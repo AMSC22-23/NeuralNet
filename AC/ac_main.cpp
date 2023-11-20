@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include "matrixgen.hpp"
 
 int main(int argc, char **argv){
     
@@ -25,7 +26,26 @@ int main(int argc, char **argv){
      try {
         int m = std::stoi(argv[1]);
         int n = std::stoi(argv[2]);
+        if(std::strcmp(argv[3], "f") == 0){
+            auto matrixF = matrixgen<float>(m, n);
+            for (const auto& riga : matrixF) {
+                for (auto valore : riga) {
+                    std::cout << valore << " ";
+                }
+             std::cout << std::endl;
+            }
+        }
+        if(std::strcmp(argv[3], "d") == 0){
+            auto matrixD = matrixgen<float>(m, n);
+            for (const auto& riga : matrixF) {
+                for (auto valore : riga) {
+                    std::cout << valore << " ";
+                }
+                std::cout << std::endl;
+            }
+        }
         std::cout << "matrice definita m x n: " << m << " x " << n << std::endl;
+        
     } catch (const std::invalid_argument& e) {
         std::cerr << "Errore: Conversione fallita " << e.what() << std::endl;
         return 1;
@@ -33,5 +53,7 @@ int main(int argc, char **argv){
         std::cerr << "Errore: Numero non consentito " << e.what() << std::endl;
         return 1;
     }
+
+    
     return 0;
 }
