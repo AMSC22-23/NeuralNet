@@ -1,0 +1,4 @@
+AMSC Repository dedicated to the Neural Network project
+Alessandro Colombo
+Filippo Mininno
+Nicola Chiarani
