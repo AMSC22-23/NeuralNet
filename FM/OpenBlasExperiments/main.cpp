@@ -4,6 +4,24 @@
 // source /u/sw/etc/bash.bashrc 
 // module load gcc-glibc/11.2.0
 // module load openblas
+// -L$mkOpenblasLib -lopenblas
+
+
+//  prefix=/u/sw/toolchains/gcc-glibc/11.2.0/pkgs/openblas/0.3.15
+// libdir=${prefix}/lib
+// includedir=${prefix}/include
+
+
+
+
+
+/*
+  TO COMPILE THIS STUFF:
+    g++ main.cpp  -I ${mkOpenblasInc}  -L${mkOpenblasLib} -lopenblas
+*/
+
+
+
 
 /*
  This module provides an optimized implementation of the BLAS and LAPACK
@@ -33,8 +51,13 @@ int main() {
     int rows_A = 3, cols_A = 3, rows_B = 3, cols_B = 3;
 
     // Inizializing Matrices
-    double A[rows_A * cols_A] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    double B[rows_B * cols_B] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    double A[rows_A * cols_A] = {2, 0 , 0, 
+                                  0, 3, 0, 
+                                  0, 0, 5};
+                                  
+    double B[rows_B * cols_B] = {2, 0 , 0, 
+                                  0, 3, 0, 
+                                  0, 0, 5};
 
     // Inizializing Matrix Result
     double C[rows_A * cols_B];
