@@ -1,23 +1,30 @@
 #include <cblas.h>
 #include <iostream>
 
-// source /u/sw/etc/bash.bashrc 
-// module load gcc-glibc/11.2.0
-// module load openblas
-// -L$mkOpenblasLib -lopenblas
-
-
-//  prefix=/u/sw/toolchains/gcc-glibc/11.2.0/pkgs/openblas/0.3.15
-// libdir=${prefix}/lib
-// includedir=${prefix}/include
-
-
-
-
 
 /*
-  TO COMPILE THIS STUFF:
-    g++ main.cpp  -I ${mkOpenblasInc}  -L${mkOpenblasLib} -lopenblas
+  this is a simple example of an application of the openblas library. 
+  we compute the product of two matrices. 
+
+  To load the module 
+
+       source /u/sw/etc/bash.bashrc 
+       module load gcc-glibc/11.2.0
+       module load openblas
+
+  This flags are needed by the linker     
+     -L$mkOpenblasLib -lopenblas
+
+  This flags are needed by compiler
+      -I ${mkOpenblasInc}
+
+
+  To compile the program
+    g++ main.cpp  -I ${mkOpenblasInc}  -L${mkOpenblasLib} -lopenblas -o program
+
+
+  
+  
 */
 
 
@@ -50,11 +57,14 @@ int main() {
     // Defining Matrix dimensions
     int rows_A = 3, cols_A = 3, rows_B = 3, cols_B = 3;
 
+
+    openblas_set_num_threads(4); // i am setting to 4 the number of thread dinamically default is to 1. I think we should keep to 1 the no. threads. 
+
     // Inizializing Matrices
     double A[rows_A * cols_A] = {2, 0 , 0, 
                                   0, 3, 0, 
                                   0, 0, 5};
-                                  
+
     double B[rows_B * cols_B] = {2, 0 , 0, 
                                   0, 3, 0, 
                                   0, 0, 5};
