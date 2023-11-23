@@ -4,7 +4,7 @@
 #include "matrixgen.hpp"
 
 template <typename T>
-std::vector<std::vector<T>> matrixgen(int m, int n){
+std::vector<std::vector<T>> matrixgen(const int m, const int n){
     std::srand(static_cast<unsigned>(std::time(0)));
     std::vector<std::vector<T>> matrix(m, std::vector<T>(n));
     for (int i = 0; i < m; ++i) {
