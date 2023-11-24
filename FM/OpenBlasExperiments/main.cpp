@@ -1,7 +1,6 @@
 #include <cblas.h>
 #include <iostream>
-
-
+#include "../MatrixClass/Matrix.hpp"
 /*
   this is a simple example of an application of the openblas library. 
   we compute the product of two matrices. 
@@ -97,13 +96,16 @@ int main() {
                 cols_B              // The size of the first dimension of matrix C; if you are passing a matrix C[m][n], the value should be m.
                 );
 
-    // Stampare la matrice risultato
+    // Stampa la matrice risultato
     for (int i = 0; i < rows_A; ++i) {
         for (int j = 0; j < cols_B; ++j) {
             std::cout << C[i * cols_B + j] << " ";
         }
         std::cout << std::endl;
     }
+
+
+
 
     return 0;
 }
