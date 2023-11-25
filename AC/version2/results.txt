@@ -166,3 +166,35 @@ time to run a 1000 x 1000 matrix(random Vector/Vector) multiplication of float: 
 ---------------------------------------------------
 ---------------------------------------------------
 
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of float: 0 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of double: 1 ms
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of float: 1 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of float: 0 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+

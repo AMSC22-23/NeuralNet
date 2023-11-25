@@ -14,6 +14,7 @@
 #include <array>
 #include <iomanip>
 #include <fstream>  //per output su file
+#include <immintrin.h> //intrinsics intel per SIMD
 
 
 template<typename T>
@@ -215,25 +216,54 @@ MatrixVect<T> matrixProdVect(MatrixVect<T>& a, MatrixVect<T>& b){
 }
 
 
+//definisco funzione che riduce la matrice ad un vettore
+template<typename T>
+std::vector<T> vectorReduction(MatrixVect<T>& x, size_t m, size_t n){
+  std::vector<T> c;
+  c.resize(m*n);
+  for(size_t i = 0; i < m; i++){
+    for(size_t j = 0; j < n; j++){
+      c[m*i+j] = x(i,j);
+    }
+  }
+  return c;
+}
+
+
+//funzione SIMD per il calcolo della moltiplicazione
+template<typename T>
+void matrixMultAvx(std::vector<T>& A, std::vector<T>& B, std::vector<T>& C, size_t m, size_t n, size_t q){
+  for (size_t i = 0; i < m; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            __m256d result = _mm256_setzero_pd();
+
+            for (size_t k = 0; k < q; ++k) {
+                __m256d a = _mm256_loadu_pd(&A[i + k * m]);  // Carica la colonna i-esima di A
+                //__m256d a = _mm256_load_pd(&A[i + k * m]);
+                __m256d b = _mm256_broadcast_sd(&B[k + j * q]);  // Broadcast l'elemento j-esimo di B
+
+                result = _mm256_add_pd(result, _mm256_mul_pd(a, b));  // Moltiplicazione e somma
+            }
+
+            _mm256_storeu_pd(&C[i + j * m], result);  // Salva il risultato in C
+        }
+    }
+}
+
+
 int main(int argc, char **argv){
   using namespace std::chrono;
     Matrix<double> mat, mat2, mat3, matR, mat2R, mat3R;
     Matrix<float> mat4, mat5, mat6, mat4R, mat5R, mat6R;
     MatrixVect<double> mat7, mat8, mat9, mat7R, mat8R, mat9R;
     MatrixVect<float> mat10, mat11, mat12, mat10R, mat11R, mat12R;
+    std::vector<double> a,b,c;
     size_t m;
     std::ofstream outputFile("results.txt", std::ios::app);
     std::ofstream outputFileMatrix("matrix.txt");
-  /**  for(int i = 0 ; i<3; i++){
-        for(int j = 0; j<5 ; j++){
-            mat(i,j) = 1.0;
-           // mat2(i,j) = 2.0;
-        }
-    }
-  **/
-   // fillMatrixDouble(mat2, 4, 6);
-    //fillMatrix<float>(mat3, 3, 3);
-    //fillMatrixVect<double>(mat4, 4, 4);
+ 
+
+
     if (argc < 2){
       m = 10;
     }else{
@@ -259,6 +289,7 @@ int main(int argc, char **argv){
     fillMatrixVect<float>(mat10R, m, m);
     fillMatrixVect<float>(mat11R, m, m);
 
+/**
     if(m < 401){
     const auto t0 = high_resolution_clock::now();   //vector/map impiega troppo tempo
     mat3 = matrixProd<double>(mat, mat2);
@@ -356,12 +387,7 @@ int main(int argc, char **argv){
     outputFileMatrix << std::endl;
     }
     
-  /**  mat2.print(std::cout);
-    std::cout<<std::endl;
-    mat3.print(std::cout);
-    std::cout<<std::endl;
-    mat5.print(std::cout);**/
-    
+  
     std::cout << "time to run a " << m << " x " << m << " matrix(default Vector/Vector) multiplication of double: " << dt_05 << " ms" << std::endl;
     std::cout << "time to run a " << m << " x " << m << " matrix(default Vector/Vector) multiplication of float: " << dt_06 << " ms" << std::endl;
     std::cout << "************************************************" << std::endl;
@@ -379,6 +405,28 @@ int main(int argc, char **argv){
     outputFile << "---------------------------------------------------" << std::endl;
     outputFile << "---------------------------------------------------" << std::endl;
     outputFile << std::endl;
+**/
+
+    a.resize(m*m);
+    b.resize(m*m);
+    c.resize(m*m);
+
+    a = vectorReduction<double>(mat7R, m, m);
+    matrixMultAvx<double>(a, a, c,m-1 , m-1, m-1);
+
+    for(size_t i = 0; i<m*m; i++){
+    std::cout << a[i] ;
+    std::cout << " ";
+    }
+    std::cout << std::endl;
+
+    for(size_t i = 0; i<m*m; i++){
+    std::cout << c[i] ;
+    std::cout << " ";
+    }
+    std::cout << std::endl;
+
+
 
     return 0;
 }
