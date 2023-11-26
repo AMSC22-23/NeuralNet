@@ -1,8 +1,9 @@
 #include <cblas.h>
 #include <iostream>
 #include "Matrix.hpp"
+#include "Profiler.hpp"
 #include<vector>
-
+#include <chrono>
 
 /*
   this is a simple example of an application of the openblas library. 
@@ -65,73 +66,16 @@
 
 
 
+int main(int argc, char** argv) {
 
 
 
-
-int main() {
-    // Defining Matrix dimensions
-   
+  Profiler p ({1000, 10000}); 
 
 
-    
-    std::vector<double> Avect {5, 0 , 0, 
-                      0, 6, 0, 
-                      0, 0, 7, 
-                      0, 0, 0};
-
-
-    std::vector<double> Bvect {5, 0 , 0, 0, 
-                              0, 6, 0, 0,
-                               0, 0, 7, 0};
-
-
-    Matrix<double> A(4, 3, Avect); 
-    Matrix<double> B(3, 4, Bvect); 
-
-    Matrix<double> C = mmm_blas(A, B);
-
-    std::size_t m, n, k; 
-
-    m = 4; 
-    k = 3; 
-    n = 4; 
-
-    std::vector<double> Cvect (m*n); 
-    //double C[m * n];
-
-    /*
-
-    cblas_dgemm(
-                CblasRowMajor,      // Specifies row-major (C) or column-major (Fortran) data ordering.
-                CblasNoTrans,       // Specifies whether to transpose matrix A.
-                CblasNoTrans,       // Specifies whether to transpose matrix B.
-                m,             // Number of rows in matrices A and C.
-                n,             // Number of columns in matrices B and C.
-                k,             // Number of columns in matrix A; number of rows in matrix B.
-                1.0,                // Scaling factor for the product of matrices A and B.
-                Avect.data(),       // UnsafePointer<Double>! to Matrix A.
-                k,                  
-                Bvect.data(),     // Matrix B. 
-                n,             // The size of the first dimension of matrix B; if you are passing a matrix B[m][n], the value should be m.
-                0.0,                // Scaling factor for matrix C.
-                Cvect.data(),     // Matrix C.
-                n             // The size of the first dimension of matrix C; if you are passing a matrix C[m][n], the value should be m.
-                );
-
-    // Stampa la matrice risultato
-    for (int i = 0; i < m; ++i) {
-        for (int j = 0; j < n; ++j) {
-            std::cout << Cvect[i * n + j] << " ";
-        }
-        std::cout << std::endl;
-    }
-
-  */
-
+  p.profile(); 
 
   
 
-
-    return 0;
+  return 0;
 }

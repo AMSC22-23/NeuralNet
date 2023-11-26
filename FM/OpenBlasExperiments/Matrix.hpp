@@ -1,69 +1,74 @@
-#include<vector>
+#include <vector>
 #include <cblas.h>
+#include <chrono>
+#include <random>
+#include <iostream>
 
-template<typename T> 
-class Matrix {
+#ifndef MATRIX_HPP
+#define MATRIX_HPP
 
-    private:
+    template<typename T> 
+    class Matrix {
 
-        std::vector<T> m_data;
-        std::size_t rows = 0, cols = 0; 
+        private:
 
-    public:
-        Matrix(std::size_t rows, std::size_t cols, std::vector<T> & data):
-            rows(rows),
-            cols(cols),
-            m_data(data)
-            {}; 
-    
-        T* get_ptr(){return m_data.data(); }
-        std::size_t get_rows() const {return rows; }
-        std::size_t get_cols() const {return cols; }
-        
-};
+            std::vector<T> m_data;
+            std::size_t rows = 0, cols = 0; 
+
+        public:
 
 
+            Matrix(std::size_t rows, std::size_t cols, const std::vector<T> & data):
+                rows(rows),
+                cols(cols),
+                m_data(data)
+                {}; 
+            
+            Matrix(std::size_t rows, std::size_t cols):  
+                        Matrix(rows, cols, std::vector<T>(rows*cols))
+                        {};
+
+
+            T* get_ptr(){return m_data.data(); }
+            std::size_t get_rows() const {return rows; }
+            std::size_t get_cols() const {return cols; }
+
+
+            void random_fill(T a, T b); 
+            void print() const; 
+            
+    };
 
 
 template<typename T>
-Matrix<T> mmm_blas(Matrix<T>& A, Matrix<T>& B){
-
-    std::size_t m, n, k; 
-
-    m = A.get_rows(); 
-    n = B.get_cols(); 
-    k = A.get_cols(); 
+void Matrix<T>::random_fill(T a, T b){
 
 
+    std::default_random_engine generator;
+    std::uniform_real_distribution<T> dist(a, b);
+    for(std::size_t i = 0; i<rows*cols; i++)
+        m_data[i] = dist(generator); 
 
-    std::vector<T> C(m*n);
-
-
-    cblas_dgemm(
-                CblasRowMajor,      // Specifies row-major (C) or column-major (Fortran) data ordering.
-                CblasNoTrans,       // Specifies whether to transpose matrix A.
-                CblasNoTrans,       // Specifies whether to transpose matrix B.
-                m,             // Number of rows in matrices A and C.
-                n,             // Number of columns in matrices B and C.
-                k,             // Number of columns in matrix A; number of rows in matrix B.
-                1.0,                // Scaling factor for the product of matrices A and B.
-                A.get_ptr(),       // UnsafePointer<Double>! to Matrix A.
-                k,                  
-                B.get_ptr(),     // Matrix B. 
-                n,             // The size of the first dimension of matrix B; if you are passing a matrix B[m][n], the value should be m.
-                0.0,                // Scaling factor for matrix C.
-                C.data(),     // Matrix C.
-                n             // The size of the first dimension of matrix C; if you are passing a matrix C[m][n], the value should be m.
-                );
+}; 
 
 
-     // Stampa la matrice risultato
-    for (int i = 0; i < m; ++i) {
-        for (int j = 0; j < n; ++j) {
-            std::cout << C[i * n + j] << " ";
+template<typename T>
+void Matrix<T>::print()const{
+
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            std::cout << m_data[i * rows + j] << " ";
         }
         std::cout << std::endl;
     }
 
-    return {m, n, C}; 
-}; 
+
+}
+
+
+
+
+
+#endif
+
