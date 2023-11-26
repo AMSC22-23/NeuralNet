@@ -1,4 +1,5 @@
 #include <cblas.h>
+#include <cstdlib>
 #include <iostream>
 #include "Matrix.hpp"
 #include "Profiler.hpp"
@@ -70,11 +71,11 @@ int main(int argc, char** argv) {
 
   openblas_set_num_threads(4);
 
-  Profiler p ({516, 1024}); 
+  Profiler p ({64, 128, 516}); 
 
   p.profile(); 
 
+  system("python visualize_data.py");
 
-
-  return 0;
+  return 0; 
 }
