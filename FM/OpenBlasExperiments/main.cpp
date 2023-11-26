@@ -6,9 +6,7 @@
 #include <chrono>
 
 /*
-  this is a simple example of an application of the openblas library. 
-  we compute the product of two matrices. 
-
+  
   To load the module 
 
        source /u/sw/etc/bash.bashrc && module load gcc-glibc/11.2.0 && module load openblas
@@ -68,14 +66,30 @@
 
 int main(int argc, char** argv) {
 
+  
+/*
+  openblas_set_num_threads(4);
 
-
-  Profiler p ({1000, 10000}); 
+  Profiler p ({4}); 
 
 
   p.profile(); 
 
-  
+  */
+
+
+ Matrix<float> A(2, 2); 
+ Matrix<float> B(2, 2); 
+A.random_fill(-2, 2);
+B.random_fill(-2, 2);
+
+
+A.print();
+
+std::cout<<"-----------------------------------------------------\n"; 
+
+B.print();
+
 
   return 0;
 }

@@ -32,6 +32,7 @@
             T* get_ptr(){return m_data.data(); }
             std::size_t get_rows() const {return rows; }
             std::size_t get_cols() const {return cols; }
+            const T& operator[](std::size_t i) const;  
 
 
             void random_fill(T a, T b); 
@@ -66,6 +67,15 @@ void Matrix<T>::print()const{
 
 }
 
+
+
+
+template<typename T>
+const T& Matrix<T>::operator[](std::size_t i) const{
+
+    return m_data[i]; 
+
+}; 
 
 
 
