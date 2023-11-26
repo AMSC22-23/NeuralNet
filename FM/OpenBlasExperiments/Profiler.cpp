@@ -99,14 +99,32 @@ const int64_t Profiler::mmm_naive(Matrix<double>& A, Matrix<double>& B){
 std::size_t rows = A.get_rows(), columns = B.get_cols(), inners = A.get_cols(); 
 std::vector<double> result(rows*columns);
 
+const auto t0 = std::chrono::high_resolution_clock::now();
 
-std::cout<<"-----------------------------------------------------------------------"<<std::endl;
-std::cout<<"Matrix Af"<<std::endl;
-A.print();
-std::cout<<"-----------------------------------------------------------------------"<<std::endl;
-std::cout<<"Matrix Bf"<<std::endl;
-B.print();
-std::cout<<"-----------------------------------------------------------------------"<<std::endl;
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < columns; col++) {
+      for (int inner = 0; inner < inners; inner++) {
+        result[row * columns + col] +=
+            A[row * columns + inner] * B[inner * columns + col];
+        } 
+    } 
+} 
+
+const auto t1 = std::chrono::high_resolution_clock::now();
+const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+
+// Matrix<double> C(rows, columns, result); 
+
+
+
+
+return dt; 
+} 
+
+const int64_t Profiler::mmm_naive(Matrix<float>& A, Matrix<float>& B){
+
+std::size_t rows = A.get_rows(), columns = B.get_cols(), inners = A.get_cols(); 
+std::vector<float> result(rows*columns);
 
 const auto t0 = std::chrono::high_resolution_clock::now();
 
@@ -122,29 +140,13 @@ const auto t0 = std::chrono::high_resolution_clock::now();
 const auto t1 = std::chrono::high_resolution_clock::now();
 const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
 
-Matrix<double> C(rows, columns, result); 
+// Matrix<float> C(rows, columns, result); 
 
-C.print(); 
 
 
 
 return dt; 
 } 
-
-inline void Profiler::write_result(const std::string& algorithmID, std::size_t n, const std::string& datatype, int64_t d) const{
-
-    std::fstream fout;
-    fout.open(outputfile); 
-
-    
-
-    fout.close();
-}; 
-
-
-
-
-
 
 
 
@@ -162,7 +164,7 @@ void Profiler::profile(){
     
 
     std::fstream fout;
-    fout.open(outputfile); 
+    fout.open(outputfile, std::ios::out | std::ios::app); 
 
     fout<<"AlgorithmID,n,datatype,time"<<std::endl; 
 
@@ -184,14 +186,12 @@ void Profiler::profile(){
                 
 
                 auto dt_double = mmm_blas(A, B);
-                auto dt_float = mmm_blas(Af, Bf); 
+                //auto dt_float = mmm_blas(Af, Bf); 
                 auto dt_naive_double = mmm_naive(A, B);
 
-                times_double.push_back(dt_double);
-                times_float.push_back(dt_float); 
                 
                 fout<<"blas,"<<dim<<",double,"<<dt_double<<std::endl; 
-                fout<<"blas,"<<dim<<",float,"<<dt_double<<std::endl;
+                //fout<<"blas,"<<dim<<",float,"<<dt_float<<std::endl;
                 fout<<"naive,"<<dim<<",double,"<<dt_naive_double<<std::endl; 
         }
 

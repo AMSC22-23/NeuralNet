@@ -1,0 +1,7 @@
+AlgorithmID,n,datatype,time
+blas,516,double,9
+blas,516,float,9
+naive,516,double,1885
+blas,1024,double,25
+blas,1024,float,25
+naive,1024,double,24778

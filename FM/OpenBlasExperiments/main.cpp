@@ -67,28 +67,13 @@
 int main(int argc, char** argv) {
 
   
-/*
+
   openblas_set_num_threads(4);
 
-  Profiler p ({4}); 
-
+  Profiler p ({516, 1024}); 
 
   p.profile(); 
 
-  */
-
-
- Matrix<float> A(3, 2); 
- Matrix<float> B(5, 6); 
-A.random_fill(-2, 2);
-B.random_fill(-2, 2);
-
-
-A.print();
-
-std::cout<<"-----------------------------------------------------\n"; 
-
-B.print();
 
 
   return 0;

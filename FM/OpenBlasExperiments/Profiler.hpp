@@ -11,7 +11,7 @@ class Profiler{
     std::vector<int64_t> times_float; 
     std::vector<int64_t> times_double; 
     
-    inline void write_result(const std::string& algorithmID, std::size_t n, const std::string& datatype, int64_t dt) const; 
+    
 public:
     
     Profiler() = default;
@@ -22,6 +22,7 @@ public:
     const int64_t mmm_blas(Matrix<float>& A, Matrix<float>& B); 
 
     const int64_t mmm_naive(Matrix<double>& A, Matrix<double>& B); 
+    const int64_t mmm_naive(Matrix<float>& A, Matrix<float>& B);
     void profile(); 
 
 };
