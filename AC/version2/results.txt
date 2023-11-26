@@ -1,0 +1,200 @@
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of float: 0 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 15 x 15 matrix(default Vector/Map) multiplication of double: 2 ms
+time to run a 15 x 15 matrix(default Vector/Map) multiplication of float: 3 ms
+************************************************
+time to run a 15 x 15 matrix(random Vector/Map) multiplication of double: 2 ms
+time to run a 15 x 15 matrix(random Vector/Map) multiplication of float: 2 ms
+************************************************
+time to run a 15 x 15 matrix(default Vector/Vector) multiplication of double: 0 ms
+time to run a 15 x 15 matrix(default Vector/Vector) multiplication of float: 0 ms
+************************************************
+time to run a 15 x 15 matrix(random Vector/Vector) multiplication of double: 0 ms
+time to run a 15 x 15 matrix(random Vector/Vector) multiplication of float: 0 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 100 x 100 matrix(default Vector/Map) multiplication of double: 502 ms
+time to run a 100 x 100 matrix(default Vector/Map) multiplication of float: 496 ms
+************************************************
+time to run a 100 x 100 matrix(random Vector/Map) multiplication of double: 531 ms
+time to run a 100 x 100 matrix(random Vector/Map) multiplication of float: 518 ms
+************************************************
+time to run a 100 x 100 matrix(default Vector/Vector) multiplication of double: 47 ms
+time to run a 100 x 100 matrix(default Vector/Vector) multiplication of float: 44 ms
+************************************************
+time to run a 100 x 100 matrix(random Vector/Vector) multiplication of double: 51 ms
+time to run a 100 x 100 matrix(random Vector/Vector) multiplication of float: 44 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 100 x 100 matrix(default Vector/Map) multiplication of double: 505 ms
+time to run a 100 x 100 matrix(default Vector/Map) multiplication of float: 533 ms
+************************************************
+time to run a 100 x 100 matrix(random Vector/Map) multiplication of double: 502 ms
+time to run a 100 x 100 matrix(random Vector/Map) multiplication of float: 474 ms
+************************************************
+time to run a 100 x 100 matrix(default Vector/Vector) multiplication of double: 45 ms
+time to run a 100 x 100 matrix(default Vector/Vector) multiplication of float: 47 ms
+************************************************
+time to run a 100 x 100 matrix(random Vector/Vector) multiplication of double: 44 ms
+time to run a 100 x 100 matrix(random Vector/Vector) multiplication of float: 53 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 200 x 200 matrix(default Vector/Map) multiplication of double: 4452 ms
+time to run a 200 x 200 matrix(default Vector/Map) multiplication of float: 4327 ms
+************************************************
+time to run a 200 x 200 matrix(random Vector/Map) multiplication of double: 4413 ms
+time to run a 200 x 200 matrix(random Vector/Map) multiplication of float: 4248 ms
+************************************************
+time to run a 200 x 200 matrix(default Vector/Vector) multiplication of double: 368 ms
+time to run a 200 x 200 matrix(default Vector/Vector) multiplication of float: 368 ms
+************************************************
+time to run a 200 x 200 matrix(random Vector/Vector) multiplication of double: 369 ms
+time to run a 200 x 200 matrix(random Vector/Vector) multiplication of float: 353 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 200 x 200 matrix(default Vector/Map) multiplication of double: 4389 ms
+time to run a 200 x 200 matrix(default Vector/Map) multiplication of float: 4317 ms
+************************************************
+time to run a 200 x 200 matrix(random Vector/Map) multiplication of double: 4310 ms
+time to run a 200 x 200 matrix(random Vector/Map) multiplication of float: 4277 ms
+************************************************
+time to run a 200 x 200 matrix(default Vector/Vector) multiplication of double: 371 ms
+time to run a 200 x 200 matrix(default Vector/Vector) multiplication of float: 349 ms
+************************************************
+time to run a 200 x 200 matrix(random Vector/Vector) multiplication of double: 364 ms
+time to run a 200 x 200 matrix(random Vector/Vector) multiplication of float: 360 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 300 x 300 matrix(default Vector/Map) multiplication of double: 15632 ms
+time to run a 300 x 300 matrix(default Vector/Map) multiplication of float: 15726 ms
+************************************************
+time to run a 300 x 300 matrix(random Vector/Map) multiplication of double: 16947 ms
+time to run a 300 x 300 matrix(random Vector/Map) multiplication of float: 16793 ms
+************************************************
+time to run a 300 x 300 matrix(default Vector/Vector) multiplication of double: 1353 ms
+time to run a 300 x 300 matrix(default Vector/Vector) multiplication of float: 1296 ms
+************************************************
+time to run a 300 x 300 matrix(random Vector/Vector) multiplication of double: 1240 ms
+time to run a 300 x 300 matrix(random Vector/Vector) multiplication of float: 1263 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 400 x 400 matrix(default Vector/Map) multiplication of double: 39284 ms
+time to run a 400 x 400 matrix(default Vector/Map) multiplication of float: 38382 ms
+************************************************
+time to run a 400 x 400 matrix(random Vector/Map) multiplication of double: 42917 ms
+time to run a 400 x 400 matrix(random Vector/Map) multiplication of float: 42416 ms
+************************************************
+time to run a 400 x 400 matrix(default Vector/Vector) multiplication of double: 3065 ms
+time to run a 400 x 400 matrix(default Vector/Vector) multiplication of float: 3068 ms
+************************************************
+time to run a 400 x 400 matrix(random Vector/Vector) multiplication of double: 3030 ms
+time to run a 400 x 400 matrix(random Vector/Vector) multiplication of float: 3066 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 500 x 500 matrix(default Vector/Vector) multiplication of double: 5876 ms
+time to run a 500 x 500 matrix(default Vector/Vector) multiplication of float: 5824 ms
+************************************************
+time to run a 500 x 500 matrix(random Vector/Vector) multiplication of double: 5732 ms
+time to run a 500 x 500 matrix(random Vector/Vector) multiplication of float: 5781 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 600 x 600 matrix(default Vector/Vector) multiplication of double: 10048 ms
+time to run a 600 x 600 matrix(default Vector/Vector) multiplication of float: 10079 ms
+************************************************
+time to run a 600 x 600 matrix(random Vector/Vector) multiplication of double: 10089 ms
+time to run a 600 x 600 matrix(random Vector/Vector) multiplication of float: 10271 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 700 x 700 matrix(default Vector/Vector) multiplication of double: 16164 ms
+time to run a 700 x 700 matrix(default Vector/Vector) multiplication of float: 15872 ms
+************************************************
+time to run a 700 x 700 matrix(random Vector/Vector) multiplication of double: 17663 ms
+time to run a 700 x 700 matrix(random Vector/Vector) multiplication of float: 18240 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 1000 x 1000 matrix(default Vector/Vector) multiplication of double: 54197 ms
+time to run a 1000 x 1000 matrix(default Vector/Vector) multiplication of float: 52026 ms
+************************************************
+time to run a 1000 x 1000 matrix(random Vector/Vector) multiplication of double: 52328 ms
+time to run a 1000 x 1000 matrix(random Vector/Vector) multiplication of float: 49891 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of float: 0 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of double: 1 ms
+time to run a 10 x 10 matrix(default Vector/Map) multiplication of float: 1 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(default Vector/Vector) multiplication of float: 0 ms
+************************************************
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of double: 0 ms
+time to run a 10 x 10 matrix(random Vector/Vector) multiplication of float: 0 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
