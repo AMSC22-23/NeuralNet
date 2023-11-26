@@ -78,8 +78,8 @@ int main(int argc, char** argv) {
   */
 
 
- Matrix<float> A(2, 2); 
- Matrix<float> B(2, 2); 
+ Matrix<float> A(3, 2); 
+ Matrix<float> B(5, 6); 
 A.random_fill(-2, 2);
 B.random_fill(-2, 2);
 

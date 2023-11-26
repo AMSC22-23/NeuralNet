@@ -43,12 +43,13 @@
 
 template<typename T>
 void Matrix<T>::random_fill(T a, T b){
+    
+    std::random_device rd;
+    std::mt19937 gen(rd()); 
 
-
-    std::default_random_engine generator;
     std::uniform_real_distribution<T> dist(a, b);
     for(std::size_t i = 0; i<rows*cols; i++)
-        m_data[i] = dist(generator); 
+        m_data[i] = dist(gen); 
 
 }; 
 
