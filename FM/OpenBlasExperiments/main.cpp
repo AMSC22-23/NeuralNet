@@ -20,7 +20,7 @@
 
 
   To compile the program
-    g++ main.cpp  -I ${mkOpenblasInc}  -L${mkOpenblasLib} -lopenblas -o program
+    g++ main.cpp  Profiler.cpp -I ${mkOpenblasInc}  -L${mkOpenblasLib} -lopenblas -o program
 
 
   OPENBLAS MODULE:
@@ -79,3 +79,17 @@ int main(int argc, char** argv) {
 
   return 0; 
 }
+
+/*
+Without any optimizations:
+Time blas = 8
+Time naive = 1946
+------------------------------------------
+Loop unrolling all loops:      -funroll-all-loops
+Time blas = 4
+Time naive = 1954
+--------------------------------------------------------
+Loop unrolling loops whos iteration can be found at runtime:      -funroll-all-loops
+
+
+*/
