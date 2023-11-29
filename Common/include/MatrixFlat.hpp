@@ -1,6 +1,5 @@
 #include "MatrixSkltn.hpp"
 
-
 #ifndef MATRIXFLAT_HPP
 #define MATRIXFLAT_HPP
 
@@ -16,6 +15,7 @@ class MatrixFlat : public MatrixSkltn<T>{
         std::vector<T> m_data;
 
         bool check_indexes(size_t i, size_t j) const;
+
     public:
 
 
@@ -27,8 +27,8 @@ class MatrixFlat : public MatrixSkltn<T>{
 
         //! Initializes a matrix of zeros
         MatrixFlat(std::size_t rows, std::size_t cols):
-                MatrixFlat(rows, cols, std::vector<T>(rows*cols))
-                    {};
+            MatrixFlat(rows, cols, std::vector<T>(rows*cols))
+            {};
 
         //! Initializes a matrix filled of random values with values in the interval (a, b)
         MatrixFlat(std::size_t rows, std::size_t cols, T a, T b):
@@ -73,7 +73,7 @@ void MatrixFlat<T>::_print(std::ostream &os) const {
 template<typename T>
 T &MatrixFlat<T>::operator()(size_t i, size_t j) {
     if(check_indexes(i, j) == 1)
-        return  m_data[MatrixSkltn<T>::n_rows * i + j];
+        return  m_data[MatrixSkltn<T>::n_cols * i + j];
     std::cerr<<"Error in operator(): indexes "<< i<<", "<< j<< " are not correct.\n"
               <<"Stopping execution. "<<std::endl;
     std::exit(-1);
@@ -83,7 +83,7 @@ T &MatrixFlat<T>::operator()(size_t i, size_t j) {
 template<typename T>
 const T &MatrixFlat<T>::operator()(size_t i, size_t j) const {
     if(check_indexes(i, j) == 1)
-        return  m_data[MatrixSkltn<T>::n_rows * i + j];
+        return  m_data[MatrixSkltn<T>::n_cols * i + j];
     std::cerr<<"Error in operator(): indexes "<< i<<", "<< j<< " are not correct.\n"
              <<"Stopping execution. "<<std::endl;
     std::exit(-1);
