@@ -101,9 +101,9 @@ std::vector<double> result(rows*columns);
 
 const auto t0 = std::chrono::high_resolution_clock::now();
 
-  for (int row = 0; row < rows; row++) {
-    for (int col = 0; col < columns; col++) {
-      for (int inner = 0; inner < inners; inner++) {
+  for (std::size_t row = 0; row < rows; row++) {
+    for (std::size_t col = 0; col < columns; col++) {
+      for (std::size_t inner = 0; inner < inners; inner++) {
         result[row * columns + col] +=
             A[row * columns + inner] * B[inner * columns + col];
         } 

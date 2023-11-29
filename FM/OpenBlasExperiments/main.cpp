@@ -12,10 +12,10 @@
 
        source /u/sw/etc/bash.bashrc && module load gcc-glibc/11.2.0 && module load openblas
 
-  This flags are needed by the linker     
+  These flags are needed by the linker
      -L$mkOpenblasLib -lopenblas
 
-  This flags are needed by compiler
+  These flags are needed by compiler
       -I ${mkOpenblasInc}
 
 
@@ -80,16 +80,3 @@ int main(int argc, char** argv) {
   return 0; 
 }
 
-/*
-Without any optimizations:
-Time blas = 8
-Time naive = 1946
-------------------------------------------
-Loop unrolling all loops:      -funroll-all-loops
-Time blas = 4
-Time naive = 1954
---------------------------------------------------------
-Loop unrolling loops whos iteration can be found at runtime:      -funroll-all-loops
-
-
-*/
