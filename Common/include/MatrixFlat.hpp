@@ -47,6 +47,9 @@ class MatrixFlat : public MatrixSkltn<T>{
 
         void _print(std::ostream& os) const override;
 
+        //aggiunto da ale, ritorno il vettore dati
+        std::vector<T> getMdata(){return m_data; }
+
 
 
     virtual ~MatrixFlat() = default;

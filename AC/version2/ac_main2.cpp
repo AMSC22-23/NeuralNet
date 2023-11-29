@@ -420,7 +420,7 @@ int main(int argc, char **argv){
       }else{
         std::cout << "Also vector - vector optimisation turned off...do you really want to spen more then one hour to wait for results ??.." << std::endl;
       }
-/**
+
 
       if(m < 20){
         mat.print(outputFileMatrix);
@@ -467,7 +467,7 @@ int main(int argc, char **argv){
       }
       
     
-      **/
+      
 
       
 
@@ -484,7 +484,6 @@ int main(int argc, char **argv){
     
       std::cout<< "let's go with AVX...." << std::endl;
     
-
       const auto t9 = high_resolution_clock::now();
       matrixMultD_Avx(d,d,f,m);
       const auto t10 = high_resolution_clock::now();

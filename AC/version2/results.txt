@@ -392,6 +392,7 @@ time to run a 240 x 240 matrix(random Vector/Vector) multiplication of double: 6
 time to run a 240 x 240 matrix(random Vector/Vector) multiplication of float: 9 ms
 ************************************************
 
+
 time to run a 240 x 240 matrix(random Vector-AVX256) multiplication of double: 13 ms
 time to run a 240 x 240 matrix(random VectorAVX256) multiplication of float: 4 ms
 ************************************************
@@ -509,6 +510,48 @@ time to run a 400 x 400 matrix(random Vector/Vector) multiplication of float: 78
 
 time to run a 400 x 400 matrix(random Vector-AVX256) multiplication of double: 41 ms
 time to run a 400 x 400 matrix(random VectorAVX256) multiplication of float: 18 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 3000 x 3000 matrix(random Vector-AVX256) multiplication of double: 109550 ms
+time to run a 3000 x 3000 matrix(random VectorAVX256) multiplication of float: 61411 ms
+************************************************
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 16 x 16 matrix(default Vector/Map) multiplication of double: 0 ms
+time to run a 16 x 16 matrix(default Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 16 x 16 matrix(random Vector/Map) multiplication of double: 0 ms
+time to run a 16 x 16 matrix(random Vector/Map) multiplication of float: 0 ms
+************************************************
+time to run a 16 x 16 matrix(default Vector/Vector) multiplication of double: 0 ms
+time to run a 16 x 16 matrix(default Vector/Vector) multiplication of float: 0 ms
+************************************************
+time to run a 16 x 16 matrix(random Vector/Vector) multiplication of double: 0 ms
+time to run a 16 x 16 matrix(random Vector/Vector) multiplication of float: 0 ms
+************************************************
+
+time to run a 16 x 16 matrix(random Vector-AVX256) multiplication of double: 0 ms
+time to run a 16 x 16 matrix(random VectorAVX256) multiplication of float: 0 ms
+************************************************
+
+
+
+
+
+
+
+
+
+---------------------------------------------------
+---------------------------------------------------
+
+time to run a 2000 x 2000 matrix(random Vector-AVX256) multiplication of double: 49202 ms
+time to run a 2000 x 2000 matrix(random VectorAVX256) multiplication of float: 22428 ms
 ************************************************
 
 ---------------------------------------------------
