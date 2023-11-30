@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "MatrixSkltn.hpp"
 
 #ifndef MATRIXFLAT_HPP
@@ -16,6 +17,11 @@ class MatrixFlat : public MatrixSkltn<T>{
 
         bool check_indexes(size_t i, size_t j) const;
 
+        inline static bool is_zero(T elem, T tolerance);
+
+        void compute_nzrs(T tolerance = 1e-10);
+
+
     public:
 
 
@@ -23,11 +29,15 @@ class MatrixFlat : public MatrixSkltn<T>{
         MatrixFlat(size_t rows, size_t cols, const std::vector<T> & data):
             MatrixSkltn<T>(rows, cols, 0),
             m_data(data)
-            {};
+            {
+                compute_nzrs();
+
+            };
 
         //! Initializes a matrix of zeros
         MatrixFlat(std::size_t rows, std::size_t cols):
-            MatrixFlat(rows, cols, std::vector<T>(rows*cols))
+            MatrixSkltn<T>(rows, cols, 0),
+            m_data(std::vector<T>(rows*cols))
             {};
 
         //! Initializes a matrix filled of random values with values in the interval (a, b)
@@ -36,6 +46,7 @@ class MatrixFlat : public MatrixSkltn<T>{
             {
                 m_data.resize(rows*cols);
                 MatrixSkltn<T>::generate_random_vector(a, b, m_data);
+                compute_nzrs();
             }
 
         //! Return an unsafe pointer to the data in the heap, useful for interact with openblas library
@@ -53,10 +64,51 @@ class MatrixFlat : public MatrixSkltn<T>{
         std::vector<T> getMdata(){return m_data; }
 
 
+        //Aggiunto da fil
+        size_t nnzrs() override;
+
+        //aggiunto da fil, necessario per verificare correttezza mmm
+        MatrixFlat<T> operator-(const MatrixFlat<T>& B) const;
 
     virtual ~MatrixFlat() = default;
 
 };
+
+template<typename T>
+MatrixFlat<T> MatrixFlat<T>::operator-(const MatrixFlat<T> &B) const {
+    if(this->nrows() != B.nrows() || this->ncols() != B.ncols())
+        {
+        std::cerr<<"Error: dimension of the two matrices are wrong: cannot compute difference. Stopping execution. "<<std::endl;
+        std::exit(-1);
+        }
+    std::vector<T> diff( B.nrows() * B.ncols());
+    for(size_t i = 0; i < B.nrows() * B.ncols(); i++ )
+        diff[i] = (*this)[i] - B[i];
+
+    return MatrixFlat<T>( B.nrows(),  B.ncols(), diff);
+}
+
+template<typename T>
+size_t MatrixFlat<T>::nnzrs()  {
+    compute_nzrs();
+    return MatrixSkltn<T>::nnzrs();
+}
+
+template<typename T>
+bool MatrixFlat<T>::is_zero(T elem, T tolerance ) {
+    return std::abs(elem) <= tolerance;
+}
+
+
+template<typename T>
+void MatrixFlat<T>::compute_nzrs(T tolerance) {
+    unsigned int count = 0;
+    for (const T& elem : m_data)
+    {
+        count += !is_zero(elem, tolerance);
+    }
+   MatrixSkltn<T>::n_nzrs = count;
+}
 
 template<typename T>
 T &MatrixFlat<T>::operator[](size_t index) {
@@ -77,7 +129,7 @@ bool MatrixFlat<T>::check_indexes(size_t i, size_t j) const {
 
 template<typename T>
 void MatrixFlat<T>::_print(std::ostream &os) const {
-    std::cout<<"Dim: "<<MatrixSkltn<T>::n_rows<<"X"<<MatrixSkltn<T>::n_cols<<std::endl;
+
     for (size_t i = 0; i < MatrixSkltn<T>::n_rows; i++) {
         for (size_t j = 0; j < MatrixSkltn<T>::n_cols; j++)
             std::cout << (*this).operator()(i, j) << " ";

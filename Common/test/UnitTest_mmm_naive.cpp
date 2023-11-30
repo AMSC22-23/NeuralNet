@@ -1,5 +1,22 @@
 #include "../include/mmm.hpp"
-#include <string>
+
+
+/*
+ * This test has the scope of validate the mmm_naive algorithm.
+ * We test if the function works, in both double & single precision, we compare the result with the openBlas
+ * matrix-matrix multiplication in both term of times and result.
+ *
+ * To compile this test without any optimizations:
+ * make UnitTest_mmm_naive
+ *
+ * To compile with 1X1 optimizations settings:
+ * make UnitTest_mmm_naive_101
+ *
+ * To run this test you have to pass the desired dimension of the matrix (we test just square matrix, so
+ * the program accepts just one parameter)
+ *
+ */
+
 
 int main(int argc, char ** argv){
 
@@ -11,28 +28,38 @@ int main(int argc, char ** argv){
 
     size_t dim = std::stoi(argv[1]);
 
+    std::cout<<"Input Dimension: "<<dim<<std::endl;
+    std::cout<<"Matrices will be of dimensions: "<<dim<<"X"<<dim<<std::endl;
+
     MatrixFlat<double> A(dim, dim, -10, 10);
     MatrixFlat<double> B(dim, dim, -10, 10);
     MatrixFlat<double> C(dim, dim);
+    MatrixFlat<double> Cblas(dim, dim);
     MatrixFlat<float> Af(dim, dim, -10, 10);
     MatrixFlat<float> Bf(dim, dim, -10, 10);
     MatrixFlat<float> Cf(dim, dim);
+    MatrixFlat<float> Cblasf(dim, dim);
 
 
     int64_t time;
 
     mmm_naive(A, B, C, time);
     std::cout<<"This operation took: "<<time<< " [ms]"<<std::endl;
-    mmm_blas(A, B, C, time);
+    mmm_blas(A, B, Cblas, time);
     std::cout<<"The same operation using openBlas took: "<<time<< " [ms]"<<std::endl;
+    std::cout<<"We check if the result is the same: "<<std::endl;
+    std::cout<<"nnz(C-Cblas): "<<(Cblas-C).nnzrs()<<std::endl;
+
     std::cout<<"-----------------------------------------------------------------------"<<std::endl;
 
     mmm_naive(Af, Bf, Cf, time);
     std::cout<<"This operation took: "<<time<< " [ms]"<<std::endl;
-    mmm_blas(Af, Bf, Cf, time);
+    mmm_blas(Af, Bf, Cblasf, time);
     std::cout<<"The same operation using openBlas took: "<<time<< " [ms]"<<std::endl;
-    std::cout<<"-----------------------------------------------------------------------"<<std::endl;
+    std::cout<<"We check if the result is the same: "<<std::endl;
+    std::cout<<"nnz(C-Cblas): "<<(Cblas-C).nnzrs()<<std::endl;
 
+    std::cout<<"-----------------------------------------------------------------------"<<std::endl;
 
 
 }

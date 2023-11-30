@@ -20,7 +20,10 @@
 
         size_t nrows() const {return n_rows;}
         size_t ncols() const {return n_cols;}
-        size_t nnzrs() const {return n_nzrs;}
+
+        //MODIFICATA DA FILIPPO, aggiunto il virtual e tolto il const
+
+        virtual size_t nnzrs() {return n_nzrs;}
 
     // Print da modificare
 
@@ -41,7 +44,6 @@
         void generate_random_vector(T a, T b, std::vector<T>& vct);
         void generate_random_vector(T a, T b, std::vector<T>& vct,  int seed);
     };
-
 
 
 
