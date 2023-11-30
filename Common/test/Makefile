@@ -29,3 +29,13 @@ MatrixFlat: MatrixFlat.o
 MatrixFlat.o :
 	@echo "Compiling test_MatrixFlat.cpp..."
 	@g++ test_MatrixFlat.cpp -c
+
+# Making of test_mmm_naive.cpp
+
+mmmNAIVE: test_mmm_naive.o mmm.o
+	@echo "Linking..."
+	@g++ test_mmm_naive.o mmm.o -o mmmNAIVE ${CFLAG}
+test_mmm_naive.o:
+	@echo "Compiling test_mmm_naive.cpp..."
+	@g++ test_mmm_naive.cpp -c
+

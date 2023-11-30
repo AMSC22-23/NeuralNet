@@ -45,6 +45,8 @@ class MatrixFlat : public MatrixSkltn<T>{
         const T& operator()(size_t i, size_t j) const override;
         T& operator()(size_t i, size_t j) override;
 
+        inline const T& operator[](size_t index) const;
+        inline T& operator[](size_t index);
         void _print(std::ostream& os) const override;
 
 
@@ -52,6 +54,16 @@ class MatrixFlat : public MatrixSkltn<T>{
     virtual ~MatrixFlat() = default;
 
 };
+
+template<typename T>
+T &MatrixFlat<T>::operator[](size_t index) {
+    return m_data[index];
+}
+
+template<typename T>
+const T &MatrixFlat<T>::operator[](size_t index) const {
+    return m_data[index];
+}
 
 template<typename T>
 bool MatrixFlat<T>::check_indexes(size_t i, size_t j) const {

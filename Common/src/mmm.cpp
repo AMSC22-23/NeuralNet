@@ -85,3 +85,49 @@ int64_t mmm_blas(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double
 
 
 }
+
+int64_t mmm_naive(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double>& C){
+
+    size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+
+
+    const auto t0 = std::chrono::high_resolution_clock::now();
+
+    for (std::size_t row = 0; row < rows; row++) {
+        for (std::size_t col = 0; col < columns; col++) {
+            for (std::size_t inner = 0; inner < inners; inner++) {
+                C[row * columns + col] +=
+                        A[row * columns + inner] * B[inner * columns + col];
+            }
+        }
+    }
+
+    const auto t1 = std::chrono::high_resolution_clock::now();
+    const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+
+
+return dt;
+}
+
+int64_t mmm_naive(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C){
+
+    size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+
+
+    const auto t0 = std::chrono::high_resolution_clock::now();
+
+    for (std::size_t row = 0; row < rows; row++) {
+        for (std::size_t col = 0; col < columns; col++) {
+            for (std::size_t inner = 0; inner < inners; inner++) {
+                C[row * columns + col] +=
+                        A[row * columns + inner] * B[inner * columns + col];
+            }
+        }
+    }
+
+    const auto t1 = std::chrono::high_resolution_clock::now();
+    const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+
+
+    return dt;
+}
