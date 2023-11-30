@@ -3,16 +3,15 @@
 #ifndef MMM_HPP
 #define MMM_HPP
 
-// TO DO: All matrix A, B can be marked as const
 
-int64_t mmm_blas(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C);
+void mmm_blas(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time);
 
-int64_t mmm_blas(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double>& C);
+void mmm_blas(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time);
 
+void mmm_naive(const MatrixFlat<double>& A, const MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time);
 
-int64_t mmm_naive(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double>& C);
+void mmm_naive(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time);
 
-int64_t mmm_naive(MatrixFlat<float>& A, MatrixFlat<double>& B, MatrixFlat<float>& C);
 
 
 

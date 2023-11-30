@@ -2,9 +2,9 @@
 #include <cblas.h>
 #include <chrono>
 
-int64_t mmm_blas(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C) {
+void mmm_blas(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time) {
 
-    //! Performs C = A*B in single precision using openblas optimized mm multiplication and returns the latency of the operation
+    //! Performs C = A*B in single precision using openblas optimized mm multiplication and returns the latency of the operation in variable time
 
 
     std::size_t m, n, k;
@@ -36,15 +36,13 @@ int64_t mmm_blas(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& 
 
     const auto t1 = std::chrono::high_resolution_clock::now();
 
-    const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-
-    return dt;
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
 
 
 
 }
 
-int64_t mmm_blas(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double>& C) {
+void mmm_blas(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time) {
 
     //! Performs C = A*B in double precision using openblas optimized mm multiplication and returns the latency of the operation
 
@@ -78,17 +76,14 @@ int64_t mmm_blas(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double
 
     const auto t1 = std::chrono::high_resolution_clock::now();
 
-    const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-
-    return dt;
-
-
-
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+    
 }
 
-int64_t mmm_naive(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double>& C){
+void mmm_naive(const MatrixFlat<double>& A, const MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time){
 
-    size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+    std::cout<<"Performing naive mmm in double precision (double)  "<<std::endl;
+    std::size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
 
 
     const auto t0 = std::chrono::high_resolution_clock::now();
@@ -103,15 +98,15 @@ int64_t mmm_naive(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<doubl
     }
 
     const auto t1 = std::chrono::high_resolution_clock::now();
-    const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
 
 
-return dt;
-}
+};
 
-int64_t mmm_naive(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C){
+void mmm_naive(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time){
 
-    size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+    std::cout<<"Performing naive mmm in single precision (float) "<<std::endl;
+    std::size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
 
 
     const auto t0 = std::chrono::high_resolution_clock::now();
@@ -126,8 +121,7 @@ int64_t mmm_naive(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>&
     }
 
     const auto t1 = std::chrono::high_resolution_clock::now();
-    const auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
 
 
-    return dt;
-}
+};

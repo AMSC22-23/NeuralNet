@@ -16,26 +16,27 @@ mmm.o: ../src/mmm.cpp
 	@echo "Compiling mmm.cpp"
 	@g++ ../src/mmm.cpp -c
 
-# making clean
-clean:
+# making clear
+clear:
 	@echo "Removing everything but the source files"
-	@rm -f test_mmm_blas.o mmm.o mmmBLAS test_MatrixFlat.o MatrixFlat
+	@rm -f test_mmm_blas.o mmm.o mmmBLAS UnitTest_MatrixFlat.o UnitTest_MatrixFlat
 
-# making of test_MatrixFlat.cpp
-MatrixFlat: MatrixFlat.o
+# making of Unit_Test_MatrixFlat.cpp
+UnitTest_MatrixFlat: UnitTest_MatrixFlat.o
 	@echo "Linking..."
-	@g++ test_MatrixFlat.o -o MatrixFlat
+	@g++ UnitTest_MatrixFlat.o -o UnitTest_MatrixFlat
 	@echo "Done!"
-MatrixFlat.o :
+UnitTest_MatrixFlat.o :
 	@echo "Compiling test_MatrixFlat.cpp..."
-	@g++ test_MatrixFlat.cpp -c
+	@g++ UnitTest_MatrixFlat.cpp -c
 
-# Making of test_mmm_naive.cpp
+# Making of UnitTest_mmm_naive.cpp
 
-mmmNAIVE: test_mmm_naive.o mmm.o
+UnitTest_mmm_naive: UnitTest_mmm_naive.o mmm.o
 	@echo "Linking..."
-	@g++ test_mmm_naive.o mmm.o -o mmmNAIVE ${CFLAG}
-test_mmm_naive.o:
-	@echo "Compiling test_mmm_naive.cpp..."
-	@g++ test_mmm_naive.cpp -c
+	@g++ UnitTest_mmm_naive.o mmm.o -o UnitTest_mmm_naive ${CFLAG}
+	@echo "Done! To run the test call ./UnitTest_mmm_naive "
 
+UnitTest_mmm_naive.o: UnitTest_mmm_naive.cpp
+	@echo "Building UnitTest_mmm_naive.cpp..."
+	@g++ UnitTest_mmm_naive.cpp -c
