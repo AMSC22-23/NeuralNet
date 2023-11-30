@@ -125,3 +125,55 @@ void mmm_naive(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFla
 
 
 };
+
+void mmm_naive_RegisterAcc(const MatrixFlat<double>& A, const MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time){
+
+    std::cout<<"Performing naive_mmm_RegisterAcc in double precision (double) "<<std::endl;
+
+    std::size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+
+
+    const auto t0 = std::chrono::high_resolution_clock::now();
+
+    for (std::size_t row = 0; row < rows; row++) {
+        for (std::size_t col = 0; col < columns; col++) {
+            double acc = 0;
+            for (std::size_t inner = 0; inner < inners; inner++) {
+                acc += A[row * columns + inner] * B[inner * columns + col];
+            }
+            C[row * columns + col] =  acc;
+        }
+    }
+
+    const auto t1 = std::chrono::high_resolution_clock::now();
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+
+
+
+};
+
+void mmm_naive_RegisterAcc(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time){
+
+
+    std::cout<<"Performing naive_mmm_RegisterAcc in single precision (float) "<<std::endl;
+
+    std::size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+
+    const auto t0 = std::chrono::high_resolution_clock::now();
+
+    for (std::size_t row = 0; row < rows; row++) {
+        for (std::size_t col = 0; col < columns; col++) {
+            float acc = 0;
+            for (std::size_t inner = 0; inner < inners; inner++) {
+                acc += A[row * columns + inner] * B[inner * columns + col];
+            }
+            C[row * columns + col] =  acc;
+        }
+    }
+
+    const auto t1 = std::chrono::high_resolution_clock::now();
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+
+
+
+};
