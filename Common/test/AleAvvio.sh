@@ -6,6 +6,6 @@
 
 #g++ -o ale_test.o matrixProd_VM_VV.o
 
-g++ -std=c++20 ale_test.cpp ../src/matrixProd_AVX.cpp  -mavx2 -std=c++20 -o ale_test
+g++ -O3 -std=c++20 ale_test.cpp ../src/matrixProd_AVX.cpp  -mavx2 -std=c++20 -o ale_test
 
 #g++ -std=c++20 ale_test.cpp   -mavx2 -std=c++20 -o ale_test

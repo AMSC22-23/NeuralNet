@@ -11,60 +11,132 @@
 
 //#include <iostream>   //ok in matrixskltn
 //#include <vector>     //ok in matrixskltn
-//#include <set>
-//#include <algorithm>
-//#include <random>       //ok in matrixskltn
+#include <set>
+#include <algorithm>
+#include <random>       //ok in matrixskltn
 #include <chrono>   //per le funzioni di timing
 
-//#include <unordered_map>
-//#include <tuple>
-//#include <memory>
-//#include <cassert>
-//#include <utility>
-//#include <functional>
-//#include <array>
+#include <unordered_map>
+#include <tuple>
+#include <memory>
+#include <cassert>
+#include <utility>
+#include <functional>
+#include <array>
 
-//#include <fstream>  //per output su file
-//#include <immintrin.h> //intrinsics intel per SIMD
-
-
+#include <fstream>  //per output su file
+#include <immintrin.h> //intrinsics intel per SIMD
 
 
+
+void printFile(std::ofstream& file, int id, size_t m, size_t n, int T, int64_t& time){
+    if(T==0){
+        file << "AC;" << id << ";" << m << "x" << n << ";" << "float;" << time << std::endl; 
+    }else{
+        file << "AC;" << id << ";" << m << "x" << n << ";" << "double;" << time << std::endl;
+    }
+
+}
 
 
 
 int main(){
-
+using namespace std::chrono;
+    std::ofstream outputFile("AleResuls.csv", std::ios::app);
     Matrix<double> a,b,c;
     MatrixVect<double> d,e,f;
-    MatrixFlat<double> mat(8,8,0.0,10.0);
+    int m=1024, n=1024;
+
+    std::cout << "Building matricies..." << std::endl;
+    MatrixFlat<double> mat(m,n,0.0,10.0);
+    MatrixFlat<float> matf(m,n,0.0,10.0);
     int64_t t1,t2,t3;
     std::vector<double> res,mat1;
+    std::vector<float> resf,mat1f;
+    int id;
 
 
-    a(0,0) = d(0,0) = 2.0;
-    b(0,0) = e(0,0) = 3.0;
-    c = matrixProd<double>(a,b,t1);
-    f = matrixProdVect<double>(d,e,t2);
-
-    std::cout << "primo: " << c(0,0) <<" secondo: " << f(0,0) << std::endl;
-    std::cout << "primo: " << t1 <<" ms secondo: " << t2 << std::endl;
-    std::cout << "stampa dati random matrice: " << std::endl;
-
-    for(int i=0; i<mat.getMdata().size(); i++){
-        std::cout << mat.getMdata()[i] << " ";
-    }
-    std::cout << "fine stampa dati random matrice: " << mat.getMdata().size() << std::endl;
-
-    res.resize(8*8);
+    res.resize(m*n);
+    resf.resize(m*n);
     mat1=mat.getMdata();
-    matrixMult_Avx(mat1,mat1, res, 8,t3);
+    mat1f=matf.getMdata();
+    
+    std::cout << "Test starting..." << std::endl;
 
-    for(int i=0; i<mat.getMdata().size(); i++){
-        std::cout << res[i] << " ";
-    }
+    id = MatrixNaive(mat1, mat1, res, m,n, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,1,t1);
+    std::cout<<std::endl;
+    
+    id = MatrixRegOptimised(mat1, mat1, res, m,n, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,1,t1);
+    std::cout<<std::endl;
+
+    id = MatrixCaheOptimised(mat1, mat1, res, m,n, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,1,t1);
+    std::cout<<std::endl;
+
+    id = MatrixBTransposeOptimised(mat1, mat1, res, m,n, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,1,t1);
+    std::cout<<std::endl;
+
+    id = matrixMult_Avx(mat1, mat1, res, m, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,1,t1);
+    std::cout<<std::endl;
+
+    id = matrixMultTransposeOpt_Avx(mat1, mat1, res, m, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,1,t1);
+    std::cout<<std::endl;
 
 
+    std::cout << "***********************************************" << std::endl;
+
+    id = MatrixNaive(mat1f, mat1f, resf, m,n, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,0,t1);
+    std::cout<<std::endl;
+    
+    id = MatrixRegOptimised(mat1f, mat1f, resf, m,n, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,0,t1);
+    std::cout<<std::endl;
+
+    id = MatrixCaheOptimised(mat1f, mat1f, resf, m,n, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,0,t1);
+    std::cout<<std::endl;
+
+    id = MatrixBTransposeOptimised(mat1f, mat1f, resf, m,n, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,0,t1);
+    std::cout<<std::endl;
+
+    id = matrixMult_Avx(mat1f, mat1f, resf, m, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,0,t1);
+    std::cout<<std::endl;
+
+    id = matrixMultTransposeOpt_Avx(mat1f, mat1f, resf, m, t1);
+    std::cout<<std::endl;
+    std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
+    printFile(outputFile,id,m,n,0,t1);
+    std::cout<<std::endl;
 
 
 

@@ -48,7 +48,11 @@ void matrixMult_Avx(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, siz
 
 }**/
 template<typename T>
-void matrixMult_Avx(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, size_t m,int64_t& dt_01);
+int matrixMult_Avx(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, size_t m,int64_t& dt_01);
+
+template<typename T>
+int matrixMultTransposeOpt_Avx(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, size_t m,int64_t& dt_01);
+
 
 
 
