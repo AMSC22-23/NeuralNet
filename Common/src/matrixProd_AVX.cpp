@@ -170,18 +170,19 @@ int matrixMultTransposeOpt_Avx(std::vector<double>& a, std::vector<double>& b_tr
     //std::vector<double> d;
     //d.resize(4);
     for (size_t i =0; i<ma; i++){
-       result = _mm256_setzero_pd();
+       //result = _mm256_setzero_pd();
        for(size_t j = 0; j < nb; j ++){
             partial = _mm256_setzero_pd();
           for(size_t q=0; q<na; q += 4){
             A = _mm256_loadu_pd(&a[i*na+q]);
             B = _mm256_loadu_pd(&b_transpose[j*na+q]);
-            result =  _mm256_mul_pd(A, B);
-            shuf = _mm256_hadd_pd(result, result);
+            //result =  _mm256_mul_pd(A, B);
+            //shuf = _mm256_hadd_pd(result, result);
             
-            partial = _mm256_add_pd(partial, shuf);
+            //partial = _mm256_add_pd(partial, shuf);
+            partial = _mm256_fmadd_pd(A, B, partial);
           }
-          c[j+i*nb] = ((double*)&partial)[0] + ((double*)&partial)[2];
+          c[j+i*nb] = ((double*)&partial)[0] + ((double*)&partial)[1]+ ((double*)&partial)[2] + ((double*)&partial)[3];
           
         }
     }
@@ -203,16 +204,17 @@ int matrixMultTransposeOpt_Avx(std::vector<float>& a, std::vector<float>& b_tran
             A = _mm256_loadu_ps(&a[i*na+q]);
             B = _mm256_loadu_ps(&b_transpose[j*na+q]);
             //std::cout << "index A: " << i*(na+da)+q << " val A: " << ((float*)&A)[0] << " " << ((float*)&A)[1] << " " << ((float*)&A)[2] << " " << ((float*)&A)[3]<< " " << ((float*)&A)[4] << " " << ((float*)&A)[5] << " " << ((float*)&A)[6]<< " " << ((float*)&A)[7]  << " index B: " <<j*(na+da)+q << " val B: " << ((float*)&B)[0] << " " << ((float*)&B)[1]<< " " << ((float*)&B)[2] << " " << ((float*)&B)[3]<< " " << ((float*)&B)[4]<< " " << ((float*)&B)[5] << " " << ((float*)&B)[6]<< " " << ((float*)&B)[7] << std::endl;
-            result =  _mm256_mul_ps(A, B);
-            shuf = _mm256_hadd_ps(result, result);
-            //shuf2 = _mm256_hadd_pd(shuf, shuf);
+            //result =  _mm256_mul_ps(A, B);
+            //shuf = _mm256_hadd_ps(result, result);
+           
             
-            partial = _mm256_add_ps(partial, shuf);
+            //partial = _mm256_add_ps(partial, shuf);
+            partial = _mm256_fmadd_ps(A, B, partial);
              
           }
           
              
-          c[j+i*nb] = ((float*)&partial)[0] + ((float*)&partial)[1]+((float*)&partial)[4] + ((float*)&partial)[5];
+          c[j+i*nb] = ((float*)&partial)[0] + ((float*)&partial)[1]+((float*)&partial)[2] + ((float*)&partial)[3]+((float*)&partial)[4] + ((float*)&partial)[5]+((float*)&partial)[6] + ((float*)&partial)[7];
           
         }
     }
