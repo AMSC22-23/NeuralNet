@@ -1,4 +1,4 @@
-#include "../include/mmm.hpp"
+#include "../../include/mmm.hpp"
 
 
 /*
@@ -24,6 +24,12 @@ int main(int argc, char ** argv){
 
     size_t dim = std::stoi(argv[1]);
     size_t tileSize = std::stoi(argv[2]);
+
+    if(dim % tileSize != 0)
+    {
+        std::cout<<"Error! The dimension of the matrix must be a multiple of the tileSize"<<std::endl;
+        std::exit(-1);
+    }
 
     std::cout<<"Input Dimension: "<<dim<<std::endl;
     std::cout<<"Matrices will be of dimensions: "<<dim<<"X"<<dim<<std::endl;

@@ -1,16 +1,14 @@
-#include "../include/mmm.hpp"
+#include "../../include/mmm.hpp"
+
 
 
 /*
- * This test has the scope of validate the mmm_naive algorithm.
+ * This test has the scope of validate the mmm_loopI algorithm.
  * We test if the function works, in both double & single precision, we compare the result with the openBlas
- * matrix-matrix multiplication in both term of times and result.
+ * matrix-matrix multiplication in both term of times and correctness of result.
  *
- * To compile this test without any optimizations:
+ * To compile (with -O3 -march=native -ffast-math) :
  * make UnitTest_mmm_naive
- *
- * To compile with 1X1 optimizations settings:
- * make UnitTest_mmm_naive_101
  *
  * To run this test you have to pass the desired dimension of the matrix (we test just square matrix, so
  * the program accepts just one parameter)
@@ -43,7 +41,7 @@ int main(int argc, char ** argv){
 
     int64_t time;
 
-    mmm_naive(A, B, C, time);
+    mmm_loopI(A, B, C, time);
     std::cout<<"This operation took: "<<time<< " [ms]"<<std::endl;
     mmm_blas(A, B, Cblas, time);
     std::cout<<"The same operation using openBlas took: "<<time<< " [ms]"<<std::endl;
@@ -52,7 +50,7 @@ int main(int argc, char ** argv){
 
     std::cout<<"-----------------------------------------------------------------------"<<std::endl;
 
-    mmm_naive(Af, Bf, Cf, time);
+    mmm_loopI(Af, Bf, Cf, time);
     std::cout<<"This operation took: "<<time<< " [ms]"<<std::endl;
     mmm_blas(Af, Bf, Cblasf, time);
     std::cout<<"The same operation using openBlas took: "<<time<< " [ms]"<<std::endl;

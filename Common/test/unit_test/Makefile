@@ -5,9 +5,9 @@ FLAG1X1 = -O3 -march=native -ffast-math
 
 
 
-mmm.o: ../src/mmm.cpp
+mmm.o: ../../src/mmm.cpp
 	@echo "Compiling mmm.cpp..."
-	@g++ ../src/mmm.cpp -c ${FLAG1X1}
+	@g++ ../../src/mmm.cpp -c ${FLAG1X1}
 
 
 # making of Unit_Test_MatrixFlat.cpp
@@ -66,7 +66,7 @@ UnitTest_mmm_tiling.o: UnitTest_mmm_tiling.cpp
 	@g++ UnitTest_mmm_tiling.cpp -c ${FLAG1X1}
 
 # making of ale_test.cpp
-ale_test: ale_test.cpp
+ale_test: ../ale_test.cpp
 	@echo "Building and linking ale_test... "
 	@g++ -std=c++20 ale_test.cpp ../src/matrixProd_AVX.cpp  -mavx2 -std=c++20 -o ale_test
 	@echo "Done! To run the test call ./ale_test"
@@ -75,4 +75,5 @@ ale_test: ale_test.cpp
 # making clear
 clear:
 	@echo "Removing everything but the source files"
-	@rm -f mmm.o UnitTest_MatrixFlat.o UnitTest_MatrixFlat UnitTest_mmm_naive UnitTest_mmm_naive.o
+	@rm -f mmm.o UnitTest_MatrixFlat.o UnitTest_MatrixFlat UnitTest_mmm_naive UnitTest_mmm_naive.o UnitTest_mmm_tiling UnitTest_mmm_tiling.o UnitTest_mmm_loopI.o UnitTest_mmm_loopI UnitTest_mmm_naive_RegisterAcc UnitTest_mmm_naive_RegisterAcc.o
+	@echo "Done!"

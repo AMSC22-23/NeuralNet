@@ -49,6 +49,9 @@ private:
 template<typename T>
 class MatrixVect : public MatrixSkltn<T> {
   public:
+
+    MatrixVect(std::size_t rows, std::size_t cols, std::size_t nnz) : MatrixSkltn<T>(rows, cols, nnz){};
+
     virtual T& operator()(size_t i, size_t j) override {
     if (m_data.size() < i + 1) {
       m_data.resize(i + 1);
