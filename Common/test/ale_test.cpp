@@ -58,9 +58,9 @@ void generateStandardMatrix(std::vector<T>& a, size_t m, size_t n){
     for(size_t i = 0; i<m; i++){
             for(size_t j =0; j<n; j++){
                 if( i == j){
-                    a[i*n + j] = 2.1;
+                    a[i*n + j] = 2;
                 }else{
-                     a[i*n + j] = 1.1;
+                     a[i*n + j] = 1;
                 }
             }
         }
@@ -74,7 +74,7 @@ using namespace std::chrono;
     std::ofstream outputMatrixFile("AleMAtrixResuls.csv");
     Matrix<double> z;
     MatrixVect<double> zv;
-    int mul=3;
+    int mul=1;
     int m=1024*mul, n=1024*mul,mb=1024*mul,nb=1024*mul, comp_opt = 10*3;
 
     std::cout << "Building matricies..." << std::endl;
