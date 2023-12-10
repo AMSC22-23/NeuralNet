@@ -36,14 +36,14 @@ int main(int argc, char ** argv){
         MatrixFlat<float> Bf(dim, dim, -10, 10);
         MatrixFlat<float> Cf(dim, dim);
 
-        mmm_naive(Af, Bf, Cf, time);
+        mmm_loopI(Af, Bf, Cf, time);
 
     }else {
         std::cout << "Double Version" << std::endl;
         MatrixFlat<double> A(dim, dim, -10, 10);
         MatrixFlat<double> B(dim, dim, -10, 10);
         MatrixFlat<double> C(dim, dim);
-        mmm_naive(A, B, C, time);
+        mmm_loopI(A, B, C, time);
     }
 
     if(!cache_grind_run) {

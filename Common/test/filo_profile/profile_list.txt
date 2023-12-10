@@ -1,0 +1,9 @@
+algorithm, program arguments, compiler optimization
+multiT, 1024 0 104 32 , -O3 -march=native -ffast-math
+multiT, 1024 1 104 32 , -O3 -march=native -ffast-math
+tiling, 1024 0 103 32 , -O3 -march=native -ffast-math
+tiling, 1024 1 103 32 , -O3 -march=native -ffast-math
+loopI, 1024 0 102 , -O3 -march=native -ffast-math
+loopI, 1024 1 102 , -O3 -march=native -ffast-math
+naive, 1024 0 101 , -O3 -march=native -ffast-math
+naive, 1024 1 101 , -O3 -march=native -ffast-math

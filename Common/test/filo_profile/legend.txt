@@ -1,0 +1,6 @@
+10X:  -O3 -march=native -ffast-math
+11X:  -O3 -march=native -ffast-math -funroll-loops
+11AX: -O3 -march=native -ffast-math -funroll-all-loops
+12X:  -O3 -march=native -ffast-math -funroll-loops -ftracer
+13X:  -03 -march=native -ffast-math -fmodulo-sched -fmodulo-sched-allow-regmoves  // this is software pipelining
+14X:  -O3 -march=native -ffast-math -funroll-loops -ftracer -fmodulo-sched -fmodulo-sched-allow-regmoves
