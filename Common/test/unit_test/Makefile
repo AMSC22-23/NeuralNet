@@ -7,7 +7,7 @@ FLAG1X1 = -O3 -march=native -ffast-math
 
 mmm.o: ../../src/mmm.cpp
 	@echo "Compiling mmm.cpp..."
-	@g++ ../../src/mmm.cpp -c ${FLAG1X1}
+	@g++ -fopenmp ../../src/mmm.cpp -c ${FLAG1X1}
 
 
 # making of Unit_Test_MatrixFlat.cpp
@@ -71,6 +71,19 @@ ale_test: ../ale_test.cpp
 	@g++ -std=c++20 ale_test.cpp ../src/matrixProd_AVX.cpp  -mavx2 -std=c++20 -o ale_test
 	@echo "Done! To run the test call ./ale_test"
 
+# add unit test for UnitTest_mmm_multiT.cpp
+UnitTest_mmm_multiT: UnitTest_mmm_multiT.o mmm.o mmm_blas.o
+	@echo "Linking..."
+	@g++ -fopenmp UnitTest_mmm_multiT.o mmm.o mmm_blas.o -o UnitTest_mmm_multiT ${CFLAG} ${FLAG1X1}
+	@echo "Done! To run the test call ./UnitTest_mmm_multiT MATRIXDIM TILE_SIZE"
+
+UnitTest_mmm_multiT.o: UnitTest_mmm_multiT.cpp
+	@echo "Compiling UnitTest_mmm_multiT.cpp..."
+	@g++ -fopenmp UnitTest_mmm_multiT.cpp -c ${FLAG1X1}
+
+mmm_blas.o: ../../src/mmm_blas.cpp
+	@echo "Compiling mmm_blas.cpp..."
+	@g++ -fopenmp ../../src/mmm_blas.cpp -c ${FLAG1X1}
 
 # making clear
 clear:
