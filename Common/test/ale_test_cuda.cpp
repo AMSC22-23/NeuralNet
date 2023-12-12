@@ -139,7 +139,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
     a = mat1f.data();
     b = mat1Bf.data();
     c = resf.data();
-
+    
 
     //cudaFunction(a,b,c,m,n,nb);
     //cudaLauncher(a, b, c, m, n, nb);
@@ -209,7 +209,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
 
     cudaFunction(a,b,c,m,n,nb);
 
-/**
+
     res.resize(m*nb);
     res.assign(m*nb,0);
     //id = MatrixNaive(mat1, mat1B, res, m,n,nb, t1);
@@ -326,7 +326,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
      printFile(outputFile,id+comp_opt,m+i,nb+db,0,t1);
     std::cout<<std::endl;
     //printMatrixToFile(id, outputMatrixFile, resf, m+i, nb+db);
-**/
+
     /**
     for(int r=0; r<20 ; r++){
         for(int rr=0; rr<20; rr++){
