@@ -5,9 +5,23 @@
 13X:  -03 -march=native -ffast-math -fmodulo-sched -fmodulo-sched-allow-regmoves  // this is software pipelining
 14X:  -O3 -march=native -ffast-math -funroll-loops -ftracer -fmodulo-sched -fmodulo-sched-allow-regmoves
 
-
+X = 1 -> naive
+X = 2 -> loopI
+X = 3 -> tiling
+X = 4 -> multiT
 X = 5 -> openblas
+x = 6 -> avx
+x = 7 -> avxT
+
+To profile avx e avxt:
+avx, 1024 1 126,  ../../src/matrixProd_AVX.cpp -mavx2 -mfma -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
+avxT, 1024 0 127, ../../src/matrixProd_AVX.cpp ../../include/matrixProd_VM_VV.hpp -mavx2 -mfma -O3 -march=native -ffast-math -funroll-loops -ftracer ,1
+
 
 
 The line makes something goes into segmentation fault:
 multiT, 216 0 124 32, -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
+the problem is that the algorithm as of now requires that the number of threads is a divisor of the number of rows of the first matrix.
+This is not the case here, so it goes into segmentation fault. I should fix this. (scritto da copilot)
+
+*/

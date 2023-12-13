@@ -17,7 +17,9 @@ data = df.copy()
 for i in range(len(data)):
     if pd.isnull(data['misses'][i]):
         data['misses'][i] = data['tile_dim'][i]
-        data['tile_dim'][i] = np.nan
+        data['tile_dim'][i] = -1
+
+print(data.tail(10))
 
 
 
@@ -33,6 +35,11 @@ def plot_histogram(dataframe):
     loopI = dataframe[dataframe['id'] == '102']
     tiling = dataframe[dataframe['id'] == '103']
     multiT = dataframe[dataframe['id'] == '104']
+    blas = dataframe[dataframe['id'] == '105']
+    avx = dataframe[dataframe['id'] == '106']
+    avxT = dataframe[dataframe['id'] == '107']
+
+
 
     # for each dataframe we extract just two values: the misses when datatype is 1 and the misses when datatype is 0
     miss_naive_float = naive[naive['datatype'] == 'float']['misses'].iloc[0]
@@ -43,12 +50,18 @@ def plot_histogram(dataframe):
     miss_tiling_double = tiling[tiling['datatype'] == 'double']['misses'].iloc[0]
     miss_multiT_float = multiT[multiT['datatype'] == 'float']['misses'].iloc[0]
     miss_multiT_double = multiT[multiT['datatype'] == 'double']['misses'].iloc[0]
-
+    miss_blas_float = blas[blas['datatype'] == 'float']['misses'].iloc[0]
+    miss_blas_double = blas[blas['datatype'] == 'double']['misses'].iloc[0]
+    miss_avx_float = avx[avx['datatype'] == 'float']['misses'].iloc[0]
+    miss_avx_double = avx[avx['datatype'] == 'double']['misses'].iloc[0]
+    miss_avxT_float = avxT[avxT['datatype'] == 'float']['misses'].iloc[0]
+    miss_avxT_double = avxT[avxT['datatype'] == 'double']['misses'].iloc[0]
 
     # plotting the histogram
     fig = plt.figure()
 
-    plt.bar(["naive_float", "naive_double", "loopI_float", "loopI_double", "tiling_float", "tiling_double", "multiT_float", "multiT_double"], [miss_naive_float, miss_naive_double, miss_loopI_float, miss_loopI_double, miss_tiling_float, miss_tiling_double, miss_multiT_float, miss_multiT_double])
+    plt.bar(["naive_float", "naive_double", "loopI_float", "loopI_double", "tiling_float", "tiling_double", "multiT_float", "multiT_double", "miss_blas_float", "miss_blas_double", "miss_avx_float", "miss_avx_double", "miss_avxT_float", "miss_avxT_double"],
+            [miss_naive_float, miss_naive_double, miss_loopI_float, miss_loopI_double, miss_tiling_float, miss_tiling_double, miss_multiT_float, miss_multiT_double, miss_blas_float, miss_blas_double, miss_avx_float, miss_avx_double, miss_avxT_float, miss_avxT_double])
     plt.title("Misses for each algorithm")
     plt.xlabel("Algorithm")
     plt.ylabel("# of misses")
@@ -82,6 +95,8 @@ def plot_time_complexity(dataframe):
     time_tiling_double = tiling[tiling['datatype'] == 'double']['time [ms]'].iloc[0]
     time_multiT_float = multiT[multiT['datatype'] == 'float']['time [ms]'].iloc[0]
     time_multiT_double = multiT[multiT['datatype'] == 'double']['time [ms]'].iloc[0]
+
+
 
     # plotting the histogram
     fig = plt.figure()
