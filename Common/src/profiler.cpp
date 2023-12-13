@@ -1,8 +1,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "utilities.hpp"
-#include "profiler.hpp"
+//#include "utilities.hpp"
+#include "../include/profiler.hpp"
 
 
 
@@ -63,34 +63,41 @@ void Profiler::append_misses(const std::string& misses) const {
 
 }
 
-void Profiler::profile_one(const std::string& algorithm, const std::string& program_arguments, const std::string& compiler_flags) const  {
+void Profiler::profile_one(const std::string& algorithm, const std::string& program_arguments, const std::string& compiler_flags, bool profile_misses) const {
 
     std::string program_filename = algorithm + ".cpp";
+    std::string openblas_flags = " -lopenblas ";
 
     std::cout << "Compiling " + program_filename << std::endl;
     std::cout << "Compiler optimization: " << compiler_flags << std::endl;
 
-    std::string compiling_command = "g++ " + program_filename + " ../../src/mmm.cpp" + compiler_flags + " -o " + algorithm;
+    std::string compiling_command =
+            "g++ " + program_filename + " ../../src/mmm.cpp ../../src/mmm_blas.cpp" + compiler_flags + " -o " + algorithm + openblas_flags;
     system(compiling_command.data());
 
     std::cout << "Profiling time complexity" << std::endl;
-    std::string run_command = "./" + algorithm + program_arguments + " 0"; // we have to add 0 here because we have to specify to the program that we are executing it not using cachegrind
+    std::string run_command = "./" + algorithm + program_arguments +
+                              " 0"; // we have to add 0 here because we have to specify to the program that we are executing it not using cachegrind
 
     system(run_command.data());
 
     std::cout << "------------------------------------------------------" << std::endl;
 
-
-    std::string valgrind_call =
-            "valgrind --tool=cachegrind --cachegrind-out-file=cachegrindTEMP.txt --log-file=TEMP.txt ./" +
-            algorithm + program_arguments + " 1";
+    if (profile_misses){
+        std::string valgrind_call =
+                "valgrind --tool=cachegrind --cachegrind-out-file=cachegrindTEMP.txt --log-file=TEMP.txt ./" +
+                algorithm + program_arguments + " 1";
 
     std::cout << "Profiling misses" << std::endl;
     system(valgrind_call.data());
 
     cachegrindReader();
 
-
+    }
+    else{
+        std::cout << "Misses profiling skipped" << std::endl;
+        append_misses("-1");
+    }
     std::cout<< "============================================================================================="<< std::endl;
 
 }
@@ -105,19 +112,22 @@ void Profiler::profile() const {
 
     while (std::getline(file, line)){
 
-            std::string algorithm, program_arguments, compiler_flags;
+            std::string algorithm, program_arguments, compiler_flags, profile_misses_string;
             std::istringstream buf(line);
 
             std::getline(buf, algorithm, ',');
             std::getline(buf, program_arguments, ',');
             std::getline(buf, compiler_flags, ',');
 
-            profile_one(algorithm, program_arguments, compiler_flags);
+            std::getline(buf, profile_misses_string, ',');
+
+            bool profile_misses = (profile_misses_string == "1");
+
+
+            profile_one(algorithm, program_arguments, compiler_flags, profile_misses);
     }
 
 }
-
-
 
 
 

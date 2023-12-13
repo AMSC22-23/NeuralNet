@@ -4,3 +4,10 @@
 12X:  -O3 -march=native -ffast-math -funroll-loops -ftracer
 13X:  -03 -march=native -ffast-math -fmodulo-sched -fmodulo-sched-allow-regmoves  // this is software pipelining
 14X:  -O3 -march=native -ffast-math -funroll-loops -ftracer -fmodulo-sched -fmodulo-sched-allow-regmoves
+
+
+X = 5 -> openblas
+
+
+The line makes something goes into segmentation fault:
+multiT, 216 0 124 32, -O3 -march=native -ffast-math -funroll-loops -ftracer ,0

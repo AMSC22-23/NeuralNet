@@ -4,85 +4,9 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 
-void mmm_blas(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time) {
-
-    //! Performs C = A*B in single precision using openblas optimized mm multiplication and returns the latency of the operation in variable time
-
-
-    std::size_t m, n, k;
-
-    m = A.nrows();
-    n = B.ncols();
-    k = A.ncols();
-
-
-    const auto t0 = std::chrono::high_resolution_clock::now();
-
-    cblas_sgemm(
-            CblasRowMajor,      // Specifies row-major (C) or column-major (Fortran) data ordering.
-            CblasNoTrans,       // Specifies whether to transpose matrix A.
-            CblasNoTrans,       // Specifies whether to transpose matrix B.
-            m,             // Number of rows in matrices A and C.
-            n,             // Number of columns in matrices B and C.
-            k,             // Number of columns in matrix A; number of rows in matrix B.
-            1.0,                // Scaling factor for the product of matrices A and B.
-            A.get_ptr(),       // UnsafePointer<Double>! to Matrix A.
-            k,
-            B.get_ptr(),     // Matrix B.
-            n,             // The size of the first dimension of matrix B; if you are passing a matrix B[m][n], the value should be m.
-            0.0,                // Scaling factor for matrix C.
-            C.get_ptr(),     // Matrix C.
-            n             // The size of the first dimension of matrix C; if you are passing a matrix C[m][n], the value should be m.
-    );
-
-
-    const auto t1 = std::chrono::high_resolution_clock::now();
-
-    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-
-
-
-}
-
-void mmm_blas(MatrixFlat<double>& A, MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time) {
-
-    //! Performs C = A*B in double precision using openblas optimized mm multiplication and returns the latency of the operation
-
-
-    std::size_t m, n, k;
-
-    m = A.nrows();
-    n = B.ncols();
-    k = A.ncols();
-
-
-    const auto t0 = std::chrono::high_resolution_clock::now();
-
-    cblas_dgemm(
-            CblasRowMajor,      // Specifies row-major (C) or column-major (Fortran) data ordering.
-            CblasNoTrans,       // Specifies whether to transpose matrix A.
-            CblasNoTrans,       // Specifies whether to transpose matrix B.
-            m,             // Number of rows in matrices A and C.
-            n,             // Number of columns in matrices B and C.
-            k,             // Number of columns in matrix A; number of rows in matrix B.
-            1.0,                // Scaling factor for the product of matrices A and B.
-            A.get_ptr(),       // UnsafePointer<Double>! to Matrix A.
-            k,
-            B.get_ptr(),     // Matrix B.
-            n,             // The size of the first dimension of matrix B; if you are passing a matrix B[m][n], the value should be m.
-            0.0,                // Scaling factor for matrix C.
-            C.get_ptr(),     // Matrix C.
-            n             // The size of the first dimension of matrix C; if you are passing a matrix C[m][n], the value should be m.
-    );
-
-
-    const auto t1 = std::chrono::high_resolution_clock::now();
-
-    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-    
-}
 
 void mmm_naive(const MatrixFlat<double>& A, const MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time){
 
@@ -279,18 +203,92 @@ void mmm_tiling(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFl
 
 };
 
+void mmm_multiT(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time, int tileSize){
 
-void printFile(std::ofstream& file, int id, size_t m, size_t n, int T, int64_t& time){
-    /*
-     * printFile modificata. Alla fine di ogni linea non va a capo per far si sia possibile aggiungere un nuovo campo che contiene il # di miss in cache
-     *
-     */
+    std::cout<<"Performing mmm_multiT in single precision (single)"<<std::endl;
 
-    if(T==0){
-        file << "FM;" << id << ";" << m << "x" << n << ";" << "float;" << time << std::endl;
-    }else{
-        file << "FM;" << id << ";" << m << "x" << n << ";" << "double;" << time << std::endl;
+    std::size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+
+    const auto t0 = std::chrono::high_resolution_clock::now();
+
+#pragma omp parallel for shared(A, B, C, rows, columns, inners, tileSize) default(none) \
+  collapse(2) num_threads(8)
+
+
+    for (int rowTile = 0; rowTile < rows; rowTile += 256) {
+        for (int columnTile = 0; columnTile < columns; columnTile += 256) {
+            for (int innerTile = 0; innerTile < inners; innerTile += tileSize) {
+                for (int row = rowTile; row < rowTile + 256; row++) {
+                    int innerTileEnd = std::min<int>(inners, innerTile + tileSize);
+                    for (int inner = innerTile; inner < innerTileEnd; inner++) {
+                        for (int col = columnTile; col < columnTile + 256; col++) {
+                            C[row * columns + col] +=
+                                    A[row * inners + inner] * B[inner * columns + col];
+                        } } } } } }
+    const auto t1 = std::chrono::high_resolution_clock::now();
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+};
+
+void mmm_multiT(const MatrixFlat<double>& A, const MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time, int tileSize) {
+
+    std::cout<<"Performing mmm_multiT in double precision (double)"<<std::endl;
+
+
+    std::size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+
+    const auto t0 = std::chrono::high_resolution_clock::now();
+
+    #pragma omp parallel for shared(A, B, C, rows, columns, inners, tileSize) default(none) \
+      collapse(2) num_threads(8)
+
+
+
+    for (int rowTile = 0; rowTile < rows; rowTile += 256) {
+        for (int columnTile = 0; columnTile < columns; columnTile += 256) {
+            for (int innerTile = 0; innerTile < inners; innerTile += tileSize) {
+                for (int row = rowTile; row < rowTile + 256; row++) {
+                    int innerTileEnd = std::min<int>(inners, innerTile + tileSize);
+                    for (int inner = innerTile; inner < innerTileEnd; inner++) {
+                        for (int col = columnTile; col < columnTile + 256; col++) {
+                            C[row * columns + col] +=
+                                    A[row * inners + inner] * B[inner * columns + col];
+                        } } } } } }
+
+    const auto t1 = std::chrono::high_resolution_clock::now();
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+}
+
+
+
+void appendCSVRow(const std::vector<std::string>& rowData,  bool newline ){
+    std::ofstream file;
+    std::string filename = "filResult.csv";
+    file.open(filename, std::ios_base::app); // Apre il file in modalità append
+
+    if (!file.is_open()) {
+        std::cerr << "Cannot open file: " << filename << std::endl;
+        return;
     }
 
+    // Costruisce una stringa con i dati da aggiungere
+    std::ostringstream oss;
+    for (size_t i = 0; i < rowData.size(); ++i) {
+        oss << rowData[i];
+        if (i != rowData.size() - 1) {
+            oss << ","; // Aggiunge la virgola tra i valori
+        }
+    }
+    if(newline)
+     oss << "\n"; // Aggiunge una nuova riga alla fine
+
+    file << oss.str(); // Aggiunge la riga al file
+
+    file.close(); // Chiude il file dopo aver aggiunto la riga
 }
+
+
+
+
+
+
 
