@@ -9,11 +9,14 @@ mmm.o: ../../src/mmm.cpp
 	@echo "Compiling mmm.cpp..."
 	@g++ -fopenmp ../../src/mmm.cpp -c ${FLAG1X1}
 
+mmm_blas.o: ../../src/mmm_blas.cpp
+	@echo "Compiling mmm_blas.cpp..."
+	@g++ -fopenmp ../../src/mmm_blas.cpp -c ${FLAG1X1}
 
 # making of Unit_Test_MatrixFlat.cpp
 UnitTest_MatrixFlat: UnitTest_MatrixFlat.o
 	@echo "Linking..."
-	@g++ UnitTest_MatrixFlat.o -o UnitTest_MatrixFlat
+	@g++ -fopenmp UnitTest_MatrixFlat.o -o UnitTest_MatrixFlat
 	@echo "Done! To run the test call ./UnitTest_MatrixFlat"
 
 UnitTest_MatrixFlat.o :
@@ -23,9 +26,9 @@ UnitTest_MatrixFlat.o :
 # Making of UnitTest_mmm_naive.cpp
 
 # making of Unit_Test_mmm_naive.cpp
-UnitTest_mmm_naive: UnitTest_mmm_naive.o mmm.o
+UnitTest_mmm_naive: UnitTest_mmm_naive.o mmm.o mmm_blas.o
 	@echo "Linking..."
-	@g++ UnitTest_mmm_naive.o mmm.o -o UnitTest_mmm_naive ${CFLAG} ${FLAG1X1}
+	@g++ -fopenmp UnitTest_mmm_naive.o mmm.o mmm_blas.o -o UnitTest_mmm_naive ${CFLAG} ${FLAG1X1}
 	@echo "Done! To run the test call ./UnitTest_mmm_naive MATRIXDIM "
 
 UnitTest_mmm_naive.o: UnitTest_mmm_naive.cpp
@@ -35,9 +38,9 @@ UnitTest_mmm_naive.o: UnitTest_mmm_naive.cpp
 
 # making of Unit_Test_mmm_naive_RegisterAcc.cpp
 
-UnitTest_mmm_naive_RegisterAcc: UnitTest_mmm_naive_RegisterAcc.o mmm.o
+UnitTest_mmm_naive_RegisterAcc: UnitTest_mmm_naive_RegisterAcc.o mmm.o mmm_blas.o
 	@echo "Linking..."
-	@g++ UnitTest_mmm_naive_RegisterAcc.o mmm.o -o UnitTest_mmm_naive_RegisterAcc ${CFLAG} ${FLAG1X1}
+	@g++ -fopenmp UnitTest_mmm_naive_RegisterAcc.o mmm.o mmm_blas.o -o UnitTest_mmm_naive_RegisterAcc ${CFLAG} ${FLAG1X1}
 	@echo "Done! To run the test call ./UnitTest_mmm_naive_RegisterAcc MATRIXDIM "
 
 UnitTest_mmm_naive_RegisterAcc.o: UnitTest_mmm_naive_RegisterAcc.cpp
@@ -47,18 +50,18 @@ UnitTest_mmm_naive_RegisterAcc.o: UnitTest_mmm_naive_RegisterAcc.cpp
 
 # making of Unit_Test_mmmloopI.cpp
 
-UnitTest_mmm_loopI: UnitTest_mmm_loopI.o mmm.o
+UnitTest_mmm_loopI: UnitTest_mmm_loopI.o mmm.o mmm_blas.o
 	@echo "Linking..."
-	@g++ UnitTest_mmm_loopI.o mmm.o -o UnitTest_mmm_loopI ${CFLAG} ${FLAG1X1}
+	@g++ -fopenmp UnitTest_mmm_loopI.o mmm.o mmm_blas.o -o UnitTest_mmm_loopI ${CFLAG} ${FLAG1X1}
 	@echo "Done! To run the test call ./UnitTest_mmm_loopI MATRIXDIM"
 
 UnitTest_mmm_loopI.o: UnitTest_mmm_loopI.cpp
 	@echo "Compiling UnitTest_mmm_loopI.cpp..."
 	@g++ UnitTest_mmm_loopI.cpp -c ${FLAG1X1}
 
-UnitTest_mmm_tiling: UnitTest_mmm_tiling.o mmm.o
+UnitTest_mmm_tiling: UnitTest_mmm_tiling.o mmm.o mmm_blas.o
 	@echo "Linking..."
-	@g++ UnitTest_mmm_tiling.o mmm.o -o UnitTest_mmm_tiling ${CFLAG} ${FLAG1X1}
+	@g++ -fopenmp UnitTest_mmm_tiling.o mmm.o mmm_blas.o -o UnitTest_mmm_tiling ${CFLAG} ${FLAG1X1}
 	@echo "Done! To run the test call ./UnitTest_mmm_tiling MATRIXDIM TILE_SIZE"
 
 UnitTest_mmm_tiling.o: UnitTest_mmm_tiling.cpp
@@ -81,12 +84,12 @@ UnitTest_mmm_multiT.o: UnitTest_mmm_multiT.cpp
 	@echo "Compiling UnitTest_mmm_multiT.cpp..."
 	@g++ -fopenmp UnitTest_mmm_multiT.cpp -c ${FLAG1X1}
 
-mmm_blas.o: ../../src/mmm_blas.cpp
-	@echo "Compiling mmm_blas.cpp..."
-	@g++ -fopenmp ../../src/mmm_blas.cpp -c ${FLAG1X1}
+#mmm_blas.o: ../../src/mmm_blas.cpp
+#	@echo "Compiling mmm_blas.cpp..."
+#	@g++ -fopenmp ../../src/mmm_blas.cpp -c ${FLAG1X1}
 
 # making clear
 clear:
 	@echo "Removing everything but the source files"
-	@rm -f mmm.o UnitTest_MatrixFlat.o UnitTest_MatrixFlat UnitTest_mmm_naive UnitTest_mmm_naive.o UnitTest_mmm_tiling UnitTest_mmm_tiling.o UnitTest_mmm_loopI.o UnitTest_mmm_loopI UnitTest_mmm_naive_RegisterAcc UnitTest_mmm_naive_RegisterAcc.o
+	@rm -f mmm.o UnitTest_MatrixFlat.o UnitTest_MatrixFlat UnitTest_mmm_naive UnitTest_mmm_naive.o UnitTest_mmm_tiling UnitTest_mmm_tiling.o UnitTest_mmm_loopI.o UnitTest_mmm_loopI UnitTest_mmm_naive_RegisterAcc UnitTest_mmm_naive_RegisterAcc.o UnitTest_mmm_multiT UnitTest_mmm_multiT.o mmm_blas.o
 	@echo "Done!"

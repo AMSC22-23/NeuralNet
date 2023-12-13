@@ -1,5 +1,5 @@
 #include "../../include/mmm.hpp"
-
+#include "../../include/mmm_blas.hpp"
 
 /*
  * This test has the scope of validate the mmm_tiling algorithm.
