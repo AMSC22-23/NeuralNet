@@ -16,7 +16,7 @@
 
 
 template<typename T>
-int matrixMult_Avx(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, size_t ma, size_t na, size_t nb, int64_t& dt_01);
+int matrixMult_Avx(const std::vector<T>& a, const std::vector<T>& b,std::vector<T>& c, size_t ma, size_t na, size_t nb, int64_t& dt_01);
 
 ////************************************************
 

@@ -115,7 +115,7 @@ int matrixMultTransposeOpt_Avx(std::vector<float>& a, std::vector<float>& b_tran
 **/
 
 template<>
-    int matrixMult_Avx(std::vector<double>& a, std::vector<double>& b, std::vector<double>& c,size_t ma, size_t na, size_t nb, int64_t& dt_01){
+    int matrixMult_Avx(const std::vector<double>& a, const std::vector<double>& b, std::vector<double>& c,size_t ma, size_t na, size_t nb, int64_t& dt_01){
         const auto t0 = std::chrono::high_resolution_clock::now();
   //prova su double
     __m256d A,B,result;
@@ -138,7 +138,7 @@ template<>
 
 
 template<>
-int matrixMult_Avx(std::vector<float>& a, std::vector<float>& b, std::vector<float>& c, size_t ma, size_t na, size_t nb, int64_t& dt_01){
+int matrixMult_Avx(const std::vector<float>& a,const  std::vector<float>& b, std::vector<float>& c, size_t ma, size_t na, size_t nb, int64_t& dt_01){
     const auto t0 = std::chrono::high_resolution_clock::now();
   //prova su double
     __m256 A,B,result;
