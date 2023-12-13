@@ -111,7 +111,10 @@ class Model{
         std::cout << std::endl;
     }
 
-    void predict(std::vector<T>& input, int& selection);
+    void predict(std::vector<T>& input, int& selection); //this version need to be called only after the resizing of the weights
+    void predict(std::vector<T>& input, int& selection, int flag);
+    void extendMatrix();
+    void reduceMatrix();
 
     Input<T> getInput(){return model_input;}
     Output<T> getOutput(){return model_output;}

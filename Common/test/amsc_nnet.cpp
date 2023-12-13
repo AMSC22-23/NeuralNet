@@ -4,6 +4,16 @@
 #include <sstream>
 #include <tuple>
 
+void genFakeData(std::vector<std::vector<float>>& a, int rows, int cols){
+    for (int i = 0; i < rows; ++i) {
+        std::vector<float> row;
+        for (int j = 0; j < cols; ++j) {
+            row.push_back(1.0f * (j + 1));  // Aggiungi [1, 2, 3]
+        }
+        a.push_back(row);
+    }
+}
+
 // Tuple to represent a row of Iris data
 // Each tuple contains 4 doubles (SepalLengthCm, SepalWidthCm, PetalLengthCm, PetalWidthCm) 
 // and a tuple representing the species in one-hot encoding format
@@ -137,6 +147,7 @@ getIrisSets(const std::tuple<std::vector<IrisTuple>, std::vector<IrisTuple>, std
 int main(){
 
     std::vector<std::vector<float>> trainSet, validationSet, testSet, trainOut, validationOut, testOut;
+    int a=0;
 
     genFakeData(trainSet, 100, 5);
     genFakeData(validationSet, 50, 5);
@@ -171,6 +182,9 @@ int main(){
 
     model.printWeigts();
 
+    model.predict(trainSet[0], a, 1);
+
+    model.extendMatrix();
     model.predict(trainSet[0], a);
   
 
