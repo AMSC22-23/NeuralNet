@@ -26,7 +26,8 @@ private:
     void append_misses(const std::string& misses) const;
     void cachegrindReader() const ;
 
-    void profile_one(const std::string& compiler_flags, const std::string& algorithm, const std::string& program_arguments) const;
+    void profile_one(const std::string& compiler_flags, const std::string& algorithm, const std::string& program_arguments,
+                            bool profile_misses = false) const;
 
 
 public:
