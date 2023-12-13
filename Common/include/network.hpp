@@ -126,7 +126,8 @@ class Output{
     }
 
     int getShapeOutputData() const {return train_shape[1];}
-
+    std::string getAct_Fun() const {return act_funct;}
+    
 
     private:
     std::vector<std::vector<T>> output_target_train, output_target_validation, output_target_test, output_result;
@@ -146,6 +147,7 @@ class Layer{
     }
 
     int getNeurons() {return neurons;}
+    std::string getActFun() {return act_funct;};
     private:
     std::string act_funct, name;
     bool dense = true;

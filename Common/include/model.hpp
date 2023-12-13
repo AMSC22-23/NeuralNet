@@ -34,10 +34,23 @@ class Model{
         std::cout << "Loss function: " << model_loss_fun << std::endl;
         std::cout << "Stop cryteria: " << model_stop_cryteria << std::endl;
         std::cout << std::endl;
+        std::cout << "Input layer: " << std::endl;
+        std::cout << "Number of input introduced in the network: " << model_input.getShapeInputData() << std::endl;
+        printLayers();
+        std::cout << "Output layer: " << std::endl;
+        std::cout << "Number of output introduced in the network: " << model_output.getShapeOutputData() << " activation function: " << model_output.getAct_Fun() << std::endl;
+        std::cout << std::endl;
 
+        //resizing the vectors
         weights.resize(layers.size()+1);
         bias.resize(layers.size()+1);
         weights_shape.resize(layers.size()+1);
+        z.resize(layers.size()+1);
+        h.resize(layers.size());
+        dAct_z.resize(layers.size()+1);
+        dE_dw.resize(layers.size()+1);
+
+        //create dimensions for the first iteration
         int fillerdim = model_input.getShapeInputData();
         int check = 0;
         for(int block = 0; block < layers.size(); ++block){
@@ -52,6 +65,11 @@ class Model{
             weights[block] = filler;
             bias[block].resize(layers[block].getNeurons());
             bias[block] = fillerBias;
+            dE_dw[block].resize(fillerdim * layers[block].getNeurons());
+            dAct_z[block].resize(layers[block].getNeurons());
+            z[block].resize(layers[block].getNeurons());
+            h[block].resize(layers[block].getNeurons());
+            //update the dimensions for the next iteration
             fillerdim = layers[block].getNeurons();
             check += 1;
         }
@@ -64,9 +82,12 @@ class Model{
         weights_shape[check][0] = layers[check-1].getNeurons();
         bias[check].resize(model_output.getShapeOutputData());
         bias[check] = fillerBias;
+        z[check].resize(model_output.getShapeOutputData());
+        y.resize(model_output.getShapeOutputData());
 
 
         std::cout << "Model built!" << std::endl;
+        std::cout << std::endl;
     }
 
     void printWeigts(){
@@ -90,14 +111,20 @@ class Model{
         std::cout << std::endl;
     }
 
+    void predict(std::vector<T>& input, int& selection);
+
     Input<T> getInput(){return model_input;}
     Output<T> getOutput(){return model_output;}
 
+    protected:
+    std::vector<std::vector<T>> dE_dw, z, h, dAct_z;
+    std::vector<T> y;
+    
     private:
     std::vector<Layer> layers;
     Input<T> model_input;
     Output<T> model_output;
-    int model_epochs, model_batch_size;
+    int model_epochs, model_batch_size, matrix_mul_optimisation = 0;
     float model_learning_rate;
     T default_weight = 0.3;
     std::string model_name, model_loss_fun, model_stop_cryteria;

@@ -23,7 +23,8 @@ int main(){
     genFakeData(trainOut, 100, 3);
     genFakeData(validationOut, 50, 3);
     genFakeData(testOut, 20, 3);
-
+    
+    int a = 0;
     Input input(trainSet, validationSet, testSet);
     Output output(trainOut, validationOut, testOut, "sigmoid");
     Layer layer1("prova", 3, "sigmoid"), layer2("prova2", 7, "sigmoid"), layer3("prova3", 10, "sigmoid");
@@ -36,7 +37,7 @@ int main(){
     Input<float> input2(model.getInput());
     Output<float> output2(model.getOutput());
 
-    input.printShape();
+    /**input.printShape();
     std::cout << std::endl;
     output.printShape();
     std::cout << std::endl;
@@ -44,11 +45,13 @@ int main(){
     std::cout << std::endl;
     layer1.printLayer();
     std::cout << std::endl;
-    model.printLayers();
+    model.printLayers();**/
 
     model.buildModel();
 
     model.printWeigts();
+
+    model.predict(trainSet[0], a);
   
 
 
