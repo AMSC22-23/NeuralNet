@@ -17,11 +17,57 @@ from dbconnection import upload_new_data
 upload_new_data()
 
 
-
 # we now connect to the database
 client = MongoClient('mongodb://localhost:27017/')
 db = client['AMSC_PROJECT']  # Cambia con il nome del tuo database
 collection = db['filresult']
+
+
+def id_to_name(ids):
+    """
+    This function map the id of the algorithm to its name:
+    id         name
+    1X1 = 1 -> naive
+    1X2 = 2 -> loopI
+    1X3 = 3 -> tiling
+    1X4 = 4 -> multiT
+    1X5 = 5 -> openblas
+    1x6 = 6 -> avx
+    1x7 = 7 -> avxT
+
+    if the id has last digit equal to 1 it means that is naive,
+    if the id has last digit equal to 2 it means that is loopI,
+    and so on
+
+    :param id:
+    :return:
+    """
+    # we convert ids to a list of string(initially is a pd dataframe)
+    ids = list(ids)
+
+    result = []
+    for ID in ids:
+
+        last_digit = int(ID[-1])
+        if last_digit == 1:
+            result.append('naive')
+        elif last_digit == 2:
+            result.append('loopI')
+        elif last_digit == 3:
+            result.append('tiling')
+        elif last_digit == 4:
+            result.append('multiT')
+        elif last_digit == 5:
+            result.append('openblas')
+        elif last_digit == 6:
+            result.append('avx')
+        elif last_digit == 7:
+            result.append('avxT')
+        else:
+            result.append('unknown')
+    return result
+
+
 
 
 def misses_bar_plot():
@@ -49,9 +95,9 @@ def misses_bar_plot():
 
     # we reduce now the data DataFrame by considering just one data for each id
     data = data.drop_duplicates(subset='id', keep='first')
-
+    print(data['id'])
     # we now plot the data
-    plt.bar(data['id'], data['misses'])
+    plt.bar(id_to_name(data['id']), data['misses'])
     plt.xlabel('Algorithm')
     plt.ylabel('Misses')
     plt.title('Misses for each algorithm on square 1024 matrices on float datatype')
@@ -71,13 +117,14 @@ def misses_bar_plot():
     data = data.drop_duplicates(subset='id', keep='first')
 
     # we now plot the data
-    plt.bar(data['id'], data['misses'])
+    plt.bar(id_to_name(data['id']), data['misses'])
     plt.xlabel('Algorithm')
     plt.ylabel('Misses')
     plt.title('Misses for each algorithm on square 1024 matrices on double datatype')
 
     # saving the plot
     plt.savefig('plot/misses_double.png')
+    #plt.show()
 
     plt.close()
 
@@ -135,13 +182,85 @@ def time_complexity_plot(algorithm_id):
     # saving the plot
     plt.legend()
     plt.savefig('plot/time_complexity_' + algorithm_id + '.png')
-    plt.show()
+    # plt.show()
     plt.close()
     # saving the plot
 
-
-
-
-
-
 time_complexity_plot('124')
+
+def plot_effect_of_different_tilesize():
+    """
+    This function plot the effect of different tilesize on the time complexity of the tiling algorithm
+
+    :return:
+    """
+
+    # extracting the data from the database
+    data = collection.find({'id': '103', 'datatype': 'float', 'matrix_dimension': '1024X1024', 'misses': {'$ne': -1}})
+    data = pd.DataFrame(data)
+
+    # Converting the time column to float
+    data['time [ms]'] = data['time [ms]'].astype(float)
+    # Converting the tilesize column to int, using a lambda function
+    data['tile_dim'] = data['tile_dim'].apply(lambda x: int(x))
+    # Convert the misses column to int
+    data['misses'] = data['misses'].astype(int)
+    # Sorting the data by tilesize
+    data = data.sort_values(by=['tile_dim'])
+
+    # keeping just one data for each tilesize
+    data = data.drop_duplicates(subset='tile_dim', keep='first')
+
+    # Plotting the data
+
+    # creating a figure with two subplots
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+
+
+    # plotting the time complexity
+    # we use also dots to better see the data
+    ax1.plot(data['tile_dim'], data['time [ms]'], '-o', label='time complexity')
+
+    ax1.set_xlabel('tile_dim')
+    ax1.set_ylabel('time [ms]')
+    ax1.set_title('Effect of different tile dimensions on 1024X1024 matrices (float)')
+
+
+    # addding a label to each dot: the tilesize
+
+    for i, txt in enumerate(data['tile_dim']):
+        if i == 0 or i == 1:
+           ax1.annotate(txt, (data['tile_dim'].iloc[i], data['time [ms]'].iloc[i]),
+                        xytext=(6, -3), textcoords='offset points', ha='left',  rotation=0)
+        else:
+            ax1.annotate(txt, (data['tile_dim'].iloc[i], data['time [ms]'].iloc[i]),
+                         xytext=(0, 5), textcoords='offset points', ha='center',  rotation=0)
+
+
+    ax1.grid()
+    ax1.legend()
+
+    # plotting the number of misses
+    ax2.plot(data['tile_dim'], data['misses'],'-o' ,label='misses')
+    ax2.set_xlabel('tile_dim')
+    ax2.set_ylabel('misses')
+    #ax2.set_title('Time complexity of tiling algorithm with different tilesize')
+
+    for i, txt in enumerate(data['tile_dim']):
+        if i>2:
+            ax2.annotate(txt, (data['tile_dim'].iloc[i], data['misses'].iloc[i]), xytext=(3, -10), textcoords='offset points', ha='center',  rotation=0)
+        else:
+            ax2.annotate(txt, (data['tile_dim'].iloc[i], data['misses'].iloc[i]), xytext=(6, -3), textcoords='offset points', ha='left',  rotation=0)
+
+
+    ax2.legend()
+    ax2.grid()
+
+    #saving the plot
+    plt.savefig('plot/tilesize_effect.png')
+
+    #plt.show()
+    plt.close()
+
+
+plot_effect_of_different_tilesize()
