@@ -60,3 +60,21 @@ T applyActivationFunction(const T &input, const std::string &activationFunction)
 
 template float applyActivationFunction<float>(const float &input, const std::string &activationFunction);
 template double applyActivationFunction<double>(const double &input, const std::string &activationFunction);
+
+template<typename T>
+T applyActivationFunctionDerivative(const T &input, const std::string &activationFunction) {
+    if (activationFunction == "linear") {
+        return linearActivationDerivative(input);
+    } else if (activationFunction == "sigmoid") {
+        return sigmoidActivationDerivative(input);
+    } else if (activationFunction == "tanh") {
+        return tanhActivationDerivative(input);
+    } else if (activationFunction == "ReLu") {
+        return ReLuActivationDerivative(input);
+    } else {
+        std::cout << "Activation function not implemented" << std::endl;
+    }
+}
+
+template float applyActivationFunctionDerivative<float>(const float &input, const std::string &activationFunction);
+template double applyActivationFunctionDerivative<double>(const double &input, const std::string &activationFunction);

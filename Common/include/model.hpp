@@ -49,6 +49,9 @@ class Model{
         h.resize(layers.size());
         dAct_z.resize(layers.size()+1);
         dE_dw.resize(layers.size()+1);
+        dE_dx.resize(layers.size());
+        dE_db.resize(layers.size()+1);
+        y.resize(model_output.getShapeOutputData());
 
         //create dimensions for the first iteration
         int fillerdim = model_input.getShapeInputData();
@@ -69,6 +72,9 @@ class Model{
             dAct_z[block].resize(layers[block].getNeurons());
             z[block].resize(layers[block].getNeurons());
             h[block].resize(layers[block].getNeurons());
+            dE_dx[block].resize(layers[block].getNeurons());
+            dE_db[block].resize(layers[block].getNeurons());
+            dE_dx[block].resize(layers[block].getNeurons());
             //update the dimensions for the next iteration
             fillerdim = layers[block].getNeurons();
             check += 1;
@@ -82,6 +88,9 @@ class Model{
         weights_shape[check][0] = layers[check-1].getNeurons();
         bias[check].resize(model_output.getShapeOutputData());
         bias[check] = fillerBias;
+        dE_dw[check].resize(fillerdim * layers[check-1].getNeurons());
+        dAct_z[check].resize(model_output.getShapeOutputData());
+        dE_db[check].resize(model_output.getShapeOutputData());
         z[check].resize(model_output.getShapeOutputData());
         y.resize(model_output.getShapeOutputData());
 
@@ -113,14 +122,16 @@ class Model{
 
     void predict(std::vector<T>& input, int& selection); //this version need to be called only after the resizing of the weights
     void predict(std::vector<T>& input, int& selection, int flag);
+    void backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int& selection);
     void extendMatrix();
     void reduceMatrix();
+    
 
     Input<T> getInput(){return model_input;}
     Output<T> getOutput(){return model_output;}
 
     protected:
-    std::vector<std::vector<T>> dE_dw, z, h, dAct_z;
+    std::vector<std::vector<T>> dE_dw, z, h, dAct_z, dE_dx, dE_db;
     std::vector<T> y;
     
     private:
@@ -135,3 +146,4 @@ class Model{
     std::vector<std::vector<int>> weights_shape;
     std::vector<T> input_layer, output_layer;
 };
+

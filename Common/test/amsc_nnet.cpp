@@ -160,6 +160,7 @@ int main(){
     Output output(trainOut, validationOut, testOut, "sigmoid");
     Layer layer1("prova", 3, "sigmoid"), layer2("prova2", 7, "sigmoid"), layer3("prova3", 10, "sigmoid");
     Model model("Modello",100, 10, 0.01, "MSE", input, output, "early_stop");
+    std::vector<float> faketest = {0.5,0.6,0.8};
     model.addLayer(layer1);
     model.addLayer(layer2);
     model.addLayer(layer3);
@@ -186,6 +187,8 @@ int main(){
 
     model.extendMatrix();
     model.predict(trainSet[0], a);
+
+    model.backPropagation(trainSet[0], faketest, a);
   
 
 
