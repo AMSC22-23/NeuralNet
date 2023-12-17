@@ -5,6 +5,21 @@
 #include <algorithm>
 
 template<typename T>
+void resetVector(std::vector<std::vector<T>>& vector){
+    for (auto& row : vector) {
+        std::fill(row.begin(), row.end(), 0.0);
+    }
+    /**for(int i = 0; i < vector.size(); i++){
+        for(int j = 0; j < vector[i].size(); j++){
+            vector[i][j] = 0;
+        }
+    }**/
+}
+template void resetVector<float>(std::vector<std::vector<float>>& vector);
+template void resetVector<double>(std::vector<std::vector<double>>& vector);
+
+
+template<typename T>
 void evaluateAccuracy(std::vector<T>& y, std::vector<T>& target, int& numCorrect, int& numTotal){
     for(int i = 0; i < y.size(); i++){
         if(y[i] == target[i]){
@@ -184,6 +199,7 @@ void Model<T>::predict(std::vector<T>& input, int& selection){
         std::cout << y[i] << " ";
     }
     std::cout << std::endl;**/
+    resetVector(z);
     input.pop_back();
 }
 
@@ -372,6 +388,8 @@ void Model<T>::train(int& selection){
                     applyLossFunction(y, model_output.getOutputTrain()[batch_loop*model_batch_size+i], dE_dy, model_loss_fun);
                     backPropagation(temp, dE_dy, selection);
                     updateDE_Dw_Db(dE_dw, dE_db, tempWeights, tempBias);
+                    resetVector(dE_dw);
+                    resetVector(dE_dx);
                     //auto max_element_target = std::max_element(model_output.getOutputTrain()[batch_loop*model_batch_size+i].begin(), model_output.getOutputTrain()[batch_loop*model_batch_size+i].end());
                     index_max_element_target = 0;
                     float temp_1 = model_output.getOutputTrain()[batch_loop*model_batch_size+i][0];

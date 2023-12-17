@@ -35,12 +35,12 @@ T tanhActivationDerivative(const T &input) {
 
 template <typename T>
 T ReLuActivation(const T &input) {
-    return input > 0 ? input : 0;
+    return (input > 0) ? input : 0;
 }
 
 template <typename T>
 T ReLuActivationDerivative(const T &input) {
-    return input > 0 ? 1 : 0;
+    return (input > 0) ? 1 : 0;
 }
 
 template <typename T>

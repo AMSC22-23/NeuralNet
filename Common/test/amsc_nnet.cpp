@@ -151,9 +151,19 @@ int main(){
     int a=0;
 
     auto result = readIrisData("Iris.csv");
+    auto split_result = getIrisSets(result, 0.6, 0.2, 0.2);
+
+    trainSet = std::get<0>(split_result);
+    trainOut = std::get<1>(split_result);
+    validationSet = std::get<2>(split_result);
+    validationOut = std::get<3>(split_result);
+    testSet = std::get<4>(split_result);
+    testOut = std::get<5>(split_result);
+
+    
 
     // Ottenere i vettori dalla tupla risultante
-    std::vector<IrisTuple> vector1 = std::get<0>(result);
+    /**std::vector<IrisTuple> vector1 = std::get<0>(result);
     std::vector<IrisTuple> vector2 = std::get<1>(result);
     std::vector<IrisTuple> vector3 = std::get<2>(result);
 
@@ -200,7 +210,7 @@ int main(){
                                           static_cast<float>(std::get<1>(innerTuple)),
                                           static_cast<float>(std::get<2>(innerTuple))};
         tupleElements.push_back(tupleValues);
-    }
+    }**/
 
     /**std::cout << "First four elements: " << firstFourElements.size() << std::endl;
     std::cout << "Tuple elements: " << tupleElements.size() << std::endl;
@@ -217,31 +227,31 @@ int main(){
 
 
     // Creare i set di addestramento, validazione e test
-    auto iris_sets = getIrisSets(result, 0.6, 0.2, 0.2);  
+    //auto iris_sets = getIrisSets(result, 0.6, 0.2, 0.2);  
 
 
 
-    genFakeData(trainSet, 101, 5);
+    /**genFakeData(trainSet, 101, 5);
     genFakeData(validationSet, 50, 5);
     genFakeData(testSet, 20, 5);
     genFakeData(trainOut, 101, 3);
     genFakeData(validationOut, 50, 3);
-    genFakeData(testOut, 20, 3);
+    genFakeData(testOut, 20, 3);**/
 
     //Input input(trainSet, validationSet, testSet);
-    Input input(firstFourElements, firstFourElements, firstFourElements);
+    Input input(trainSet, validationSet, testSet);
     //Output output(trainOut, validationOut, testOut, "sigmoid");
-    Output output(tupleElements, tupleElements, tupleElements, "sigmoid");
-    Layer layer1("prova", 3, "sigmoid"), layer2("prova2", 7, "sigmoid"), layer3("prova3", 10, "sigmoid");
-    Model model("Modello",50, 8, 0.01, "MSE", input, output, "early_stop");
+    Output output(trainOut, validationOut, testOut, "sigmoid");
+    Layer layer1("prova", 3, "ReLu"), layer2("prova2", 7, "ReLu"), layer3("prova3", 10, "ReLu");
+    Model model("Modello",100, 10, 0.1, "MSE", input, output, "early_stop");
     std::vector<float> faketest = {0.5,0.6,0.8};
     model.addLayer(layer1);
     model.addLayer(layer2);
     model.addLayer(layer3);
 
 
-    Input<float> input2(model.getInput());
-    Output<float> output2(model.getOutput());
+    //Input<float> input2(model.getInput());
+    //Output<float> output2(model.getOutput());
 
     /**input.printShape();
     std::cout << std::endl;
