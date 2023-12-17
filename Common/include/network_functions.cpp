@@ -2,6 +2,18 @@
 #include "matrixProd_VM_VV.hpp"
 #include "ActivationFunctions.hpp"
 #include "functions_utilities.hpp"
+#include <algorithm>
+
+template<typename T>
+void evaluateAccuracy(std::vector<T>& y, std::vector<T>& target, int& numCorrect, int& numTotal){
+    for(int i = 0; i < y.size(); i++){
+        if(y[i] == target[i]){
+            numCorrect++;
+        }
+        numTotal++;
+    }
+}
+
 
 
 template<typename T>
@@ -329,7 +341,10 @@ template void Model<double>::backPropagation(std::vector<double>& input, std::ve
 template<typename T>
 void Model<T>::train(int& selection){
     int batch = model_input.getTrain().size() / model_batch_size;
-    int count=0, operations = 0;
+    int count=0, operations = 0, correct = 0;
+    float maxElement_train, max_element_target;
+    int index_max_element_train, index_max_element_target; 
+    float train_accuracy;
     std::vector<T> y_acc;
     std::vector<T> temp, temp2;
     dE_dy.resize(model_output.getShapeOutputData());
@@ -338,10 +353,11 @@ void Model<T>::train(int& selection){
     std::cout << "batch: " << batch << std::endl;
     std::cout << "train size: " << model_input.getTrain().size() << std::endl;
     for(int epoch = 0; epoch < model_epochs; epoch++){
-        std::cout << "epoch: " << epoch << std::endl;
+        std::cout << "epoch: " << epoch << " batch loop: " ;
         operations = 0;
+        correct = 0;
         for(int batch_loop = 0; batch_loop < batch+1; batch_loop++){//considera di aggiungere +1 per l'avanzo delle rimaneti singole batch
-            std::cout << "batch_loop: " << batch_loop << std::endl;
+            std::cout << " " << batch_loop ;
             std::vector<std::vector<T>> tempWeights = createTempWeightMAtrix(weights);
             std::vector<std::vector<T>> tempBias = createTempBiasMAtrix(bias);
             count = 0;
@@ -356,54 +372,48 @@ void Model<T>::train(int& selection){
                     applyLossFunction(y, model_output.getOutputTrain()[batch_loop*model_batch_size+i], dE_dy, model_loss_fun);
                     backPropagation(temp, dE_dy, selection);
                     updateDE_Dw_Db(dE_dw, dE_db, tempWeights, tempBias);
-                    y_acc = sum(y_acc, y);
+                    //auto max_element_target = std::max_element(model_output.getOutputTrain()[batch_loop*model_batch_size+i].begin(), model_output.getOutputTrain()[batch_loop*model_batch_size+i].end());
+                    index_max_element_target = 0;
+                    float temp_1 = model_output.getOutputTrain()[batch_loop*model_batch_size+i][0];
+                    for(int q =1; q<model_output.getOutputTrain()[batch_loop*model_batch_size+i].size(); q++){
+                        if(model_output.getOutputTrain()[batch_loop*model_batch_size+i][q] > temp_1 ){
+                            index_max_element_target = q;
+                            temp_1 = model_output.getOutputTrain()[batch_loop*model_batch_size+i][q];
+                        }
+                    }
+                    index_max_element_train = 0;
+                    float temp_2 = y[0];
+                    for(int q =1; q<y.size(); q++){
+                        if(y[q] > temp_2 ){
+                            index_max_element_train = q;
+                            temp_2 = y[q];
+                        }
+                    }
+
+
+                    //auto index_max_element_target = std::distance(model_output.getOutputTrain()[batch_loop*model_batch_size+i].begin(), max_element_target);
+                    //auto maxElement_train = std::max_element(y.begin(), y.end());
+                    //auto index_max_element_train = std::distance(y.begin(), maxElement_train);
+                    if(index_max_element_target == index_max_element_train){
+                        correct++;
+                    }
+                    //y_acc = sum(y_acc, y);
                     operations++;
                     count++;
                 }
             }
             updateWeightsBias(weights, tempWeights, bias, tempBias, count, model_learning_rate);
-            std::cout << "y_acc: " << std::endl;
+            /**std::cout << "y_acc: " << std::endl;
             for(int i = 0; i < y_acc.size(); i++){
                 std::cout << y_acc[i] << " ";
-            }
+            }**/
         }
+        train_accuracy = (float)correct/operations;
+        std::cout << " train Accuracy: " << train_accuracy << std::endl;
     }
     std::cout << std::endl;
     std::cout << "operations: " << operations << std::endl;
-                /**std::cout << "i: " << i << std::endl;
-                std::cout << "input: " << std::endl;
                 
-                std::cout << std::endl;
-                predict(model_input.getTrain()[batch_loop*model_batch_size+i], selection);
-                
-                
-                
-                
-                
-                std::cout << "target: " << std::endl;
-                for(int j = 0; j < model_output.getShapeOutputData(); j++){
-                    std::cout << model_output.getTrain()[batch_loop*model_batch_size+i][j] << " ";
-                }
-                std::cout << std::endl;
-                std::cout << "weights[0]: " << std::endl;
-                for(int s = 0; s < weights_shape[0][0]; s++){
-                    for(int t = 0; t < weights_shape[0][1]; t++){
-                        std::cout << weights[0][t+s*weights_shape[0][1]] << " ";
-                    }
-                    std::cout << std::endl;
-                }
-                std::cout << std::endl;
-                std::cout << "weights[1]: " << std::endl;
-                for(int s = 0; s < weights_shape[1][0]; s++){
-                    for(int t = 0; t < weights_shape[1][1]; t++){
-                        std::cout << weights[1][t+s*weights_shape[1][1]] << " ";
-                    }
-                    std::cout << std::endl;
-                }
-                std::cout << std::endl;
-                std::cout << "weights[2]: " << std::endl;
-                for(int s = 0; s < weights_shape[2][0]; s++){
-                    for(int t = 0; t < weights_shape[2][1]; t++){**/
 }
 
 template void Model<float>::train(int& selection);
