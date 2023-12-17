@@ -149,17 +149,17 @@ int main(){
     std::vector<std::vector<float>> trainSet, validationSet, testSet, trainOut, validationOut, testOut;
     int a=0;
 
-    genFakeData(trainSet, 100, 5);
+    genFakeData(trainSet, 101, 5);
     genFakeData(validationSet, 50, 5);
     genFakeData(testSet, 20, 5);
-    genFakeData(trainOut, 100, 3);
+    genFakeData(trainOut, 101, 3);
     genFakeData(validationOut, 50, 3);
     genFakeData(testOut, 20, 3);
 
     Input input(trainSet, validationSet, testSet);
     Output output(trainOut, validationOut, testOut, "sigmoid");
     Layer layer1("prova", 3, "sigmoid"), layer2("prova2", 7, "sigmoid"), layer3("prova3", 10, "sigmoid");
-    Model model("Modello",100, 10, 0.01, "MSE", input, output, "early_stop");
+    Model model("Modello",100, 8, 0.01, "MSE", input, output, "early_stop");
     std::vector<float> faketest = {0.5,0.6,0.8};
     model.addLayer(layer1);
     model.addLayer(layer2);
@@ -183,12 +183,15 @@ int main(){
 
     model.printWeigts();
 
-    model.predict(trainSet[0], a, 1);
+    //model.predict(trainSet[0], a, 1);
 
     model.extendMatrix();
     model.predict(trainSet[0], a);
+    model.reduceMatrix();
 
     model.backPropagation(trainSet[0], faketest, a);
+
+    model.train( a);
   
 
 

@@ -81,14 +81,14 @@ class Model{
         }
         std::vector<T> filler(layers[check-1].getNeurons() * model_output.getShapeOutputData(), default_weight);
         std::vector<T> fillerBias(model_output.getShapeOutputData(), default_weight);
-        weights[check].resize(fillerdim * layers[check-1].getNeurons());
+        weights[check].resize(fillerdim * model_output.getShapeOutputData());
         weights[check] = filler;
         weights_shape[check].resize(2);
         weights_shape[check][1] = model_output.getShapeOutputData();
         weights_shape[check][0] = layers[check-1].getNeurons();
         bias[check].resize(model_output.getShapeOutputData());
         bias[check] = fillerBias;
-        dE_dw[check].resize(fillerdim * layers[check-1].getNeurons());
+        dE_dw[check].resize(fillerdim * model_output.getShapeOutputData());
         dAct_z[check].resize(model_output.getShapeOutputData());
         dE_db[check].resize(model_output.getShapeOutputData());
         z[check].resize(model_output.getShapeOutputData());
@@ -123,6 +123,7 @@ class Model{
     void predict(std::vector<T>& input, int& selection); //this version need to be called only after the resizing of the weights
     void predict(std::vector<T>& input, int& selection, int flag);
     void backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int& selection);
+    void train(int& selection);
     void extendMatrix();
     void reduceMatrix();
     
@@ -132,7 +133,7 @@ class Model{
 
     protected:
     std::vector<std::vector<T>> dE_dw, z, h, dAct_z, dE_dx, dE_db;
-    std::vector<T> y;
+    std::vector<T> y, dE_dy;
     
     private:
     std::vector<Layer> layers;
