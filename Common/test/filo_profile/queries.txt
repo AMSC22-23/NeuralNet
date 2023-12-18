@@ -1,0 +1,26 @@
+db.getCollection('filresult').find({
+    datatype: 'float',
+    matrix_dimension: '1024X1024',
+    id: {
+        $not: {
+            $regex: '5$'
+        },
+        $type: 'string'
+    }
+}).sort({
+    'time [ms]': 1
+}).limit(5)
+
+
+db.getCollection('filresult').find({
+    datatype: 'double',
+    matrix_dimension: '1024X1024',
+    id: {
+        $not: {
+            $regex: '5$'
+        },
+        $type: 'string'
+    }
+}).sort({
+    'time [ms]': 1
+}).limit(5)

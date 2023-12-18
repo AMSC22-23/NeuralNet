@@ -67,10 +67,7 @@ def id_to_name(ids):
             result.append('unknown')
     return result
 
-
-
-
-def misses_bar_plot():
+def misses_bar_plot(include_naive=False):
     """
     This function plot a bar plot using the data passed as argument
     :param data: the data to plot
@@ -88,14 +85,16 @@ def misses_bar_plot():
     # moreover the id must be one of 101, 102, 103, 104, 105, 106, 107
     # we want just one data for each id
 
-
-    data = collection.find({'matrix_dimension': '1024X1024', 'datatype': 'float', 'misses': {'$ne': -1}, 'id': {'$in': ['101', '102', '103', '104', '105', '106', '107']}})
+    if not include_naive:
+        data = collection.find({'matrix_dimension': '1024X1024', 'datatype': 'float', 'misses': {'$ne': -1}, 'id': {'$in': ['101', '102', '103', '104', '105', '106', '107']}})
+    else:
+        data = collection.find({'matrix_dimension': '1024X1024', 'datatype': 'float', 'misses': {'$ne': -1}, 'id': {'$in': ['102', '103', '104', '105', '106', '107', '108']}})
 
     data = pd.DataFrame(data)
 
     # we reduce now the data DataFrame by considering just one data for each id
     data = data.drop_duplicates(subset='id', keep='first')
-    print(data['id'])
+    #print(data['id'])
     # we now plot the data
     plt.bar(id_to_name(data['id']), data['misses'])
     plt.xlabel('Algorithm')
@@ -103,7 +102,11 @@ def misses_bar_plot():
     plt.title('Misses for each algorithm on square 1024 matrices on float datatype')
 
     # saving the plot
-    plt.savefig('plot/misses_float.png')
+    if not include_naive:
+        plt.savefig('plot/misses_float.png')
+    else:
+        plt.savefig('plot/misses_float_no_naive.png')
+
 
     plt.close()
 
@@ -127,8 +130,29 @@ def misses_bar_plot():
     #plt.show()
 
     plt.close()
+    """
+    # we now plot in a single figure the misses for each algorithm on square 1024 matrices on float and double datatype
+    # we now query all data where the dimension is 1024, datatype is float and the number of misses is not NaN or -1
+    # moreover the id must be one of 101, 102, 103, 104, 105, 106, 107
+    # we want just one data for each id
+    data = collection.find({'matrix_dimension': '1024X1024', 'datatype': 'float', 'misses': {'$ne': -1}, 'id': {'$in': ['101', '102', '103', '104', '105', '106', '107']}})
+    data = pd.DataFrame(data)
+
+    # we reduce now the data DataFrame by considering just one data for each id
+    data = data.drop_duplicates(subset='id', keep='first')
+
+    # we now plot the data
+    plt.bar(id_to_name(id_to_name(data['id'])), data['misses'], label='float datatype')
+    plt.xlabel('Algorithm')
+    plt.ylabel('Misses')
+    plt.title('Misses for each algorithm on square 1024 matrices on float datatype')
+
+    plt.show()
+"""
 
 misses_bar_plot()
+
+misses_bar_plot(include_naive=True)
 
 def time_complexity_plot(algorithm_id):
     """
@@ -257,10 +281,84 @@ def plot_effect_of_different_tilesize():
     ax2.grid()
 
     #saving the plot
-    plt.savefig('plot/tilesize_effect.png')
+    plt.savefig('plot/tilesize_effect_float.png')
 
     #plt.show()
     plt.close()
 
+    # we now plot the same graph for the double datatype
+    # extracting the data from the database
+
+    data = collection.find({'id': '103', 'datatype': 'double', 'matrix_dimension': '1024X1024', 'misses': {'$ne': -1}})
+    data = pd.DataFrame(data)
+
+    # Converting the time column to float
+    data['time [ms]'] = data['time [ms]'].astype(float)
+    # Converting the tilesize column to int, using a lambda function
+    data['tile_dim'] = data['tile_dim'].apply(lambda x: int(x))
+    # Convert the misses column to int
+    data['misses'] = data['misses'].astype(int)
+    # Sorting the data by tilesize
+    data = data.sort_values(by=['tile_dim'])
+
+    # keeping just one data for each tilesize
+    data = data.drop_duplicates(subset='tile_dim', keep='first')
+
+    # Plotting the data
+
+    # creating a figure with two subplots
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+
+
+    # plotting the time complexity
+    # we use also dots to better see the data
+    ax1.plot(data['tile_dim'], data['time [ms]'], '-o', label='time complexity')
+
+    ax1.set_xlabel('tile_dim')
+    ax1.set_ylabel('time [ms]')
+    ax1.set_title('Effect of different tile dimensions on 1024X1024 matrices (double)')
+
+
+    # addding a label to each dot: the tilesize
+
+    for i, txt in enumerate(data['tile_dim']):
+        if i == 0 or i == 1:
+            ax1.annotate(txt, (data['tile_dim'].iloc[i], data['time [ms]'].iloc[i]),
+                         xytext=(6, -3), textcoords='offset points', ha='left', rotation=0)
+        else:
+            ax1.annotate(txt, (data['tile_dim'].iloc[i], data['time [ms]'].iloc[i]),
+                         xytext=(0, 5), textcoords='offset points', ha='center', rotation=0)
+
+
+    ax1.grid()
+    ax1.legend()
+
+    # plotting the number of misses
+    ax2.plot(data['tile_dim'], data['misses'], '-o', label='misses')
+    ax2.set_xlabel('tile_dim')
+    ax2.set_ylabel('misses')
+    # ax2.set_title('Time complexity of tiling algorithm with different tilesize')
+
+    for i, txt in enumerate(data['tile_dim']):
+        if i > 2:
+            ax2.annotate(txt, (data['tile_dim'].iloc[i], data['misses'].iloc[i]), xytext=(3, -10),
+                         textcoords='offset points', ha='center', rotation=0)
+        else:
+            ax2.annotate(txt, (data['tile_dim'].iloc[i], data['misses'].iloc[i]), xytext=(6, -3),
+                         textcoords='offset points', ha='left', rotation=0)
+
+
+    ax2.legend()
+    ax2.grid()
+
+    # saving the plot
+    plt.savefig('plot/tilesize_effect_double.png')
+
+    #plt.show()
+
+#plt.close()
+
+
 
 plot_effect_of_different_tilesize()
+
