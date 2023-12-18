@@ -468,6 +468,7 @@ void Model<T>::train(int& selection){
 
         train_accuracy = (float)correct/operations;
         std::cout << " train Accuracy: " << train_accuracy ;
+        
         //evaluating accuracy on validation set
         std::vector<T> temp_validation;
         int correct_validation = 0;
@@ -505,6 +506,40 @@ void Model<T>::train(int& selection){
     }
     std::cout << std::endl;
     std::cout << "operations: " << operations << std::endl;
+
+    //evaluating accuracy on test set
+    std::vector<T> temp_test;
+    int correct_test = 0;
+    int operations_test = 0;
+    for(int i = 0; i < model_input.getTest().size(); i++){
+        temp_test = model_input.getTest()[i];
+        extendMatrix(); //before predict call and for every predict in batch
+        predict(temp_test, selection);
+        reduceMatrix(); //after predict call and for every predict in batch
+        index_max_element_target = 0;
+        float temp_1 = model_output.getOutputTest()[i][0];
+        for(int q =1; q<model_output.getOutputTest()[i].size(); q++){
+            if(model_output.getOutputTest()[i][q] > temp_1 ){
+                index_max_element_target = q;
+                temp_1 = model_output.getOutputTest()[i][q];
+            }
+        }
+        index_max_element_train = 0;
+        float temp_2 = y[0];
+        for(int q =1; q<y.size(); q++){
+            if(y[q] > temp_2 ){
+                index_max_element_train = q;
+                temp_2 = y[q];
+            }
+        }
+        if(index_max_element_target == index_max_element_train){
+            correct_test++;
+        }
+        operations_test++;
+    }
+    float test_accuracy = (float)correct_test/operations_test;
+    std::cout << std::endl;
+    std::cout << "Final Accuracy on the TestSet: " << test_accuracy << std::endl;
                 
 }
 

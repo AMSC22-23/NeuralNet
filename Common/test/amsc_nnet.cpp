@@ -303,10 +303,10 @@ int main(){
     //Output output(trainOut, validationOut, testOut, "sigmoid");
     Output output(trainOut, validationOut, testOut, "sigmoid");
     Layer layer1("prova", 128, "ReLu"), layer2("prova2", 70, "ReLu"), layer3("prova3", 10, "ReLu");
-    Model model("Modello",500, 16, 0.1, "MSE", input, output, "early_stop");
+    Model model("Modello",200, 16, 0.05, "MSE", input, output, "early_stop");
     std::vector<float> faketest = {0.5,0.6,0.8};
     model.addLayer(layer1);
-    model.addLayer(layer2);
+    //model.addLayer(layer2);
     //model.addLayer(layer3);
 
 
@@ -325,7 +325,7 @@ int main(){
 
     model.buildModel();
 
-    model.printWeigts();
+    //model.printWeigts();
 
     //model.predict(trainSet[0], a, 1);
 
@@ -337,7 +337,7 @@ int main(){
 
     model.train( a);
 
-    model.printWeigts();
+    //model.printWeigts();
   
 
 
