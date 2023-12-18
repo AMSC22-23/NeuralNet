@@ -36,3 +36,9 @@ void evaluateAccuracy(std::vector<T>& y, std::vector<T>& target, int& numCorrect
 
 template<typename T>
 void resetVector(std::vector<std::vector<T>>& vector);
+
+//template<typename T>
+//void initialiseVector(std::vector<std::vector<T>>& default_weights);
+
+template<typename T>
+void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias);
