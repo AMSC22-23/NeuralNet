@@ -34,10 +34,26 @@ class Model{
         std::cout << "Loss function: " << model_loss_fun << std::endl;
         std::cout << "Stop cryteria: " << model_stop_cryteria << std::endl;
         std::cout << std::endl;
+        std::cout << "Input layer: " << std::endl;
+        std::cout << "Number of input introduced in the network: " << model_input.getShapeInputData() << std::endl;
+        printLayers();
+        std::cout << "Output layer: " << std::endl;
+        std::cout << "Number of output introduced in the network: " << model_output.getShapeOutputData() << " activation function: " << model_output.getAct_Fun() << std::endl;
+        std::cout << std::endl;
 
+        //resizing the vectors
         weights.resize(layers.size()+1);
         bias.resize(layers.size()+1);
         weights_shape.resize(layers.size()+1);
+        z.resize(layers.size()+1);
+        h.resize(layers.size());
+        dAct_z.resize(layers.size()+1);
+        dE_dw.resize(layers.size()+1);
+        dE_dx.resize(layers.size());
+        dE_db.resize(layers.size()+1);
+        y.resize(model_output.getShapeOutputData());
+
+        //create dimensions for the first iteration
         int fillerdim = model_input.getShapeInputData();
         int check = 0;
         for(int block = 0; block < layers.size(); ++block){
@@ -52,21 +68,35 @@ class Model{
             weights[block] = filler;
             bias[block].resize(layers[block].getNeurons());
             bias[block] = fillerBias;
+            dE_dw[block].resize(fillerdim * layers[block].getNeurons());
+            dAct_z[block].resize(layers[block].getNeurons());
+            z[block].resize(layers[block].getNeurons());
+            h[block].resize(layers[block].getNeurons());
+            dE_dx[block].resize(layers[block].getNeurons());
+            dE_db[block].resize(layers[block].getNeurons());
+            dE_dx[block].resize(layers[block].getNeurons());
+            //update the dimensions for the next iteration
             fillerdim = layers[block].getNeurons();
             check += 1;
         }
         std::vector<T> filler(layers[check-1].getNeurons() * model_output.getShapeOutputData(), default_weight);
         std::vector<T> fillerBias(model_output.getShapeOutputData(), default_weight);
-        weights[check].resize(fillerdim * layers[check-1].getNeurons());
+        weights[check].resize(fillerdim * model_output.getShapeOutputData());
         weights[check] = filler;
         weights_shape[check].resize(2);
         weights_shape[check][1] = model_output.getShapeOutputData();
         weights_shape[check][0] = layers[check-1].getNeurons();
         bias[check].resize(model_output.getShapeOutputData());
         bias[check] = fillerBias;
+        dE_dw[check].resize(fillerdim * model_output.getShapeOutputData());
+        dAct_z[check].resize(model_output.getShapeOutputData());
+        dE_db[check].resize(model_output.getShapeOutputData());
+        z[check].resize(model_output.getShapeOutputData());
+        y.resize(model_output.getShapeOutputData());
 
 
         std::cout << "Model built!" << std::endl;
+        std::cout << std::endl;
     }
 
     void printWeigts(){
@@ -90,14 +120,26 @@ class Model{
         std::cout << std::endl;
     }
 
+    void predict(std::vector<T>& input, int& selection); //this version need to be called only after the resizing of the weights
+    void predict(std::vector<T>& input, int& selection, int flag);
+    void backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int& selection);
+    void train(int& selection);
+    void extendMatrix();
+    void reduceMatrix();
+    
+
     Input<T> getInput(){return model_input;}
     Output<T> getOutput(){return model_output;}
 
+    protected:
+    std::vector<std::vector<T>> dE_dw, z, h, dAct_z, dE_dx, dE_db;
+    std::vector<T> y, dE_dy;
+    
     private:
     std::vector<Layer> layers;
     Input<T> model_input;
     Output<T> model_output;
-    int model_epochs, model_batch_size;
+    int model_epochs, model_batch_size, matrix_mul_optimisation = 0;
     float model_learning_rate;
     T default_weight = 0.3;
     std::string model_name, model_loss_fun, model_stop_cryteria;
@@ -105,3 +147,4 @@ class Model{
     std::vector<std::vector<int>> weights_shape;
     std::vector<T> input_layer, output_layer;
 };
+

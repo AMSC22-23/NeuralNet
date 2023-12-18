@@ -32,7 +32,7 @@ class Input{
             setShape(validation, validation_shape),
             setShape(test, test_shape);};
 
-    Input(const Input<T>& input){
+    Input(Input<T>& input){
         train_input = input.getTrain();
         test_input = input.getTest();
         validation_input = input.getValidation();
@@ -54,9 +54,9 @@ class Input{
 
     int getShapeInputData() const {return train_shape[1];}
 
-    std::vector<std::vector<T>> getTrain() const {return train_input;}
+    /**std::vector<std::vector<T>> getTrain() const {return train_input;}
     std::vector<std::vector<T>> getTest() const {return test_input;}
-    std::vector<std::vector<T>> getValidation() const {return validation_input;}
+    std::vector<std::vector<T>> getValidation() const {return validation_input;}**/
 
 
     private:
@@ -126,7 +126,8 @@ class Output{
     }
 
     int getShapeOutputData() const {return train_shape[1];}
-
+    std::string getAct_Fun() const {return act_funct;}
+    
 
     private:
     std::vector<std::vector<T>> output_target_train, output_target_validation, output_target_test, output_result;
@@ -146,9 +147,12 @@ class Layer{
     }
 
     int getNeurons() {return neurons;}
+    std::string getActFun() {return act_funct;};
     private:
     std::string act_funct, name;
     bool dense = true;
     int neurons;
 
 };
+
+
