@@ -127,7 +127,7 @@ def misses_bar_plot(include_naive=False):
 
     # saving the plot
     plt.savefig('plot/misses_double.png')
-    #plt.show()
+
 
     plt.close()
     """
@@ -147,7 +147,7 @@ def misses_bar_plot(include_naive=False):
     plt.ylabel('Misses')
     plt.title('Misses for each algorithm on square 1024 matrices on float datatype')
 
-    plt.show()
+    
 """
 
 misses_bar_plot()
@@ -206,7 +206,7 @@ def time_complexity_plot(algorithm_id):
     # saving the plot
     plt.legend()
     plt.savefig('plot/time_complexity_' + algorithm_id + '.png')
-    # plt.show()
+
     plt.close()
     # saving the plot
 
@@ -283,7 +283,7 @@ def plot_effect_of_different_tilesize():
     #saving the plot
     plt.savefig('plot/tilesize_effect_float.png')
 
-    #plt.show()
+
     plt.close()
 
     # we now plot the same graph for the double datatype
@@ -354,7 +354,7 @@ def plot_effect_of_different_tilesize():
     # saving the plot
     plt.savefig('plot/tilesize_effect_double.png')
 
-    #plt.show()
+
 
 #plt.close()
 
@@ -362,3 +362,78 @@ def plot_effect_of_different_tilesize():
 
 plot_effect_of_different_tilesize()
 
+def plot_time_complexity(dtype):
+
+    """
+    Plots the time complexity of the algorithm of specified datatype
+    :param dtype:
+    :return:
+    """
+
+    plt.close()
+    plt.figure()
+    # plotting the time complexity of the naive algorithm
+
+    # extracting the data from the database
+    for id in ['121', '122', '125']:
+        data = collection.find({'id': id, 'datatype': dtype})
+        data = pd.DataFrame(data)
+
+
+        data['time [ms]'] = data['time [ms]'].astype(float)
+        data['matrix_dimension'] = data['matrix_dimension'].apply(lambda x: int(x.split('X')[0]))
+        # removing from data entries with matrix dimension equal greater then 2048
+        data = data[data['matrix_dimension'] <= 2048]
+        data = data.sort_values(by=['matrix_dimension'])
+        data = data.drop_duplicates(subset='matrix_dimension', keep='first')
+
+
+        plt.plot(data['matrix_dimension'], data['time [ms]'], label=id_to_name([id]))
+
+
+
+    for id in ['123', '124']:
+        data = collection.find({'id': id, 'datatype': dtype, 'tile_dim': 32, })
+        data = pd.DataFrame(data)
+
+
+        data['time [ms]'] = data['time [ms]'].astype(float)
+        data['matrix_dimension'] = data['matrix_dimension'].apply(lambda x: int(x.split('X')[0]))
+        # removing from data entries with matrix dimension equal greater then 2048
+        data = data[data['matrix_dimension'] <= 2048]
+        data = data.sort_values(by=['matrix_dimension'])
+        data = data.drop_duplicates(subset='matrix_dimension', keep='first')
+
+
+        plt.plot(data['matrix_dimension'], data['time [ms]'], label=id_to_name([id]))
+
+    for id in ['126', '127']:
+        data = collection.find({'id': id, 'datatype': dtype})
+        data = pd.DataFrame(data)
+
+
+        data['time [ms]'] = data['time [ms]'].astype(float)
+        data['matrix_dimension'] = data['matrix_dimension'].apply(lambda x: int(x.split('X')[0]))
+        # removing from data entries with matrix dimension equal greater then 2048
+        data = data[data['matrix_dimension'] <= 1024]
+        data = data.sort_values(by=['matrix_dimension'])
+        data = data.drop_duplicates(subset='matrix_dimension', keep='first')
+
+
+        plt.plot(data['matrix_dimension'], data['time [ms]'], label=id_to_name([id]))
+
+
+
+
+    plt.grid()
+    plt.legend()
+
+    plt.xlabel('Matrix dimension')
+    plt.ylabel('time [ms]')
+
+    plt.title('Time complexity of algorithms on ' + dtype + ' datatype')
+
+    plt.savefig('plot/time_complexity_' + dtype + '.png')
+
+plot_time_complexity('double')
+plot_time_complexity('float')
