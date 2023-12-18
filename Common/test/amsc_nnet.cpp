@@ -19,6 +19,14 @@ void genFakeData(std::vector<std::vector<float>>& a, int rows, int cols){
 // and a tuple representing the species in one-hot encoding format
 using IrisTuple = std::tuple<float, float, float, float, std::tuple<int, int, int>>;
 
+
+
+// Function to normalize a float value between min and max
+float normalize(float value, float min, float max) {
+    return (value - min) / (max - min);
+}
+
+
 // Function to read data from Iris.CSV file and split it into vectors based on species
 std::tuple<std::vector<IrisTuple>, std::vector<IrisTuple>, std::vector<IrisTuple>> readIrisData(const std::string& file_name) {
     std::ifstream file(file_name);
@@ -33,6 +41,14 @@ std::tuple<std::vector<IrisTuple>, std::vector<IrisTuple>, std::vector<IrisTuple
     std::vector<IrisTuple> setosa_data;
     std::vector<IrisTuple> versicolor_data;
     std::vector<IrisTuple> virginica_data;
+
+
+    //Matrix to store all numerical input side data
+    std::vector<std::vector<float>> AllData;
+
+    //floats to store maximum and minimum values
+    float min = 1000000.0f;
+    float max = 0.0f;
 
     // Read the file line by line
     std::string line;
@@ -52,39 +68,74 @@ std::tuple<std::vector<IrisTuple>, std::vector<IrisTuple>, std::vector<IrisTuple
 
         // Save in 'field' the next characters until the comma
         getline(ss, field, ',');
-        // Convert field to double and save the value in sepal_length
-        double sepal_length = stod(field);
+        // Convert field to float and save the value in sepal_length
+        float sepal_length = stof(field);
+        //update min and max
+        min = std::min(sepal_length, min);
+        max = std::max(sepal_length, max);
 
         getline(ss, field, ',');
-        double sepal_width = stod(field);
+        float sepal_width = stof(field);
+        min = std::min(sepal_width, min);
+        max = std::max(sepal_width, max);
 
         getline(ss, field, ',');
-        double petal_length = stod(field);
+        float petal_length = stof(field);
+        min = std::min(petal_length, min);
+        max = std::max(petal_length, max);
 
         getline(ss, field, ',');
-        double petal_width = stod(field);
+        float petal_width = stof(field);
+        min = std::min(petal_width, min);
+        max = std::max(petal_width, max);
 
         getline(ss, field, ',');
-        std::tuple<int, int, int> species_tuple;
+        float speciesFloat;
 
-        // Represent the species in one-hot encoding format
         if (field == "Iris-setosa") {
-            species_tuple = std::make_tuple(1, 0, 0);
-            IrisTuple data = std::make_tuple(sepal_length, sepal_width, petal_length, petal_width, species_tuple);
-            setosa_data.emplace_back(data);
+            speciesFloat = 1.0f;
+
         } else if (field == "Iris-versicolor") {
-            species_tuple = std::make_tuple(0, 1, 0);
-            IrisTuple data = std::make_tuple(sepal_length, sepal_width, petal_length, petal_width, species_tuple);
-            versicolor_data.emplace_back(data);
+            speciesFloat = 2.0f;
+
         } else if (field == "Iris-virginica") {
-            species_tuple = std::make_tuple(0, 0, 1);
-            IrisTuple data = std::make_tuple(sepal_length, sepal_width, petal_length, petal_width, species_tuple);
-            virginica_data.emplace_back(data);
+            speciesFloat = 3.0f;
         }
+
+        std::vector<float> lineData = {sepal_length, sepal_width, petal_length, petal_width, speciesFloat};
+        AllData.emplace_back(lineData);
+
     }
 
     // Close the file
     file.close();
+
+    for (const auto& vect : AllData) {
+
+        IrisTuple data;
+        std::tuple<int, int, int> species_tuple;
+
+        auto normalizedSL = normalize(vect[0], min, max);
+        auto normalizedSW = normalize(vect[1], min, max);
+        auto normalizedPL = normalize(vect[2], min, max);
+        auto normalizedPW = normalize(vect[3], min, max);
+        auto code = vect[4];
+
+        // Represent the species in one-hot encoding format
+        if (code == 1.0f) {
+            species_tuple = std::make_tuple(1, 0, 0);
+            data = std::make_tuple(normalizedSL, normalizedSW, normalizedPL, normalizedPW, species_tuple);
+            setosa_data.emplace_back(data);
+        } else if (code == 2.0f) {
+            species_tuple = std::make_tuple(0, 1, 0);
+            data = std::make_tuple(normalizedSL, normalizedSW, normalizedPL, normalizedPW, species_tuple);
+            versicolor_data.emplace_back(data);
+        } else if (code == 3.0f) {
+            species_tuple = std::make_tuple(0, 0, 1);
+            data = std::make_tuple(normalizedSL, normalizedSW, normalizedPL, normalizedPW, species_tuple);
+            virginica_data.emplace_back(data);
+        }
+    }
 
     // Return the tuple containing the three vectors of tuples
     return std::make_tuple(setosa_data, versicolor_data, virginica_data);
@@ -151,9 +202,19 @@ int main(){
     int a=0;
 
     auto result = readIrisData("Iris.csv");
+    auto split_result = getIrisSets(result, 0.6, 0.2, 0.2);
+
+    trainSet = std::get<0>(split_result);
+    trainOut = std::get<1>(split_result);
+    validationSet = std::get<2>(split_result);
+    validationOut = std::get<3>(split_result);
+    testSet = std::get<4>(split_result);
+    testOut = std::get<5>(split_result);
+
+    
 
     // Ottenere i vettori dalla tupla risultante
-    std::vector<IrisTuple> vector1 = std::get<0>(result);
+    /**std::vector<IrisTuple> vector1 = std::get<0>(result);
     std::vector<IrisTuple> vector2 = std::get<1>(result);
     std::vector<IrisTuple> vector3 = std::get<2>(result);
 
@@ -200,7 +261,7 @@ int main(){
                                           static_cast<float>(std::get<1>(innerTuple)),
                                           static_cast<float>(std::get<2>(innerTuple))};
         tupleElements.push_back(tupleValues);
-    }
+    }**/
 
     /**std::cout << "First four elements: " << firstFourElements.size() << std::endl;
     std::cout << "Tuple elements: " << tupleElements.size() << std::endl;
@@ -217,31 +278,31 @@ int main(){
 
 
     // Creare i set di addestramento, validazione e test
-    auto iris_sets = getIrisSets(result, 0.6, 0.2, 0.2);  
+    //auto iris_sets = getIrisSets(result, 0.6, 0.2, 0.2);  
 
 
 
-    genFakeData(trainSet, 101, 5);
+    /**genFakeData(trainSet, 101, 5);
     genFakeData(validationSet, 50, 5);
     genFakeData(testSet, 20, 5);
     genFakeData(trainOut, 101, 3);
     genFakeData(validationOut, 50, 3);
-    genFakeData(testOut, 20, 3);
+    genFakeData(testOut, 20, 3);**/
 
     //Input input(trainSet, validationSet, testSet);
-    Input input(firstFourElements, firstFourElements, firstFourElements);
+    Input input(trainSet, validationSet, testSet);
     //Output output(trainOut, validationOut, testOut, "sigmoid");
-    Output output(tupleElements, tupleElements, tupleElements, "sigmoid");
-    Layer layer1("prova", 3, "sigmoid"), layer2("prova2", 7, "sigmoid"), layer3("prova3", 10, "sigmoid");
-    Model model("Modello",50, 8, 0.01, "MSE", input, output, "early_stop");
+    Output output(trainOut, validationOut, testOut, "sigmoid");
+    Layer layer1("prova", 3, "ReLu"), layer2("prova2", 7, "ReLu"), layer3("prova3", 10, "ReLu");
+    Model model("Modello",100, 10, 0.1, "MSE", input, output, "early_stop");
     std::vector<float> faketest = {0.5,0.6,0.8};
     model.addLayer(layer1);
     model.addLayer(layer2);
     model.addLayer(layer3);
 
 
-    Input<float> input2(model.getInput());
-    Output<float> output2(model.getOutput());
+    //Input<float> input2(model.getInput());
+    //Output<float> output2(model.getOutput());
 
     /**input.printShape();
     std::cout << std::endl;
