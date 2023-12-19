@@ -259,10 +259,80 @@ void mmm_multiT(const MatrixFlat<double>& A, const MatrixFlat<double>& B, Matrix
 }
 
 
+void mmm_gmultiT(const MatrixFlat<double>& A, const MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time, int inner_tileSize,  int num_threads) {
+
+    std::cout<<"Performing mmm_gmultiT in double precision (double)"<<std::endl;
+
+
+    std::size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+    int tileSize = rows/4;
+
+    std::cout<<"Tile Size: "<<(tileSize)<<std::endl;
+    const auto t0 = std::chrono::high_resolution_clock::now();
+
+
+#pragma omp parallel for shared(A, B, C, rows, columns, inners, inner_tileSize, tileSize) default(none) \
+      collapse(2) num_threads(num_threads)
+
+
+    for (int rowTile = 0; rowTile < rows; rowTile += tileSize) {
+        for (int columnTile = 0; columnTile < columns; columnTile += tileSize) {
+            for (int innerTile = 0; innerTile < inners; innerTile += inner_tileSize) {
+                for (int row = rowTile; row < std::min<int>(rowTile + tileSize , rows); row++) {
+                    int innerTileEnd = std::min<int>(inners, innerTile + inner_tileSize);
+                    for (int inner = innerTile; inner < innerTileEnd; inner++) {
+                        for (int col = columnTile; col < std::min<int>(columnTile + tileSize, columns); col++) {
+                            C[row * columns + col] +=
+                                    A[row * inners + inner] * B[inner * columns + col];
+                        } } } } } }
+
+
+    const auto t1 = std::chrono::high_resolution_clock::now();
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+
+
+}
+
+
+void mmm_gmultiT(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time, int inner_tileSize, int num_threads) {
+
+    std::cout<<"Performing mmm_gmultiT in single precision (float)"<<std::endl;
+
+
+    std::size_t rows = A.nrows(), columns = B.ncols(), inners = A.ncols();
+    int tileSize = rows/4;
+
+    std::cout<<"Tile Size: "<<(tileSize)<<std::endl;
+    const auto t0 = std::chrono::high_resolution_clock::now();
+
+
+#pragma omp parallel for shared(A, B, C, rows, columns, inners, inner_tileSize, tileSize) default(none) \
+      collapse(2) num_threads(num_threads)
+
+
+    for (int rowTile = 0; rowTile < rows; rowTile += tileSize) {
+        for (int columnTile = 0; columnTile < columns; columnTile += tileSize) {
+            for (int innerTile = 0; innerTile < inners; innerTile += inner_tileSize) {
+                for (int row = rowTile; row < std::min<int>(rowTile + tileSize , rows); row++) {
+                    int innerTileEnd = std::min<int>(inners, innerTile + inner_tileSize);
+                    for (int inner = innerTile; inner < innerTileEnd; inner++) {
+                        for (int col = columnTile; col < std::min<int>(columnTile + tileSize, columns); col++) {
+                            C[row * columns + col] +=
+                                    A[row * inners + inner] * B[inner * columns + col];
+                        } } } } } }
+
+
+    const auto t1 = std::chrono::high_resolution_clock::now();
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+
+
+}
+
+
 
 void appendCSVRow(const std::vector<std::string>& rowData,  bool newline ){
     std::ofstream file;
-    std::string filename = "filResult.csv";
+    std::string filename = "profiling_results.csv";
     file.open(filename, std::ios_base::app); // Apre il file in modalità append
 
     if (!file.is_open()) {

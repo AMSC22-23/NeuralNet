@@ -28,4 +28,8 @@ void appendCSVRow(const std::vector<std::string>& rowData, bool newline = false)
 void mmm_multiT(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time, int tileSize);
 void mmm_multiT(const MatrixFlat<double>& A, const MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time, int tileSize);
 
+void mmm_gmultiT(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time, int tileSize, int numThreads = 8);
+void mmm_gmultiT(const MatrixFlat<double>& A, const MatrixFlat<double>& B, MatrixFlat<double>& C, int64_t& time, int tileSize, int numThreads = 8);
+
+
 #endif
