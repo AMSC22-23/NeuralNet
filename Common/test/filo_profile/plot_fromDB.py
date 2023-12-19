@@ -150,9 +150,9 @@ def misses_bar_plot(include_naive=False):
     
 """
 
-misses_bar_plot()
+#misses_bar_plot()
 
-misses_bar_plot(include_naive=True)
+#misses_bar_plot(include_naive=True)
 
 def time_complexity_plot(algorithm_id):
     """
@@ -210,7 +210,7 @@ def time_complexity_plot(algorithm_id):
     plt.close()
     # saving the plot
 
-time_complexity_plot('124')
+#time_complexity_plot('124')
 
 def plot_effect_of_different_tilesize():
     """
@@ -360,7 +360,7 @@ def plot_effect_of_different_tilesize():
 
 
 
-plot_effect_of_different_tilesize()
+#plot_effect_of_different_tilesize()
 
 def plot_time_complexity(dtype):
 
@@ -435,5 +435,45 @@ def plot_time_complexity(dtype):
 
     plt.savefig('plot/time_complexity_' + dtype + '.png')
 
-plot_time_complexity('double')
-plot_time_complexity('float')
+#plot_time_complexity('double')
+#plot_time_complexity('float')
+
+
+def plot_time_tiling_multiT(data_type):
+    """
+    This function plot the time complexity of the tiling and multiT algorithm
+    :return:
+    """
+
+    ids = ['123', '124', '125']
+    plt.figure()
+    # extracting the data from the database
+    for id in ids:
+        if id != '125':
+            data = collection.find({'id': id, 'datatype': data_type, 'tile_dim': 32})
+        else:
+            data = collection.find({'id': id, 'datatype': data_type})
+        data = pd.DataFrame(data)
+        # for each matrix dimension we keep the data where the time is the minimum
+        data = data.loc[data.groupby('matrix_dimension')['time [ms]'].idxmin()]
+        # convert the time column to float
+        data['time [ms]'] = data['time [ms]'].astype(float)
+        # convert the matrix dimension column to int
+        data['matrix_dimension'] = data['matrix_dimension'].apply(lambda x: int(x.split('X')[0]))
+        # we sort the data by matrix dimension
+        data = data.sort_values(by=['matrix_dimension'])
+        # we now plot the data
+        plt.plot(data['matrix_dimension'], data['time [ms]'], label=id_to_name([id]))
+
+
+
+    plt.grid()
+    plt.legend()
+    plt.xlabel('Matrix dimension')
+    plt.ylabel('time [ms]')
+    plt.title('Time complexity of tiling and multiT algorithms on ' + data_type + ' datatype')
+    plt.savefig('plot/time_complexity_tiling_multiT_' + data_type + '.png')
+    plt.close()
+
+plot_time_tiling_multiT('float')
+plot_time_tiling_multiT('double')

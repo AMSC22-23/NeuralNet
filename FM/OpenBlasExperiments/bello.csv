@@ -1,7 +1,0 @@
-AlgorithmID,n,datatype,time
-blas,64,double,0
-naive,64,double,11
-blas,128,double,0
-naive,128,double,66
-blas,516,double,4
-naive,516,double,1969

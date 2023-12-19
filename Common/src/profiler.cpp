@@ -8,6 +8,12 @@
 
 void Profiler::cachegrindReader() const {
 
+    /*
+     * This function is needed to parse the output of valgrind cachegrind.
+     * It reads the file cachegrind_log_filename and extracts the number of cache misses.
+     *
+     */
+
     std::ifstream file(cachegrind_log_filename);
 
     std::string line;
@@ -33,7 +39,7 @@ void Profiler::cachegrindReader() const {
 
 std::string Profiler::format4csv(const std::string& input_string) {
     /*
-     *  This function removes extra spaces and commas in order to prepare data to be insterted into csv
+     *  This function removes extra spaces and commas in order to prepare data to be inserted into csv
      */
     std::string result;
 
@@ -46,6 +52,10 @@ std::string Profiler::format4csv(const std::string& input_string) {
 }
 
 void Profiler::append_misses(const std::string& misses) const {
+
+    /*
+     * This function appends the number of misses to the csv file
+     */
 
     std::ofstream file;
 
@@ -64,6 +74,24 @@ void Profiler::append_misses(const std::string& misses) const {
 }
 
 void Profiler::profile_one(const std::string& algorithm, const std::string& program_arguments, const std::string& compiler_flags, bool profile_misses) const {
+
+    /*
+     * This method profiles one line of the profile_list_filename file, which must be passed as input already parsed.
+     * Since we want to be able to test different compiler flags we need each time to compile the program.
+     * Here we compile the program by calling g++ using the system function : https://cplusplus.com/reference/cstdlib/system/
+     *
+     * We want to profile time complexity but also the # of cache misses, so we use valgrind cachegrind to do so.
+     * Since when profiling misses with valgrind the execution time grows a lot, we need to execute the program twice:
+     * the first time we execute it without valgrind, and the second time we execute it with valgrind.
+     *
+     * The misses are profiled only if profile_misses is true.
+     *
+     * The time complexity is not measured directly by the profiler class but by the program itself.
+     * Since when we profile misses we don't want to write the execution time on the output, then we need to pass
+     * an extra argument to the program, which is 0 if we are profiling time complexity and 1 if we are profiling
+     * Then based on this argument the program decides whether to write the execution time or not.
+     */
+
 
     std::string program_filename = algorithm + ".cpp";
     std::string openblas_flags = " -lopenblas ";
@@ -104,6 +132,11 @@ void Profiler::profile_one(const std::string& algorithm, const std::string& prog
 
 void Profiler::profile() const {
 
+    /*
+     * This method executes the profiling of the algorithms listed in the file profile_list_filename
+     * and writes the results in the output files
+     */
+
     std::ifstream file(profile_list_filename);
 
     std::string line;
@@ -125,9 +158,42 @@ void Profiler::profile() const {
 
 
             profile_one(algorithm, program_arguments, compiler_flags, profile_misses);
+
+
+            write_backup(backup_csv_filename);
     }
 
 }
+
+void Profiler::write_backup(const std::string &backup_filename) const {
+
+    /*
+     * This function writes the last line of the csv file into the backup file
+     */
+
+
+    //reading last line of csv file and writing it into backup file
+    std::ifstream file(csv_filename);
+    std::string last_line;
+    std::string line;
+    while (std::getline(file, line))
+        last_line = line;
+
+    std::ofstream backup_file;
+    backup_file.open(backup_filename, std::ios_base::app); // opens file in append mode
+
+    if (!backup_file.is_open()) {
+        std::cerr << "Cannot open file: " << backup_filename << std::endl;
+        return;
+    }
+
+    backup_file << last_line << std::endl;
+
+
+
+
+}
+
 
 
 
