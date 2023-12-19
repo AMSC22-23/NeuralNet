@@ -211,6 +211,15 @@ int main(){
     testSet = std::get<4>(split_result);
     testOut = std::get<5>(split_result);
 
+    std::cout << trainSet.size() << std::endl;
+    std::cout << trainSet[0].size() << std::endl;
+    for(int i = 0; i<trainSet.size(); i++){
+        for(int j = 0; j<trainSet[0].size(); j++){
+            std::cout << trainSet[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
     
 
     // Ottenere i vettori dalla tupla risultante
@@ -293,12 +302,12 @@ int main(){
     Input input(trainSet, validationSet, testSet);
     //Output output(trainOut, validationOut, testOut, "sigmoid");
     Output output(trainOut, validationOut, testOut, "sigmoid");
-    Layer layer1("prova", 3, "ReLu"), layer2("prova2", 7, "ReLu"), layer3("prova3", 10, "ReLu");
-    Model model("Modello",100, 10, 0.1, "MSE", input, output, "early_stop");
+    Layer layer1("prova", 128, "ReLu"), layer2("prova2", 70, "ReLu"), layer3("prova3", 10, "ReLu");
+    Model model("Modello",200, 16, 0.05, "MSE", input, output, "early_stop");
     std::vector<float> faketest = {0.5,0.6,0.8};
     model.addLayer(layer1);
-    model.addLayer(layer2);
-    model.addLayer(layer3);
+    //model.addLayer(layer2);
+    //model.addLayer(layer3);
 
 
     //Input<float> input2(model.getInput());
@@ -316,7 +325,7 @@ int main(){
 
     model.buildModel();
 
-    model.printWeigts();
+    //model.printWeigts();
 
     //model.predict(trainSet[0], a, 1);
 
@@ -327,6 +336,8 @@ int main(){
     //model.backPropagation(trainSet[0], faketest, a);
 
     model.train( a);
+
+    //model.printWeigts();
   
 
 

@@ -3,6 +3,37 @@
 #include "ActivationFunctions.hpp"
 #include "functions_utilities.hpp"
 #include <algorithm>
+#include <random>
+
+template<typename T>
+void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias){
+    for(int i=0; i<old_weights.size(); i++){
+        for(int j=0; j<old_weights[i].size(); j++){
+            new_weights[i][j] = old_weights[i][j] + new_weights[i][j];
+        }
+        for(int j=0; j<old_bias[i].size(); j++){
+            new_bias[i][j] = old_bias[i][j] + new_bias[i][j];
+        }
+    }
+}
+template void incrementweightsBias<float>(std::vector<std::vector<float>>& old_weights, std::vector<std::vector<float>>& old_bias, std::vector<std::vector<float>>& new_weights, std::vector<std::vector<float>>& new_bias);
+template void incrementweightsBias<double>(std::vector<std::vector<double>>& old_weights, std::vector<std::vector<double>>& old_bias, std::vector<std::vector<double>>& new_weights, std::vector<std::vector<double>>& new_bias);
+
+
+template<typename T>
+void Model<T>::initialiseVector(std::vector<std::vector<T>>& default_weights){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<float> distribution(0.0, 0.1); // Distribuzione normale con media 0 e deviazione standard 0.1
+
+    for (auto& row : default_weights) {
+        for (T& weight : row) {
+            weight = distribution(gen);
+        }
+    }
+}
+template void Model<float>::initialiseVector(std::vector<std::vector<float>>& default_weights);
+template void Model<double>::initialiseVector(std::vector<std::vector<double>>& default_weights);
 
 template<typename T>
 void resetVector(std::vector<std::vector<T>>& vector){
@@ -64,7 +95,8 @@ std::vector<std::vector<T>> createTempBiasMAtrix(std::vector<std::vector<T>>& ol
     for(int i = 0; i < old_bias.size(); i++){
         temp[i].resize(old_bias[i].size());
         for(int j = 0; j < old_bias[i].size(); j++){
-            temp[i][j] = old_bias[i][j];
+            //temp[i][j] = old_bias[i][j];
+            temp[i][j] = 0.0;
         }
     }
     return temp;
@@ -72,14 +104,15 @@ std::vector<std::vector<T>> createTempBiasMAtrix(std::vector<std::vector<T>>& ol
 template std::vector<std::vector<float>> createTempBiasMAtrix(std::vector<std::vector<float>>& old_bias);
 template std::vector<std::vector<double>> createTempBiasMAtrix(std::vector<std::vector<double>>& old_bias);
 
-template<typename T>
+template<typename T>  //da ottimizzare
 std::vector<std::vector<T>> createTempWeightMAtrix(std::vector<std::vector<T>>& old_weights){
     std::vector<std::vector<T>> temp;
     temp.resize(old_weights.size());
     for(int i = 0; i < old_weights.size(); i++){
         temp[i].resize(old_weights[i].size());
         for(int j = 0; j < old_weights[i].size(); j++){
-            temp[i][j] = old_weights[i][j];
+            //temp[i][j] = old_weights[i][j];
+            temp[i][j] = 0.0;
         }
     }
     return temp;
@@ -199,7 +232,7 @@ void Model<T>::predict(std::vector<T>& input, int& selection){
         std::cout << y[i] << " ";
     }
     std::cout << std::endl;**/
-    resetVector(z);
+    //resetVector(z);
     input.pop_back();
 }
 
@@ -356,11 +389,13 @@ template void Model<double>::backPropagation(std::vector<double>& input, std::ve
 
 template<typename T>
 void Model<T>::train(int& selection){
+    std::vector<std::vector<T>> tempWeights = createTempWeightMAtrix(weights);
+    std::vector<std::vector<T>> tempBias = createTempBiasMAtrix(bias);
     int batch = model_input.getTrain().size() / model_batch_size;
     int count=0, operations = 0, correct = 0;
     float maxElement_train, max_element_target;
     int index_max_element_train, index_max_element_target; 
-    float train_accuracy;
+    float train_accuracy, validation_accuracy;
     std::vector<T> y_acc;
     std::vector<T> temp, temp2;
     dE_dy.resize(model_output.getShapeOutputData());
@@ -374,8 +409,8 @@ void Model<T>::train(int& selection){
         correct = 0;
         for(int batch_loop = 0; batch_loop < batch+1; batch_loop++){//considera di aggiungere +1 per l'avanzo delle rimaneti singole batch
             std::cout << " " << batch_loop ;
-            std::vector<std::vector<T>> tempWeights = createTempWeightMAtrix(weights);
-            std::vector<std::vector<T>> tempBias = createTempBiasMAtrix(bias);
+            //std::vector<std::vector<T>> tempWeights = createTempWeightMAtrix(weights);
+            //std::vector<std::vector<T>> tempBias = createTempBiasMAtrix(bias);
             count = 0;
             for(int i = 0; i < model_batch_size; i++){
                 if (operations < model_input.getTrain().size()){
@@ -387,9 +422,11 @@ void Model<T>::train(int& selection){
                     //applyLossFunction(y, temp2, dE_dy, model_loss_fun);
                     applyLossFunction(y, model_output.getOutputTrain()[batch_loop*model_batch_size+i], dE_dy, model_loss_fun);
                     backPropagation(temp, dE_dy, selection);
-                    updateDE_Dw_Db(dE_dw, dE_db, tempWeights, tempBias);
+                    //updateDE_Dw_Db(dE_dw, dE_db, tempWeights, tempBias);
+                    incrementweightsBias(dE_dw, dE_db, tempWeights, tempBias);
                     resetVector(dE_dw);
                     resetVector(dE_dx);
+                    resetVector(z);
                     //auto max_element_target = std::max_element(model_output.getOutputTrain()[batch_loop*model_batch_size+i].begin(), model_output.getOutputTrain()[batch_loop*model_batch_size+i].end());
                     index_max_element_target = 0;
                     float temp_1 = model_output.getOutputTrain()[batch_loop*model_batch_size+i][0];
@@ -421,16 +458,88 @@ void Model<T>::train(int& selection){
                 }
             }
             updateWeightsBias(weights, tempWeights, bias, tempBias, count, model_learning_rate);
+            resetVector(tempWeights);
+            resetVector(tempBias);
             /**std::cout << "y_acc: " << std::endl;
             for(int i = 0; i < y_acc.size(); i++){
                 std::cout << y_acc[i] << " ";
             }**/
         }
+
         train_accuracy = (float)correct/operations;
-        std::cout << " train Accuracy: " << train_accuracy << std::endl;
+        std::cout << " train Accuracy: " << train_accuracy ;
+        
+        //evaluating accuracy on validation set
+        std::vector<T> temp_validation;
+        int correct_validation = 0;
+        int operations_validation = 0;
+        for(int i = 0; i < model_input.getValidation().size(); i++){
+            temp_validation = model_input.getValidation()[i];
+            extendMatrix(); //before predict call and for every predict in batch
+            predict(temp_validation, selection);
+            reduceMatrix(); //after predict call and for every predict in batch
+            index_max_element_target = 0;
+            float temp_1 = model_output.getOutputValidation()[i][0];
+            for(int q =1; q<model_output.getOutputValidation()[i].size(); q++){
+                if(model_output.getOutputValidation()[i][q] > temp_1 ){
+                    index_max_element_target = q;
+                    temp_1 = model_output.getOutputValidation()[i][q];
+                }
+            }
+            index_max_element_train = 0;
+            float temp_2 = y[0];
+            for(int q =1; q<y.size(); q++){
+                if(y[q] > temp_2 ){
+                    index_max_element_train = q;
+                    temp_2 = y[q];
+                }
+            }
+            if(index_max_element_target == index_max_element_train){
+                correct_validation++;
+            }
+            operations_validation++;
+        }
+        validation_accuracy = (float)correct_validation/operations_validation;
+        std::cout << " validation Accuracy: " << validation_accuracy << std::endl;
+        //train_accuracy = (float)correct/operations;
+        //std::cout << " train Accuracy: " << train_accuracy << std::endl;
     }
     std::cout << std::endl;
     std::cout << "operations: " << operations << std::endl;
+
+    //evaluating accuracy on test set
+    std::vector<T> temp_test;
+    int correct_test = 0;
+    int operations_test = 0;
+    for(int i = 0; i < model_input.getTest().size(); i++){
+        temp_test = model_input.getTest()[i];
+        extendMatrix(); //before predict call and for every predict in batch
+        predict(temp_test, selection);
+        reduceMatrix(); //after predict call and for every predict in batch
+        index_max_element_target = 0;
+        float temp_1 = model_output.getOutputTest()[i][0];
+        for(int q =1; q<model_output.getOutputTest()[i].size(); q++){
+            if(model_output.getOutputTest()[i][q] > temp_1 ){
+                index_max_element_target = q;
+                temp_1 = model_output.getOutputTest()[i][q];
+            }
+        }
+        index_max_element_train = 0;
+        float temp_2 = y[0];
+        for(int q =1; q<y.size(); q++){
+            if(y[q] > temp_2 ){
+                index_max_element_train = q;
+                temp_2 = y[q];
+            }
+        }
+        if(index_max_element_target == index_max_element_train){
+            correct_test++;
+        }
+        operations_test++;
+    }
+    float test_accuracy = (float)correct_test/operations_test;
+    std::cout << std::endl;
+    std::cout << "Final Accuracy on the TestSet: " << test_accuracy << std::endl;
                 
 }
 

@@ -93,6 +93,9 @@ class Model{
         dE_db[check].resize(model_output.getShapeOutputData());
         z[check].resize(model_output.getShapeOutputData());
         y.resize(model_output.getShapeOutputData());
+        initialiseVector(weights);
+        initialiseVector(bias);
+
 
 
         std::cout << "Model built!" << std::endl;
@@ -126,6 +129,7 @@ class Model{
     void train(int& selection);
     void extendMatrix();
     void reduceMatrix();
+    void initialiseVector(std::vector<std::vector<T>>& default_weights);
     
 
     Input<T> getInput(){return model_input;}
