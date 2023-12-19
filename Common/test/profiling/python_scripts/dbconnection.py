@@ -11,7 +11,7 @@ def upload_new_data():
     db = client['AMSC_PROJECT']
     collection = db['filresult']
 
-    csv_file_path = 'profiling_results.csv'
+    csv_file_path = '../profiling_results.csv'
     data = pd.read_csv(csv_file_path, names=['author', 'id', 'matrix_dimension', 'datatype', 'time [ms]', 'tile_dim', 'misses'], header=None)
 
     # forcing the id to be a string

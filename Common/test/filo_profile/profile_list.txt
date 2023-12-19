@@ -1,4 +1,0 @@
-algorithm, program arguments, compiler optimization, profile misses?
-avx, 1024 0 126,  ../../src/matrixProd_AVX.cpp -mavx2 -mfma -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
-avx, 512 0 126,  ../../src/matrixProd_AVX.cpp -mavx2 -mfma -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
-avx, 256 0 126,  ../../src/matrixProd_AVX.cpp -mavx2 -mfma -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
