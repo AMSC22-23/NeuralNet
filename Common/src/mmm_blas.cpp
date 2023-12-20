@@ -2,7 +2,7 @@
 
 
 
-void mmm_blas(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time) {
+void pullmmm_blas(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time) {
 
     //! Performs C = A*B in single precision using openblas optimized mm multiplication and returns the latency of the operation in variable time
 

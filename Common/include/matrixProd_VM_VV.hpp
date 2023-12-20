@@ -162,7 +162,7 @@ int MatrixBTransposeOptimised(std::vector<T>& a, std::vector<T>& b_transpose, st
 
 
 template<typename T>
-std::vector<T> MatrixTranspose(std::vector<T>& a, size_t m, size_t n){
+std::vector<T> MatrixTranspose( const std::vector<T>& a, size_t m, size_t n){
   std::vector<T> a_transpose;
   a_transpose.resize(m*n);
   for(size_t i = 0; i<m; i++){
