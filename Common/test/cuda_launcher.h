@@ -1,1 +1,0 @@
-void cudaFunction(float *a, float *b, float *c, int m, int n, int nb);

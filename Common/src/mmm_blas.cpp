@@ -1,5 +1,5 @@
 #include "../include/mmm_blas.hpp"
-
+#include <cblas.h>
 
 
 void pullmmm_blas(MatrixFlat<float>& A, MatrixFlat<float>& B, MatrixFlat<float>& C, int64_t& time) {

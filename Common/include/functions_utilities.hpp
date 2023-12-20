@@ -1,6 +1,17 @@
+#ifndef UTILFUNCTIONS_HPP
+#define UTILFUNCTIONS_HPP
+
+//DEFINED IN functions_utilities.cpp in this folder
+
 
 #include <vector>
 
+//@note: it is completely fine to have functions like this one but consider
+//       1. it might be the case to implement a operator+() which is more readable
+//       2. operations like sum(sum(a, b), c) might quickly become expesive, since you
+//          need a for loop for each sum. A possible solution is template expressions
+//@note: since `a` and `b` should not change, it would be better to add `const`
+// these two problems are not limited to here
 template<typename T>
 std::vector<T> sum(std::vector<T>& a, std::vector<T>& b);
 
@@ -42,3 +53,5 @@ void resetVector(std::vector<std::vector<T>>& vector);
 
 template<typename T>
 void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias);
+
+#endif

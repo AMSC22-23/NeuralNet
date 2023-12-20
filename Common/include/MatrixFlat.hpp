@@ -139,6 +139,7 @@ void MatrixFlat<T>::_print(std::ostream &os) const {
 
 template<typename T>
 T &MatrixFlat<T>::operator()(size_t i, size_t j) {
+    //@note: check_indexes is expensive, consider coding also a version that does not have this overhead
     if(check_indexes(i, j) == 1)
         return  m_data[MatrixSkltn<T>::n_cols * i + j];
     std::cerr<<"Error in operator(): indexes "<< i<<", "<< j<< " are not correct.\n"
