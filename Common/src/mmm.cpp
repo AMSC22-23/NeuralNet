@@ -211,6 +211,7 @@ void mmm_multiT(const MatrixFlat<float>& A, const MatrixFlat<float>& B, MatrixFl
 
     const auto t0 = std::chrono::high_resolution_clock::now();
 
+//@note: do not hard code the number of threads
 #pragma omp parallel for shared(A, B, C, rows, columns, inners, tileSize) default(none) \
   collapse(2) num_threads(8)
 

@@ -81,6 +81,7 @@ class MatrixVect : public MatrixSkltn<T> {
     }
   
   private:
+  //@note: why do you need this matrix if you have the MatrixFlat which is better this
   std::vector<std::vector<T>> m_data; 
 
 

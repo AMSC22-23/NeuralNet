@@ -43,6 +43,12 @@ T ReLuActivationDerivative(const T &input) {
     return (input > 0) ? 1 : 0;
 }
 
+//@note: instead of this list of `if` you could either
+//       - use polymorphism and have a base class "ActivationFunction" that must 
+//         implement a "eval" and "eval_der" methods
+//       - this can be done also with static polymorphism if you template upon the
+//         activation function type
+//       - have a struct "ActivationFunction" that has two attibutes that are std::functions
 template <typename T>
 T applyActivationFunction(const T &input, const std::string &activationFunction) {
     if (activationFunction == "linear") {

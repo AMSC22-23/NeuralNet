@@ -102,6 +102,7 @@ class Model{
         std::cout << std::endl;
     }
 
+    //@note: method should be const
     void printWeigts(){
         for(int l=0; l <= layers.size(); l++){
             std::cout << "weights layer " << l+1 <<std::endl;
@@ -123,6 +124,7 @@ class Model{
         std::cout << std::endl;
     }
 
+    //@note: making a prediction should not change the input
     void predict(std::vector<T>& input, int& selection); //this version need to be called only after the resizing of the weights
     void predict(std::vector<T>& input, int& selection, int flag);
     void backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int& selection);
@@ -131,7 +133,7 @@ class Model{
     void reduceMatrix();
     void initialiseVector(std::vector<std::vector<T>>& default_weights);
     
-
+    //@note: method should be const
     Input<T> getInput(){return model_input;}
     Output<T> getOutput(){return model_output;}
 
