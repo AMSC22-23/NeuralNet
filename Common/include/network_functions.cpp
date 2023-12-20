@@ -508,7 +508,7 @@ void Model<T>::train(int& selection){
     std::cout << "operations: " << operations << std::endl;
 
     //evaluating accuracy on test set
-    std::vector<T> temp_test;
+    /**std::vector<T> temp_test;
     int correct_test = 0;
     int operations_test = 0;
     for(int i = 0; i < model_input.getTest().size(); i++){
@@ -539,7 +539,7 @@ void Model<T>::train(int& selection){
     }
     float test_accuracy = (float)correct_test/operations_test;
     std::cout << std::endl;
-    std::cout << "Final Accuracy on the TestSet: " << test_accuracy << std::endl;
+    std::cout << "Final Accuracy on the TestSet: " << test_accuracy << std::endl;**/
                 
 }
 

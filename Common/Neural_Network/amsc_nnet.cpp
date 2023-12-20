@@ -4,6 +4,8 @@
 #include <sstream>
 #include <tuple>
 
+// Function to generate fake data for testing
+
 void genFakeData(std::vector<std::vector<float>>& a, int rows, int cols){
     for (int i = 0; i < rows; ++i) {
         std::vector<float> row;
@@ -13,6 +15,8 @@ void genFakeData(std::vector<std::vector<float>>& a, int rows, int cols){
         a.push_back(row);
     }
 }
+
+//**************FUNCTIONS NECESSARY FOR LOADING IRIS.CSV*****************//
 
 // Tuple to represent a row of Iris data
 // Each tuple contains 4 doubles (SepalLengthCm, SepalWidthCm, PetalLengthCm, PetalWidthCm) 
@@ -107,7 +111,7 @@ std::tuple<std::vector<IrisTuple>, std::vector<IrisTuple>, std::vector<IrisTuple
 
     }
 
-    // Close the file
+    
     file.close();
 
     for (const auto& vect : AllData) {
@@ -121,7 +125,7 @@ std::tuple<std::vector<IrisTuple>, std::vector<IrisTuple>, std::vector<IrisTuple
         auto normalizedPW = normalize(vect[3], min, max);
         auto code = vect[4];
 
-        // Represent the species in one-hot encoding format
+        
         if (code == 1.0f) {
             species_tuple = std::make_tuple(1, 0, 0);
             data = std::make_tuple(normalizedSL, normalizedSW, normalizedPL, normalizedPW, species_tuple);
@@ -194,6 +198,8 @@ getIrisSets(const std::tuple<std::vector<IrisTuple>, std::vector<IrisTuple>, std
     return std::make_tuple(train_set, train_out, val_set, val_out, test_set, test_out);
 }
 
+//********************MAIN FUNCTION***********************//
+
 
 int main(){
 
@@ -204,6 +210,7 @@ int main(){
     auto result = readIrisData("Iris.csv");
     auto split_result = getIrisSets(result, 0.6, 0.2, 0.2);
 
+    //RETRIVING .CSV DATA
     trainSet = std::get<0>(split_result);
     trainOut = std::get<1>(split_result);
     validationSet = std::get<2>(split_result);
@@ -220,124 +227,32 @@ int main(){
         std::cout << std::endl;
     }
 
-    
-
-    // Ottenere i vettori dalla tupla risultante
-    /**std::vector<IrisTuple> vector1 = std::get<0>(result);
-    std::vector<IrisTuple> vector2 = std::get<1>(result);
-    std::vector<IrisTuple> vector3 = std::get<2>(result);
-
-    std::cout << "Setosa: " << vector1.size() << std::endl;
-    std::cout << "Versicolor: " << vector2.size() << std::endl;
-    std::cout << "Virginica: " << vector3.size() << std::endl;
-
-    // Ottenere i vettori di tuple dalla tupla risultante
-    std::tuple<int, int, int> target1 = std::get<4>(vector1[0]);
-    std::cout << "Target: " << std::get<0>(target1) << " " << std::get<1>(target1) << " " << std::get<2>(target1) << std::endl;
-
-
-    std::vector<std::vector<float>> firstFourElements;
-    std::vector<std::vector<float>> tupleElements;
-
-    for (const auto& iris : vector1) {
-        std::vector<float> firstFour = {std::get<0>(iris), std::get<1>(iris), std::get<2>(iris), std::get<3>(iris)};
-        firstFourElements.push_back(firstFour);
-
-        const auto& innerTuple = std::get<4>(iris);
-        std::vector<float> tupleValues = {static_cast<float>(std::get<0>(innerTuple)),
-                                          static_cast<float>(std::get<1>(innerTuple)),
-                                          static_cast<float>(std::get<2>(innerTuple))};
-        tupleElements.push_back(tupleValues);
-    }
-
-    for (const auto& iris : vector2) {
-        std::vector<float> firstFour = {std::get<0>(iris), std::get<1>(iris), std::get<2>(iris), std::get<3>(iris)};
-        firstFourElements.push_back(firstFour);
-
-        const auto& innerTuple = std::get<4>(iris);
-        std::vector<float> tupleValues = {static_cast<float>(std::get<0>(innerTuple)),
-                                          static_cast<float>(std::get<1>(innerTuple)),
-                                          static_cast<float>(std::get<2>(innerTuple))};
-        tupleElements.push_back(tupleValues);
-    }
-
-    for (const auto& iris : vector3) {
-        std::vector<float> firstFour = {std::get<0>(iris), std::get<1>(iris), std::get<2>(iris), std::get<3>(iris)};
-        firstFourElements.push_back(firstFour);
-
-        const auto& innerTuple = std::get<4>(iris);
-        std::vector<float> tupleValues = {static_cast<float>(std::get<0>(innerTuple)),
-                                          static_cast<float>(std::get<1>(innerTuple)),
-                                          static_cast<float>(std::get<2>(innerTuple))};
-        tupleElements.push_back(tupleValues);
-    }**/
-
-    /**std::cout << "First four elements: " << firstFourElements.size() << std::endl;
-    std::cout << "Tuple elements: " << tupleElements.size() << std::endl;
-
-    std::cout << "First four elements: " << std::endl;
-    for (const auto& element : firstFourElements) {
-        std::cout << element[0] << " " << element[1] << " " << element[2] << " " << element[3] << std::endl;
-    }
-    std::cout << std::endl;
-    std::cout << "Tuple elements: " << std::endl;
-    for (const auto& element : tupleElements) {
-        std::cout << element[0] << " " << element[1] << " " << element[2] << std::endl;
-    }**/  
-
-
-    // Creare i set di addestramento, validazione e test
-    //auto iris_sets = getIrisSets(result, 0.6, 0.2, 0.2);  
-
-
-
-    /**genFakeData(trainSet, 101, 5);
+   
+    /**genFakeData(trainSet, 101, 5);   //DEBUG DATA
     genFakeData(validationSet, 50, 5);
     genFakeData(testSet, 20, 5);
     genFakeData(trainOut, 101, 3);
     genFakeData(validationOut, 50, 3);
     genFakeData(testOut, 20, 3);**/
 
-    //Input input(trainSet, validationSet, testSet);
+    //CREATING MODEL
     Input input(trainSet, validationSet, testSet);
-    //Output output(trainOut, validationOut, testOut, "sigmoid");
     Output output(trainOut, validationOut, testOut, "sigmoid");
     Layer layer1("prova", 128, "ReLu"), layer2("prova2", 70, "ReLu"), layer3("prova3", 10, "ReLu");
     Model model("Modello",200, 16, 0.05, "MSE", input, output, "early_stop");
     std::vector<float> faketest = {0.5,0.6,0.8};
+    
     model.addLayer(layer1);
     //model.addLayer(layer2);
     //model.addLayer(layer3);
 
-
-    //Input<float> input2(model.getInput());
-    //Output<float> output2(model.getOutput());
-
-    /**input.printShape();
-    std::cout << std::endl;
-    output.printShape();
-    std::cout << std::endl;
-    input2.printShape();
-    std::cout << std::endl;
-    layer1.printLayer();
-    std::cout << std::endl;
-    model.printLayers();**/
-
     model.buildModel();
 
-    //model.printWeigts();
-
-    //model.predict(trainSet[0], a, 1);
-
-    //model.extendMatrix();
-    //model.predict(trainSet[0], a);
-    //model.reduceMatrix();
-
-    //model.backPropagation(trainSet[0], faketest, a);
+    //model.printWeigts(); //DEBUG
 
     model.train( a);
 
-    //model.printWeigts();
+    //model.printWeigts();  //DEBUG
   
 
 

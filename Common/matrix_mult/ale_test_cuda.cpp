@@ -28,7 +28,7 @@
 #include <immintrin.h> //intrinsics intel per SIMD
 #include "cuda_launcher.h"
 
-
+//***********UTILITIES*****************
 
 void printFile(std::ofstream& file, int id, size_t m, size_t n, int T, int64_t& time){
     if(T==0){
@@ -66,22 +66,9 @@ void generateStandardMatrix(std::vector<T>& a, size_t m, size_t n){
             }
         }
 }
-/**
-void proveCuda(float *a, float *b, float *c, int m){
-    std::cout << "vediamo se funziona " << a[0] << " " << b[0] <<std::endl;
-    cudaMallocManaged((void **) &a, sizeof(float)*m);
-    cudaMallocManaged((void **) &b, sizeof(float)*m);
-    cudaMallocManaged((void **) &c, sizeof(float)*m);
-
-    std::cout << "salvate in teoria..." << std::endl;
-
-    cudaFree(a);
-    cudaFree(b);
-    cudaFree(c);
-
-}**/
 
 
+//***********************MAIN FUNCTION*************************
 
 int main(){
 using namespace std::chrono;
@@ -129,7 +116,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
     mat1fAVX.resize((m+i)*(n+d));
     mat1BfAVX.resize((mb+ib)*(nb+db));
 
-    //generateStandardMatrix(mat1, m, n);
+    //generateStandardMatrix(mat1, m, n);  //DEBUG MATRIX
     //generateStandardMatrix(mat1f, m, n);
     //generateStandardMatrix(mat1Bf, mb, nb);
     //generateStandardMatrix(mat1B, mb, nb);
@@ -140,17 +127,6 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
     b = mat1Bf.data();
     c = resf.data();
     
-
-    //cudaFunction(a,b,c,m,n,nb);
-    //cudaLauncher(a, b, c, m, n, nb);
-/**
-    for(int r=0; r<20 ; r++){
-        for(int rr=0; rr<20; rr++){
-            std::cout << c[rr+r*nb] << " ";
-        }
-        std::cout << std::endl;
-    }**/
-
 
     //printMatrixToFile(00, outputMatrixFile, mat1Bf, mb ,nb);
 
@@ -192,7 +168,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
     mat1B_transpose = MatrixTranspose(mat1B, mb, nb);
     mat1B_transposeAVX = MatrixTranspose(mat1BAVX, mb+ib, nb+db);
 
-    //printMatrixToFile(1, outputMatrixFile, mat1, m ,n);
+    //printMatrixToFile(1, outputMatrixFile, mat1, m ,n);  //DEBUG PRINT
     //printMatrixToFile(2, outputMatrixFile, mat1fAVX, m+i ,n+d);
     //printMatrixToFile(11, outputMatrixFile, mat1f_transposeAVX, n+d ,m+i);
     //printMatrixToFile(20, outputMatrixFile, mat1BfAVX, mb+ib ,nb+db);
@@ -207,12 +183,15 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
 
     }
 
-    cudaFunction(a,b,c,m,n,nb);
+    cudaFunction(a,b,c,m,n,nb);  //CUDA FINCTIONS ENTRY POINT***************
+
+    // UNCOMMENT THE FOLLOWING FUNCTIONS IF YOU NEED A COMPARISON WITH CPU FUNCTIONS
+    // (if you do not want to loose time withe havy matrix and slow algorithm uncomment only necessary functions)
 
 
-    res.resize(m*nb);
+    /**res.resize(m*nb);
     res.assign(m*nb,0);
-    //id = MatrixNaive(mat1, mat1B, res, m,n,nb, t1);
+    id = MatrixNaive(mat1, mat1B, res, m,n,nb, t1);
     std::cout<<std::endl;
     //std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
     //printFile(outputFile,id+comp_opt,m,nb,1,t1);
@@ -221,7 +200,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
    
     res.resize(m*nb);
     res.assign(m*nb,0);
-    //id = MatrixRegOptimised(mat1, mat1B, res, m,n,nb, t1);
+    id = MatrixRegOptimised(mat1, mat1B, res, m,n,nb, t1);
     std::cout<<std::endl;
     //std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
     //printFile(outputFile,id+comp_opt,m,nb,1,t1);
@@ -240,7 +219,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
 
     res.resize(m*nb);
     res.assign(m*nb,0);
-    //id = MatrixBTransposeOptimised(mat1, mat1B_transpose, res, m,n,nb, t1);
+    id = MatrixBTransposeOptimised(mat1, mat1B_transpose, res, m,n,nb, t1);
     std::cout<<std::endl;
     //std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
     //printFile(outputFile,id+comp_opt,m,nb,1,t1);
@@ -249,7 +228,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
     
     res.resize((m+i)*(nb+db));
     res.assign((m+i)*(nb+db), 0);
-    //id = matrixMult_Avx(mat1AVX, mat1BAVX, res, m+i,n+d,nb+db, t1);
+    id = matrixMult_Avx(mat1AVX, mat1BAVX, res, m+i,n+d,nb+db, t1);
     std::cout<<std::endl;
     //std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
     //printFile(outputFile,id+comp_opt,m+i,nb+db,1,t1);
@@ -270,7 +249,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
     
     resf.resize(m*nb);
     resf.assign(m*nb,0);
-    //id = MatrixNaive(mat1f, mat1Bf, resf, m,n,nb, t1);
+    id = MatrixNaive(mat1f, mat1Bf, resf, m,n,nb, t1);
     std::cout<<std::endl;
     //std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
     //printFile(outputFile,id+comp_opt,m,nb,0,t1);
@@ -278,7 +257,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
     //printMatrixToFile(id, outputMatrixFile, resf, m, nb);
     
     resf.assign(m*nb,0);
-    //id = MatrixRegOptimised(mat1f, mat1Bf, resf, m,n,nb, t1);
+    id = MatrixRegOptimised(mat1f, mat1Bf, resf, m,n,nb, t1);
     std::cout<<std::endl;
     //std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
     //printFile(outputFile,id+comp_opt,m,nb,0,t1);
@@ -296,7 +275,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
     //printMatrixToFile(id, outputMatrixFile, resf, m, nb);
     
     resf.assign(m*nb, 0);
-    //id = MatrixBTransposeOptimised(mat1f, mat1Bf_transpose, resf, m,n,nb, t1);
+    id = MatrixBTransposeOptimised(mat1f, mat1Bf_transpose, resf, m,n,nb, t1);
     std::cout<<std::endl;
     //std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
     //printFile(outputFile,id+comp_opt,m,nb,0,t1);
@@ -308,7 +287,7 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
 
     resf.resize((m+i)*(nb+db));
     resf.assign((m+i)*(nb+db), 0);
-    //id = matrixMult_Avx(mat1fAVX, mat1BfAVX, resf, m+i,n+d,nb+db, t1);
+    id = matrixMult_Avx(mat1fAVX, mat1BfAVX, resf, m+i,n+d,nb+db, t1);
     std::cout<<std::endl;
     //std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
     //printFile(outputFile,id+comp_opt,m+i,nb+db,0,t1);
@@ -325,10 +304,10 @@ std::cout << "valori degli offset: " << i <<d <<ib<<db << std::endl;
     std::cout << "funzione: " << id << " tempo: " << t1 << " ms" << std::endl;
      printFile(outputFile,id+comp_opt,m+i,nb+db,0,t1);
     std::cout<<std::endl;
-    //printMatrixToFile(id, outputMatrixFile, resf, m+i, nb+db);
+    //printMatrixToFile(id, outputMatrixFile, resf, m+i, nb+db);**/
 
     /**
-    for(int r=0; r<20 ; r++){
+    for(int r=0; r<20 ; r++){       //DEBUG PRINT
         for(int rr=0; rr<20; rr++){
             std::cout << resf[rr+i+r*(nb+db)] << " ";
         }

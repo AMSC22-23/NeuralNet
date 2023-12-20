@@ -1,3 +1,8 @@
+#ifndef UTILFUNCTIONS_HPP
+#define UTILFUNCTIONS_HPP
+
+//DEFINED IN functions_utilities.cpp in this folder
+
 
 #include <vector>
 
@@ -42,3 +47,5 @@ void resetVector(std::vector<std::vector<T>>& vector);
 
 template<typename T>
 void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias);
+
+#endif
