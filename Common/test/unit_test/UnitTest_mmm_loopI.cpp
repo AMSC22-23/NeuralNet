@@ -55,7 +55,7 @@ int main(int argc, char ** argv){
     mmm_blas(Af, Bf, Cblasf, time);
     std::cout<<"The same operation using openBlas took: "<<time<< " [ms]"<<std::endl;
     std::cout<<"We check if the result is the same: "<<std::endl;
-    std::cout<<"nnz(C-Cblas): "<<(Cblas-C).nnzrs()<<std::endl;
+    std::cout<<"nnz(C-Cblas): "<<(Cblasf-Cf).nnzrs()<<std::endl;
 
     std::cout<<"-----------------------------------------------------------------------"<<std::endl;
 

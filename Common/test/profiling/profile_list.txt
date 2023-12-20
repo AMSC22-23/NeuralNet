@@ -1,3 +1,2 @@
 algorithm, program arguments, compiler optimization, profile misses?
-o_blas, 8192 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
-o_blas, 4096 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
+gmultiT, 1024 0 128 32 8, -O3 -march=native -ffast-math -funroll-loops -ftracer ,0

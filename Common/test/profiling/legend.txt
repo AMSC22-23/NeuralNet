@@ -12,7 +12,7 @@
     X = 5 -> openblas
     x = 6 -> avx
     x = 7 -> avxT
-
+    x = 8 -> gmultiT
 To profile avx e avxt:
 avx, 1024 1 126,  ../../src/matrixProd_AVX.cpp -mavx2 -mfma -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
 avxT, 1024 0 127, ../../src/matrixProd_AVX.cpp ../../include/matrixProd_VM_VV.hpp -mavx2 -mfma -O3 -march=native -ffast-math -funroll-loops -ftracer ,1

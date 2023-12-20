@@ -84,6 +84,19 @@ UnitTest_mmm_multiT.o: UnitTest_mmm_multiT.cpp
 	@echo "Compiling UnitTest_mmm_multiT.cpp..."
 	@g++ -fopenmp UnitTest_mmm_multiT.cpp -c ${FLAG1X1}
 
+
+# making of new_multiT.cpp
+
+new_multiT: new_multiT.o mmm.o mmm_blas.o
+	@echo "Linking..."
+	@g++ -fopenmp new_multiT.o mmm.o mmm_blas.o -o new_multiT ${CFLAG} ${FLAG1X1}
+	@echo "Done! To run the test call ./new_multiT MATRIXDIM TILE_SIZE"
+
+new_multiT.o: new_multiT.cpp
+	@echo "Compiling new_multiT.cpp..."
+	@g++ -fopenmp new_multiT.cpp -c ${FLAG1X1}
+
+
 #mmm_blas.o: ../../src/mmm_blas.cpp
 #	@echo "Compiling mmm_blas.cpp..."
 #	@g++ -fopenmp ../../src/mmm_blas.cpp -c ${FLAG1X1}
