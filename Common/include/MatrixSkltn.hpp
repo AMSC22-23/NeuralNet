@@ -47,7 +47,9 @@
 
 
 
-
+    //@note: does it really make sense for this to be a method of a matrix?
+    //       if we do not need the state of the object you can either define the method
+    //       as static or make it a free function
     template<typename T> 
     void MatrixSkltn<T>::generate_random_vector(T a, T b, std::vector<T>& vct, int seed){
 

@@ -146,6 +146,7 @@ class Layer{
         std::cout << "Layer: " << name << " ,number of neurons: " << neurons << " ,activation function: " << act_funct << std::endl;
     }
 
+    //@note: method should be const
     int getNeurons() {return neurons;}
     std::string getActFun() {return act_funct;};
     private:

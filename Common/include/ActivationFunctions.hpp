@@ -41,9 +41,13 @@ T applyActivationFunctionDerivative(const T &input, const std::string &activatio
 template<typename T>
 void mseDerivative(std::vector<T>& y, std::vector<T>& target, std::vector<T>& dE_dy);
 
+//@note: it is worth it to pass an object by reference if its size is less than one word
+// of memory, for ints of normal laptops you usually have that sizeof(int) == 4 and one 
+// word of memory has size 8, so it is better to pass by copy
 template<typename T>
 std::vector<T> transposeMatrix(std::vector<T>& matrix, int& m, int& n);
 
+//@note: should pass the string by const reference
 template<typename T>
 void applyLossFunction(std::vector<T>& y, std::vector<T>& target, std::vector<T>& dE_dy, std::string& lossFunction);
 
