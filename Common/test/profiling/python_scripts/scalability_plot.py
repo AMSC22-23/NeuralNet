@@ -7,7 +7,7 @@ def scalability_plot(collection):
 
     # we query all entries where id = 128 and threads is a power of 2
 
-    query = {"id": "128", "threads": {"$mod": [2, 0]}, "matrix_dimension": "1024X1024"}
+    query = {"id": "128", "threads": {"$mod": [2, 0]}, "matrix_dimension": "4000X4000"}
 
 
 

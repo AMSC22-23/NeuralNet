@@ -63,6 +63,8 @@ def id_to_name(ids):
             result.append('avx')
         elif last_digit == 7:
             result.append('avxT')
+        elif last_digit == 8:
+            result.append('gmultiT')
         else:
             result.append('unknown')
     return result
