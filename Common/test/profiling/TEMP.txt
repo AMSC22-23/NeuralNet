@@ -1,37 +1,30 @@
-==19150== Cachegrind, a cache and branch-prediction profiler
-==19150== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
-==19150== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==19150== Command: ./gmultiT 3000 0 128 256 64 1
-==19150== Parent PID: 19149
-==19150== 
---19150-- warning: L3 cache found, using its data for the LL simulation.
-==19150== 
-==19150== Process terminating with default action of signal 2 (SIGINT)
-==19150==    at 0x4026B16: __open_nocancel (open64_nocancel.c:39)
-==19150==    by 0x4007658: open_verify.constprop.1 (dl-load.c:1626)
-==19150==    by 0x400A5B3: _dl_map_object (dl-load.c:2265)
-==19150==    by 0x40203D8: map_doit (rtld.c:666)
-==19150==    by 0x401D349: _dl_catch_exception (dl-error-skeleton.c:208)
-==19150==    by 0x401D3F2: _dl_catch_error (dl-error-skeleton.c:227)
-==19150==    by 0x4021820: handle_preload_list (rtld.c:841)
-==19150==    by 0x4024AB8: dl_main (rtld.c:1847)
-==19150==    by 0x401F83B: _dl_sysdep_start (dl-sysdep.c:256)
-==19150==    by 0x4021597: _dl_start (rtld.c:507)
-==19150==    by 0x4020297: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
-==19150==    by 0x6: ???
-==19150== 
-==19150== I   refs:      59,986
-==19150== I1  misses:       415
-==19150== LLi misses:       415
-==19150== I1  miss rate:   0.69%
-==19150== LLi miss rate:   0.69%
-==19150== 
-==19150== D   refs:      12,276  (10,830 rd   + 1,446 wr)
-==19150== D1  misses:       359  (   239 rd   +   120 wr)
-==19150== LLd misses:       359  (   239 rd   +   120 wr)
-==19150== D1  miss rate:    2.9% (   2.2%     +   8.3%  )
-==19150== LLd miss rate:    2.9% (   2.2%     +   8.3%  )
-==19150== 
-==19150== LL refs:          774  (   654 rd   +   120 wr)
-==19150== LL misses:        774  (   654 rd   +   120 wr)
-==19150== LL miss rate:     1.1% (   0.9%     +   8.3%  )
+==31458== Cachegrind, a cache and branch-prediction profiler
+==31458== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==31458== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==31458== Command: ./gmultiT 1000 1 128 1 30 1
+==31458== Parent PID: 31457
+==31458== 
+--31458-- warning: L3 cache found, using its data for the LL simulation.
+==31458== 
+==31458== Process terminating with default action of signal 2 (SIGINT)
+==31458==    at 0x70C4117: __futex_abstimed_wait_cancelable64 (futex-internal.c:57)
+==31458==    by 0x70C6A40: pthread_cond_wait@@GLIBC_2.3.2 (pthread_cond_wait.c:503)
+==31458==    by 0x4BD98EA: ??? (in /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so)
+==31458==    by 0x70C7AC2: start_thread (pthread_create.c:442)
+==31458==    by 0x7158813: clone (clone.S:100)
+==31458== 
+==31458== I   refs:      22,487,124,737
+==31458== I1  misses:             3,314
+==31458== LLi misses:             3,087
+==31458== I1  miss rate:           0.00%
+==31458== LLi miss rate:           0.00%
+==31458== 
+==31458== D   refs:      13,553,287,668  (8,751,949,445 rd   + 4,801,338,223 wr)
+==31458== D1  misses:        19,433,182  (   18,765,471 rd   +       667,711 wr)
+==31458== LLd misses:           642,929  (      226,669 rd   +       416,260 wr)
+==31458== D1  miss rate:            0.1% (          0.2%     +           0.0%  )
+==31458== LLd miss rate:            0.0% (          0.0%     +           0.0%  )
+==31458== 
+==31458== LL refs:           19,436,496  (   18,768,785 rd   +       667,711 wr)
+==31458== LL misses:            646,016  (      229,756 rd   +       416,260 wr)
+==31458== LL miss rate:             0.0% (          0.0%     +           0.0%  )

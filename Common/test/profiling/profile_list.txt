@@ -1,5 +1,3 @@
 algorithm, program arguments, compiler optimization, profile misses?
-gmultiT, 256 1 128 4 64, -O3 -march=native -ffast-math -funroll-loops -ftracer -fopenmp,0
-gmultiT, 512 1 128 4 64, -O3 -march=native -ffast-math -funroll-loops -ftracer -fopenmp,0
-gmultiT, 1024 1 128 4 64, -O3 -march=native -ffast-math -funroll-loops -ftracer -fopenmp,0
-gmultiT, 2048 1 128 4 64, -O3 -march=native -ffast-math -funroll-loops -ftracer -fopenmp,0
+gmultiT, 1000 1 128 1 20, -fopenmp,0
+gmultiT, 1000 1 128 1 30, -fopenmp,1

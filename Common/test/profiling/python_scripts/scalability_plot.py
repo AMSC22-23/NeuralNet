@@ -7,14 +7,25 @@ def scalability_plot(collection):
 
     # we query all entries where id = 128 and threads is a power of 2
 
-    query = {"id": "128", "threads": {"$mod": [2, 0]}, "matrix_dimension": "4000X4000"}
+    #query = {"id": "128", "threads": {"$mod": [2, 0]}, "matrix_dimension": "2048X2048"}
 
+    # we queray all entries wehere threads is less then 8 or equal to 8
+    query = {"id": "128", "threads": {"$lte": 15}, "matrix_dimension": "1000X1000"}
 
 
     gmultiT = collection.find(query)
 
     # convert to dataframe
     gmultiT = pd.DataFrame(list(gmultiT))
+
+    # we consider duplicates all the entries with the same number of threads
+    # for each duplicate we take the one that has the lowest time
+
+    gmultiT = gmultiT.sort_values(by=['time [ms]'])
+    gmultiT = gmultiT.drop_duplicates(subset=['threads'])
+
+
+
 
     # we consider duplicates all the entries with the same number of threads
     # for each duplicate we take the one that has the lowest time
