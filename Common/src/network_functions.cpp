@@ -1,7 +1,7 @@
-#include "model.hpp"
-#include "matrixProd_VM_VV.hpp"
-#include "ActivationFunctions.hpp"
-#include "functions_utilities.hpp"
+#include "../include/model.hpp"
+#include "../include/matrixProd_VM_VV.hpp"
+#include "../include/ActivationFunctions.hpp"
+#include "../include/functions_utilities.hpp"
 #include <algorithm>
 #include <random>
 
