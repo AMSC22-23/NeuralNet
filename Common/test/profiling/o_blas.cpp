@@ -51,7 +51,8 @@ int main(int argc, char ** argv){
         std::string type = (T == 0) ? "float" : "double";
         std::string matrixDim = std::to_string(dim) + "X" + std::to_string(dim);
         std::string tile_size = "-1";  // -1 because we are not using tiles
-        appendCSVRow({"FM", id, matrixDim, type, std::to_string(time), tile_size});
+        appendCSVRow({"FM", id, matrixDim, type, std::to_string(time),
+                      "", "1"});
     }
 
     return 0;

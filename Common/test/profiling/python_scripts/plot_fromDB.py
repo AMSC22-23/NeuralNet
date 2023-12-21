@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 #conncetion to the database
-from pymongo import  MongoClient
+from pymongo import MongoClient
 from dbconnection import upload_new_data
 
 
@@ -19,7 +19,7 @@ upload_new_data()
 
 # we now connect to the database
 client = MongoClient('mongodb://localhost:27017/')
-db = client['AMSC_PROJECT']  # Cambia con il nome del tuo database
+db = client['AMSC_PROJECT']
 collection = db['filresult']
 
 
@@ -103,9 +103,9 @@ def misses_bar_plot(include_naive=False):
 
     # saving the plot
     if not include_naive:
-        plt.savefig('../plot/misses_float.png')
+        plt.savefig('plot/misses_float.png')
     else:
-        plt.savefig('../plot/misses_float_no_naive.png')
+        plt.savefig(' plot/misses_float_no_naive.png')
 
 
     plt.close()
@@ -126,7 +126,7 @@ def misses_bar_plot(include_naive=False):
     plt.title('Misses for each algorithm on square 1024 matrices on double datatype')
 
     # saving the plot
-    plt.savefig('../plot/misses_double.png')
+    plt.savefig(' plot/misses_double.png')
 
 
     plt.close()
@@ -205,7 +205,7 @@ def time_complexity_plot(algorithm_id):
 
     # saving the plot
     plt.legend()
-    plt.savefig('../plot/time_complexity_' + algorithm_id + '.png')
+    plt.savefig(' plot/time_complexity_' + algorithm_id + '.png')
 
     plt.close()
     # saving the plot
@@ -281,7 +281,7 @@ def plot_effect_of_different_tilesize():
     ax2.grid()
 
     #saving the plot
-    plt.savefig('../plot/tilesize_effect_float.png')
+    plt.savefig(' plot/tilesize_effect_float.png')
 
 
     plt.close()
@@ -352,7 +352,7 @@ def plot_effect_of_different_tilesize():
     ax2.grid()
 
     # saving the plot
-    plt.savefig('../plot/tilesize_effect_double.png')
+    plt.savefig(' plot/tilesize_effect_double.png')
 
 
 
@@ -433,7 +433,7 @@ def plot_time_complexity(dtype):
 
     plt.title('Time complexity of algorithms on ' + dtype + ' datatype')
 
-    plt.savefig('../plot/time_complexity_' + dtype + '.png')
+    plt.savefig(' plot/time_complexity_' + dtype + '.png')
 
 #plot_time_complexity('double')
 #plot_time_complexity('float')
@@ -472,7 +472,7 @@ def plot_time_tiling_multiT(data_type):
     plt.xlabel('Matrix dimension')
     plt.ylabel('time [ms]')
     plt.title('Time complexity of tiling and multiT algorithms on ' + data_type + ' datatype')
-    plt.savefig('../plot/time_complexity_tiling_multiT_' + data_type + '.png')
+    plt.savefig('plot/time_complexity_tiling_multiT_' + data_type + '.png')
     plt.close()
 
 plot_time_tiling_multiT('float')

@@ -49,7 +49,8 @@ int main(int argc, char ** argv){
     if(!cache_grind_run) {
         std::string type = (T == 0) ? "float" : "double";
         std::string matrixDim = std::to_string(dim) + "X" + std::to_string(dim);
-        appendCSVRow({"FM", id, matrixDim, type, std::to_string(time)});
+        appendCSVRow({"FM", id, matrixDim, type, std::to_string(time),
+                     "", ""});
     }
 
     return 0;

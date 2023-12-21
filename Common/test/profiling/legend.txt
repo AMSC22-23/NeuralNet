@@ -4,6 +4,10 @@
 12X:  -O3 -march=native -ffast-math -funroll-loops -ftracer
 13X:  -03 -march=native -ffast-math -fmodulo-sched -fmodulo-sched-allow-regmoves  // this is software pipelining
 14X:  -O3 -march=native -ffast-math -funroll-loops -ftracer -fmodulo-sched -fmodulo-sched-allow-regmoves
+15X:  -O0
+16X:  -O1
+17X:  -O2
+18X:  -O3
 
     X = 1 -> naive
     X = 2 -> loopI
@@ -13,6 +17,9 @@
     x = 6 -> avx
     x = 7 -> avxT
     x = 8 -> gmultiT
+
+
+
 To profile avx e avxt:
 avx, 1024 1 126,  ../../src/matrixProd_AVX.cpp -mavx2 -mfma -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
 avxT, 1024 0 127, ../../src/matrixProd_AVX.cpp ../../include/matrixProd_VM_VV.hpp -mavx2 -mfma -O3 -march=native -ffast-math -funroll-loops -ftracer ,1

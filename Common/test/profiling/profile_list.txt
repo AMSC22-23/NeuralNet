@@ -1,2 +1,6 @@
 algorithm, program arguments, compiler optimization, profile misses?
-gmultiT, 1024 0 128 32 8, -O3 -march=native -ffast-math -funroll-loops -ftracer ,0
+o_blas, 1000 0 125, -O0 , 0
+o_blas, 2000 0 125, -O0 , 0
+o_blas, 3000 0 125, -O0 , 0
+o_blas, 4000 0 125, -O0 , 0
+o_blas, 5000 0 125, -O0 , 0
