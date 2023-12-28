@@ -4,6 +4,44 @@
 #include "../include/functions_utilities.hpp"
 #include <algorithm>
 #include <random>
+#include <iomanip>
+
+//***************************************************************************************************************************
+//This finction tacke as input the train and the output data and shuffle them
+
+template<typename T>
+void shuffleData(std::vector<std::vector<T>>& firstSet, std::vector<std::vector<T>>& secondSet){
+    if(firstSet.size() != secondSet.size()){
+        std::cout << "Error: the two set have different size" << std::endl;
+        return;
+    }
+    std::vector<std::vector<T>> temp1, temp2;
+    std::vector<int> index;
+    //std::random_device rd;  //aumento la qualità random ma seed non fisso
+    //std::mt19937 g(rd());
+    std::mt19937 g(44); //seed fisso
+    index.resize(firstSet.size());
+    std::iota(index.begin(), index.end(), 0);
+    std::shuffle(index.begin(), index.end(), g);
+
+    temp1.resize(firstSet.size());
+    temp2.resize(firstSet.size());
+
+    for(int i = 0; i < firstSet.size(); i++){
+        temp1[i].resize(firstSet[i].size());
+        temp2[i].resize(secondSet[i].size());
+        temp1[i] = firstSet[index[i]];
+        temp2[i] = secondSet[index[i]];
+    }
+    firstSet = temp1;
+    secondSet = temp2;
+    
+}
+
+template void shuffleData<float>(std::vector<std::vector<float>>& firstSet, std::vector<std::vector<float>>& secondSet);
+template void shuffleData<double>(std::vector<std::vector<double>>& firstSet, std::vector<std::vector<double>>& secondSet);
+
+
 
 template<typename T>
 void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias){
@@ -19,21 +57,106 @@ void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<
 template void incrementweightsBias<float>(std::vector<std::vector<float>>& old_weights, std::vector<std::vector<float>>& old_bias, std::vector<std::vector<float>>& new_weights, std::vector<std::vector<float>>& new_bias);
 template void incrementweightsBias<double>(std::vector<std::vector<double>>& old_weights, std::vector<std::vector<double>>& old_bias, std::vector<std::vector<double>>& new_weights, std::vector<std::vector<double>>& new_bias);
 
+//******************************************************************************************************************************************
+//This function initialize the weights and the bias of the model, different model of initialization available 
+//setting different values for the variable weights_model:
+
+/*  1) DEFAULT CHOICE "Normal_Distribution"  Gaussian 0 mean and standard deviation 1 normal distribution
+    2) "Uniform_distribution" Gaussian uniform distribution, 0 mean and 1 STD
+    3) "He" optimized for ReLu Activadion Functions
+    4) "Xavier" optimized for non ReLu Activetion Functions or Marvel's fans
+    5) "Glorot"
+    6) "debug" define weights with rows filled by the same value equal to row number +1 use for debug reasons */
 
 template<typename T>
-void Model<T>::initialiseVector(std::vector<std::vector<T>>& default_weights){
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::normal_distribution<float> distribution(0.0, 0.1); // Distribuzione normale con media 0 e deviazione standard 0.1
+void Model<T>::initialiseVector(std::vector<std::vector<T>>& default_weights, const std::string& weights_model){
+    if(weights_model == "Normal_Distribution"){
+        //std::random_device rd;   //seed variabile
+        //std::mt19937 gen(rd());
+        std::mt19937 gen(44); //seed fisso
+        std::normal_distribution<T> distribution(0.0, 0.1); // Distribuzione normale con media 0 e deviazione standard 0.1
 
-    for (auto& row : default_weights) {
-        for (T& weight : row) {
-            weight = distribution(gen);
+        for (auto& row : default_weights) {
+            for (T& weight : row) {
+                weight = distribution(gen);
+            }
+        }   
+
+    }
+    else if(weights_model == "Uniform_Distribution"){
+        //std::random_device rd;   //seed variabile
+        //std::mt19937 gen(rd());
+        std::mt19937 gen(44); //seed fisso
+        std::uniform_real_distribution<T> distribution(0.0, 0.1); // Distribuzione normale con media 0 e deviazione standard 0.1
+
+        for (auto& row : default_weights) {
+            for (T& weight : row) {
+                weight = distribution(gen);
+            }
+        }   
+
+    }
+    else if(weights_model == "Xavier"){
+        //std::random_device rd;   //seed variabile
+        //std::mt19937 gen(rd());
+        std::mt19937 gen(44); //seed fisso
+        std::normal_distribution<T> distribution(0.0, 1.0); // Distribuzione normale con media 0 e deviazione standard 1.0
+        for (auto& row : default_weights) {
+            for (T& weight : row) {
+                weight = distribution(gen);
+            }
+        }   
+        for(int i = 0; i < default_weights.size(); i++){
+            for(int j = 0; j < default_weights[i].size(); j++){
+                default_weights[i][j] = default_weights[i][j] * sqrt(1.0/weights_shape[i][0]); //weighted on size of the input
+            }
         }
     }
+    else if(weights_model == "He"){
+        //std::random_device rd;   //seed variabile
+        //std::mt19937 gen(rd());
+        std::mt19937 gen(44); //seed fisso
+        std::normal_distribution<T> distribution(0.0, 1.0); // Distribuzione normale con media 0 e deviazione standard 1.0
+        for (auto& row : default_weights) {
+            for (T& weight : row) {
+                weight = distribution(gen);
+            }
+        }   
+        for(int i = 0; i < default_weights.size(); i++){
+            for(int j = 0; j < default_weights[i].size(); j++){
+                default_weights[i][j] = default_weights[i][j] * sqrt(2.0/weights_shape[i][0]);  //weighted on size of the input
+            }
+        }
+    }
+    else if (weights_model == "debug"){
+        for(int i = 0; i < default_weights.size(); i++){
+            for(int j = 0; j < weights_shape[i][0]; j++){
+                for(int k = 0; k < weights_shape[i][1]; k++){
+                    default_weights[i][j*weights_shape[i][1]+k] = j+1;
+                }
+            }
+        }
+    }
+    /**else if(weights_model == "Glorot"){  //need to be implemented...usefull for layers but not for the last one
+        //std::random_device rd;   //seed variabile
+        //std::mt19937 gen(rd());
+        std::mt19937 gen(44); //seed fisso
+        std::normal_distribution<T> distribution(0.0, 1.0); // Distribuzione normale con media 0 e deviazione standard 1.0
+        for (auto& row : default_weights) {
+            for (T& weight : row) {
+                weight = distribution(gen);
+            }
+        }   
+        for(int i = 0; i < default_weights.size(); i++){
+            for(int j = 0; j < default_weights[i].size(); j++){
+                default_weights[i][j] = default_weights[i][j] * sqrt(2.0/(weights_shape[i][0]+weights_shape[i+1][0]));
+            }
+        }
+    }**/
+    
 }
-template void Model<float>::initialiseVector(std::vector<std::vector<float>>& default_weights);
-template void Model<double>::initialiseVector(std::vector<std::vector<double>>& default_weights);
+template void Model<float>::initialiseVector(std::vector<std::vector<float>>& default_weights, const std::string& weights_model);
+template void Model<double>::initialiseVector(std::vector<std::vector<double>>& default_weights, const std::string& weights_model);
 
 template<typename T>
 void resetVector(std::vector<std::vector<T>>& vector){
@@ -277,9 +400,12 @@ std::vector<T> transposeMatrix(const std::vector<T>& matrix, const int m, const 
     std::vector<T> transposed_matrix;
     transposed_matrix.resize(1);
     transposed_matrix.resize(m*n);
-    for(int i = 0; i < m; i++){
-        for(int j = 0; j < n; j++){
-            transposed_matrix[j+i*n] = matrix[i+j*m];
+    //for(int i = 0; i < m; i++){
+        //for(int j = 0; j < n; j++){
+            //transposed_matrix[j+i*n] = matrix[i+j*m];  //Ma cosa mi sono fumato per scrivere questa cazzata ??
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){        
+            transposed_matrix[j+i*m] = matrix[i+j*n];
         }
     }
     return transposed_matrix;
@@ -291,9 +417,9 @@ template<typename T>
 void transposeMatrix2(const std::vector<T>& matrix, std::vector<T>& transposed,  const int m, const int n){
     transposed.resize(1);
     transposed.resize(m*n);
-    for(int i=0; i<m; i++){
-        for(int j=0; j<n; j++){
-            transposed[j+i*n] = matrix[i+j*m];
+    for(int i=0; i<n; i++){
+        for(int j=0; j<m; j++){
+            transposed[j+i*m] = matrix[i+j*n];
         }
     }
 }
@@ -404,7 +530,7 @@ void Model<T>::train(int& selection){
     std::cout << "batch: " << batch << std::endl;
     std::cout << "train size: " << model_input.getTrain().size() << std::endl;
     for(int epoch = 0; epoch < model_epochs; epoch++){
-        std::cout << "epoch: " << epoch << " batch loop: " ;
+        std::cout << "epoch: " << epoch << "    batch loop: " ;
         operations = 0;
         correct = 0;
         for(int batch_loop = 0; batch_loop < batch+1; batch_loop++){//considera di aggiungere +1 per l'avanzo delle rimaneti singole batch
@@ -500,7 +626,7 @@ void Model<T>::train(int& selection){
             operations_validation++;
         }
         validation_accuracy = (float)correct_validation/operations_validation;
-        std::cout << " validation Accuracy: " << validation_accuracy << std::endl;
+        std::cout << "  validation Accuracy: " << validation_accuracy << std::endl;
         //train_accuracy = (float)correct/operations;
         //std::cout << " train Accuracy: " << train_accuracy << std::endl;
     }

@@ -93,8 +93,8 @@ class Model{
         dE_db[check].resize(model_output.getShapeOutputData());
         z[check].resize(model_output.getShapeOutputData());
         y.resize(model_output.getShapeOutputData());
-        initialiseVector(weights);
-        initialiseVector(bias);
+        initialiseVector(weights, weights_initialisation);
+        initialiseVector(bias, weights_initialisation);
 
 
 
@@ -124,6 +124,9 @@ class Model{
         std::cout << std::endl;
     }
 
+    void setWeightdInitialization(const std::string weights_model){
+        weights_initialisation = weights_model;
+    }
     //@note: making a prediction should not change the input
     void predict(std::vector<T>& input, int& selection); //this version need to be called only after the resizing of the weights
     void predict(std::vector<T>& input, int& selection, int flag);
@@ -131,7 +134,7 @@ class Model{
     void train(int& selection);
     void extendMatrix();
     void reduceMatrix();
-    void initialiseVector(std::vector<std::vector<T>>& default_weights);
+    void initialiseVector(std::vector<std::vector<T>>& default_weights, const std::string& weights_model);
     
     //@note: method should be const
     Input<T> getInput(){return model_input;}
@@ -148,7 +151,7 @@ class Model{
     int model_epochs, model_batch_size, matrix_mul_optimisation = 0;
     float model_learning_rate;
     T default_weight = 0.3;
-    std::string model_name, model_loss_fun, model_stop_cryteria;
+    std::string model_name, model_loss_fun, model_stop_cryteria, weights_initialisation = "Normal_Distribution";
     std::vector<std::vector<T>> weights, bias;
     std::vector<std::vector<int>> weights_shape;
     std::vector<T> input_layer, output_layer;

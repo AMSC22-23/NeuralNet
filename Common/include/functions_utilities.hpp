@@ -54,4 +54,8 @@ void resetVector(std::vector<std::vector<T>>& vector);
 template<typename T>
 void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias);
 
+template<typename T>
+void shuffleData(std::vector<std::vector<T>>& trainSet, std::vector<std::vector<T>>& trainOut);
+
+
 #endif
