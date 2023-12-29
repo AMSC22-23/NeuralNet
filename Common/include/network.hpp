@@ -144,11 +144,13 @@ class Layer{
 
     void printLayer() const {
         std::cout << "Layer: " << name << " ,number of neurons: " << neurons << " ,activation function: " << act_funct << std::endl;
+        //std::cout << name << " (Dense)" << "\033[35G" << neurons << "\033[60G" << "0" <<  std::endl;
     }
 
     //@note: method should be const
     int getNeurons() {return neurons;}
     std::string getActFun() {return act_funct;};
+    std::string getName() {return name;};
     private:
     std::string act_funct, name;
     bool dense = true;
