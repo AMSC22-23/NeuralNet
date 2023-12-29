@@ -62,6 +62,7 @@ T applyActivationFunction(const T &input, const std::string &activationFunction)
     } else {
         std::cout << "Activation function not implemented" << std::endl;
     }
+    return 0;
 }
 
 template float applyActivationFunction<float>(const float &input, const std::string &activationFunction);
@@ -80,6 +81,7 @@ T applyActivationFunctionDerivative(const T &input, const std::string &activatio
     } else {
         std::cout << "Activation function not implemented" << std::endl;
     }
+    return 0;
 }
 
 template float applyActivationFunctionDerivative<float>(const float &input, const std::string &activationFunction);

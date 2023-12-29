@@ -72,5 +72,5 @@ Utility functions like genFakeData, normalize, readIrisData, and getIrisSets fac
 It is possible to compile the code with:
 
 ```bash
-g++ -O3 -std=c++17  -march=native -ffast-math amsc_nnet.cpp ../include/network_functions.cpp ../src/ActivationFunctions.cpp  -std=c++20 -o amsc_nnet
+g++ -O3 -std=c++17  -march=native -ffast-math amsc_nnet.cpp ../src/irisLoader.cpp ../include/network_functions.cpp ../src/ActivationFunctions.cpp  -std=c++20 -o amsc_nnet
 ```

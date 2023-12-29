@@ -47,7 +47,7 @@ int main(){
     shuffleData(trainSet, trainOut);
     Input input(trainSet, validationSet, testSet);
     Output output(trainOut, validationOut, testOut, "sigmoid");
-    Layer layer1("prova", 128, "ReLu"), layer2("prova2", 70, "ReLu"), layer3("prova3", 10, "ReLu");  //best in train set at the moment
+    Layer layer1("prova", 128, "ReLu"), layer2("prova2", 70, "ReLu"), layer3("prova3", 10, "ReLu");  //128 neurons best in train set at the moment
     Model model("Modello",100, 16, 0.05, "MSE", input, output, "early_stop"); //batch around 8-16 learning rate 0.05 works well
     model.setWeightdInitialization("He");  //He best in train set at the moment, Xavier works well too, Normal is fine, Uniform do not work
 
@@ -71,17 +71,19 @@ int main(){
     //model.printAllWeightsToFile(); //DEBUG
 
     //TRAINING THE MODEL
-    const auto t0 = std::chrono::high_resolution_clock::now();
+    //const auto t0 = std::chrono::high_resolution_clock::now();
     model.train( a);
-    const auto t1 = std::chrono::high_resolution_clock::now();
-    int64_t dt_01 = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+    //const auto t1 = std::chrono::high_resolution_clock::now();
+    //int64_t dt_01 = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
 
-    std::cout << "Duration of the entire training: " << dt_01 << " ms" << std::endl;
+    //std::cout << "Duration of the entire training: " << (float)dt_01/1000 << " sec" << std::endl;
 
 
     //Debug test
 
     //std::vector<float> test_input = {1,1,1,1};
+
+    
     
 
     //model.predict(test_input, a, 1);

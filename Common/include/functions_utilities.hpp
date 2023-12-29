@@ -28,7 +28,13 @@ template<typename T>
 void applyLossFunction( std::vector<T>& y, std::vector<T>& target, std::vector<T>& dE_dy, std::string& lossFunction);
 
 template<typename T>
-void mseDerivative(std::vector<T>& y,  std::vector<T>& target, std::vector<T>& dE_dy);
+T evaluateLossFunction(std::vector<T>& y, std::vector<T>& target, std::string& lossFunction);
+
+template<typename T>
+T mse(std::vector<T>& y, std::vector<T>& target);
+
+//template<typename T>
+//void mseDerivative(std::vector<T>& y,  std::vector<T>& target, std::vector<T>& dE_dy);
 
 template<typename T>
 std::vector<std::vector<T>> createTempWeightMAtrix(std::vector<std::vector<T>>& old_weights);

@@ -616,6 +616,44 @@ void applyLossFunction(std::vector<T>& y,std::vector<T>& target, std::vector<T>&
 template void applyLossFunction<float>(std::vector<float>& y, std::vector<float>& target, std::vector<float>& dE_dy, std::string& lossFunction);
 template void applyLossFunction<double>(std::vector<double>& y, std::vector<double>& target, std::vector<double>& dE_dy, std::string& lossFunction);
 
+
+//****************************************************************************************************************************************************
+//This function defined in functions_utilities.hpp compute the mean square error (MSE)
+
+template<typename T>
+T mse(std::vector<T>& y, std::vector<T>& target){
+    T result = 0;
+    for(int i = 0; i < y.size(); i++){
+        result += pow(y[i] - target[i], 2);
+    }
+    result = result / y.size();
+    return result;
+}
+template float mse<float>(std::vector<float>& y, std::vector<float>& target);
+template double mse<double>(std::vector<double>& y, std::vector<double>& target);
+
+
+//****************************************************************************************************************************************************
+//This function is used to redirect the loss function to the correct one
+
+template<typename T>
+T evaluateLossFunction(std::vector<T>& y, std::vector<T>& target, std::string& lossFunction){
+    T result;
+    if(lossFunction == "MSE"){
+        result = mse(y, target);
+        return result;
+    }
+    else{
+        std::cout << "Error: loss function not recognized" << std::endl;
+        return result;
+    }
+}
+template float evaluateLossFunction<float>(std::vector<float>& y, std::vector<float>& target, std::string& lossFunction);
+template double evaluateLossFunction<double>(std::vector<double>& y, std::vector<double>& target, std::string& lossFunction);
+
+//****************************************************************************************************************************************************
+//This function defined in Model.hpp compute the backpropagation of the model using the chain rule and Gradient Descent
+
 template<typename T>
 void Model<T>::backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int& selection){
     int one=1;
@@ -648,7 +686,11 @@ template void Model<double>::backPropagation(std::vector<double>& input, std::ve
 
 template<typename T>
 void Model<T>::train(int& selection){
-    int w1 = 10, w2 = 15, w3 = 20;
+    std::ofstream outputFile("Train_Output.txt");
+    std::ofstream accuracyCSV("Accuracy.csv");
+    std::ofstream lossCSV("Loss.csv");
+    accuracyCSV << "epoch, train_accuracy, validation_accuracy;" << std::endl;
+    lossCSV << "epoch, batch, loss" << std::endl;
     std::vector<std::vector<T>> tempWeights = createTempWeightMAtrix(weights);
     std::vector<std::vector<T>> tempBias = createTempBiasMAtrix(bias);
     int batch = model_input.getTrain().size() / model_batch_size;
@@ -661,23 +703,26 @@ void Model<T>::train(int& selection){
     dE_dy.resize(model_output.getShapeOutputData());
     temp.resize(model_input.getShapeInputData());
     y_acc.resize(model_output.getShapeOutputData());
-    std::cout << "batch: " << batch << std::endl;
-    std::cout << "train size: " << model_input.getTrain().size() << std::endl;
+    outputFile << "batch: " << batch << std::endl;
+    outputFile << "train size: " << model_input.getTrain().size() << std::endl;
+    std::cout << "Train started !  (details and results available in Train_Output.txt file)" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Progress: " ;
+    const auto t0_0 = std::chrono::high_resolution_clock::now();
     for(int epoch = 0; epoch < model_epochs; epoch++){
-        std::cout << "epoch: " << std::setw(4) << epoch << " batch loop: " << batch << "/" << std::flush ;
+        outputFile << "epoch: " << std::setw(4) << epoch << " batch loop: " << batch << "/(";
         operations = 0;
         correct = 0;
         const auto t0 = std::chrono::high_resolution_clock::now();
+        T loss = 0;
         for(int batch_loop = 0; batch_loop < batch+1; batch_loop++){//considera di aggiungere +1 per l'avanzo delle rimaneti singole batch
-            if(batch_loop < batch){
-                std::cout << batch_loop << "\033[27G" << std::flush;
-            }
-            else{
-                std::cout << batch_loop ;;
-            }
+            outputFile << batch_loop;
+            int percentage;
+            percentage = ((epoch*batch)+batch_loop)*100/(model_epochs*batch);
             //std::vector<std::vector<T>> tempWeights = createTempWeightMAtrix(weights);
             //std::vector<std::vector<T>> tempBias = createTempBiasMAtrix(bias);
-            count = 0;          
+            count = 0;
+            //loss = 0;          
             for(int i = 0; i < model_batch_size; i++){
                 if (operations < model_input.getTrain().size()){
                     temp = model_input.getTrain()[batch_loop*model_batch_size+i];
@@ -690,6 +735,7 @@ void Model<T>::train(int& selection){
                     backPropagation(temp, dE_dy, selection);
                     //updateDE_Dw_Db(dE_dw, dE_db, tempWeights, tempBias);
                     incrementweightsBias(dE_dw, dE_db, tempWeights, tempBias);
+                    loss += evaluateLossFunction(y, model_output.getOutputTrain()[batch_loop*model_batch_size+i], model_loss_fun);
                     resetVector(dE_dw);
                     resetVector(dE_dx);
                     resetVector(z);
@@ -723,6 +769,8 @@ void Model<T>::train(int& selection){
                     count++;
                 }
             }
+            //loss = loss / count;    // uncomment if you need to evaluate the loss inside each batch uncomment also loss=0 at the beginning of the loop
+            //lossCSV << epoch << "," << batch_loop << "," << loss << ";" << std::endl;
             updateWeightsBias(weights, tempWeights, bias, tempBias, count, model_learning_rate);
             resetVector(tempWeights);
             resetVector(tempBias);
@@ -730,11 +778,15 @@ void Model<T>::train(int& selection){
             for(int i = 0; i < y_acc.size(); i++){
                 std::cout << y_acc[i] << " ";
             }**/
+            std::cout << "\033[12G" << percentage << "%";
         }
         const auto t1 = std::chrono::high_resolution_clock::now();
         int64_t dt_01 = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
         train_accuracy = (float)correct/operations;
-        std::cout << " train Accuracy: " << std::setw(9) << train_accuracy ;
+        outputFile << ") train Accuracy: " << std::setw(9) << train_accuracy ;
+
+        loss = loss / operations;       // uncomment if you need to evaluate the loss at the end of each epoch
+        lossCSV << epoch << "," << batch << "," << loss << ";" << std::endl;
         
         //evaluating accuracy on validation set
         std::vector<T> temp_validation;
@@ -768,14 +820,15 @@ void Model<T>::train(int& selection){
             operations_validation++;
         }
         validation_accuracy = (float)correct_validation/operations_validation;
-        std::cout << "  validation Accuracy: " << std::setw(9) << validation_accuracy ;
-        std::cout << "  time: " << dt_01 << " ms" << std::endl << std::flush;
+        outputFile << "  validation Accuracy: " << std::setw(9) << validation_accuracy ;
+        outputFile << "  time: " << dt_01 << " ms" << std::endl << std::flush;
+        accuracyCSV << epoch << "," << train_accuracy << "," << validation_accuracy << ";" << std::endl;
         //train_accuracy = (float)correct/operations;
         //std::cout << " train Accuracy: " << train_accuracy << std::endl;
         //std::cout << std::endl;
     }
-    std::cout << std::endl;
-    std::cout << "operations: " << operations << std::endl;
+    outputFile << std::endl;
+    outputFile << "operations: " << operations << std::endl;
 
     //evaluating accuracy on test set
     std::vector<T> temp_test;
@@ -809,11 +862,18 @@ void Model<T>::train(int& selection){
         operations_test++;
     }
     float test_accuracy = (float)correct_test/operations_test;
+    outputFile << std::endl;
+    outputFile << "Final Accuracy on the TestSet: " << test_accuracy << std::endl;
+    outputFile << std::endl;
+    const auto t1_0 = std::chrono::high_resolution_clock::now();
+    int64_t dt_00 = std::chrono::duration_cast<std::chrono::milliseconds>(t1_0 - t0_0).count();
     std::cout << std::endl;
-    std::cout << "Final Accuracy on the TestSet: " << test_accuracy << std::endl;
     std::cout << std::endl;
-    
-                
+    std::cout << "Train and evaluation on Test-Set successfully completed in " << (float)dt_00/1000 << " sec !" << std::endl;
+    std::cout << std::endl;
+    outputFile.close(); 
+    accuracyCSV.close();
+    lossCSV.close();             
 }
 
 template void Model<float>::train(int& selection);
