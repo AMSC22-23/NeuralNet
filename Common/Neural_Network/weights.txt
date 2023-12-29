@@ -1,0 +1,474 @@
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 5
+1 1 1 1 1 
+2 2 2 2 2 
+3 3 3 3 3 
+4 4 4 4 4 
+
+bias layer 1 size: 5
+1 1 1 1 1 
+
+z input layer 1 size: 5
+11 11 11 11 11 
+
+h output layer 1 size: 5
+11 11 11 11 11 
+
+dE_dx layer 1 size: 5
+0 0 0 0 0 
+
+dE_db layer 1 size: 5
+0 0 0 0 0 
+
+dE_dw layer 1 size: 4 x 5
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 5 x 3
+1 1 1 
+2 2 2 
+3 3 3 
+4 4 4 
+5 5 5 
+
+bias layer 2 size: 3
+1 1 1 
+
+z input layer 2 size: 3
+166 166 166 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 5 x 3
+3 4 4 
+4 5 5 
+5 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3
+166 166 166 
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 5
+1 1 1 1 1 
+2 2 2 2 2 
+3 3 3 3 3 
+4 4 4 4 4 
+
+bias layer 1 size: 5
+1 1 1 1 1 
+
+z input layer 1 size: 5
+11 11 11 11 11 
+
+h output layer 1 size: 5
+11 11 11 11 11 
+
+dE_dx layer 1 size: 5
+0 0 0 0 0 
+
+dE_db layer 1 size: 5
+0 0 0 0 0 
+
+dE_dw layer 1 size: 4 x 5
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 5 x 3
+1 1 1 
+2 2 2 
+3 3 3 
+4 4 4 
+5 5 5 
+
+bias layer 2 size: 3
+1 1 1 
+
+z input layer 2 size: 3
+166 166 166 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 5 x 3
+3 4 4 
+4 5 5 
+5 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3
+166 166 166 
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 10
+1 1 1 1 1 1 1 1 1 1 
+2 2 2 2 2 2 2 2 2 2 
+3 3 3 3 3 3 3 3 3 3 
+4 4 4 4 4 4 4 4 4 4 
+
+bias layer 1 size: 10
+1 1 1 1 1 1 1 1 1 1 
+
+z input layer 1 size: 10
+11 11 11 11 11 11 11 11 11 11 
+
+h output layer 1 size: 10
+11 11 11 11 11 11 11 11 11 11 
+
+dE_dx layer 1 size: 10
+0 0 0 0 0 0 0 0 0 0 
+
+dE_db layer 1 size: 10
+0 0 0 0 0 0 0 0 0 0 
+
+dE_dw layer 1 size: 4 x 10
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 10 x 3
+1 1 1 
+2 2 2 
+3 3 3 
+4 4 4 
+5 5 5 
+6 6 6 
+7 7 7 
+8 8 8 
+9 9 9 
+10 10 10 
+
+bias layer 2 size: 3
+1 1 1 
+
+z input layer 2 size: 3
+606 606 606 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 10 x 3
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3
+606 606 606 
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 4
+1 1 1 1 
+2 2 2 2 
+3 3 3 3 
+4 4 4 4 
+
+bias layer 1 size: 4
+1 1 1 1 
+
+z input layer 1 size: 4
+11 11 11 11 
+
+h output layer 1 size: 4
+11 11 11 11 
+
+dE_dx layer 1 size: 4
+0 0 0 0 
+
+dE_db layer 1 size: 4
+0 0 0 0 
+
+dE_dw layer 1 size: 4 x 4
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 4 x 3
+1 1 1 
+2 2 2 
+3 3 3 
+4 4 4 
+
+bias layer 2 size: 3
+1 1 1 
+
+z input layer 2 size: 3
+111 111 111 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 4 x 3
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3
+111 111 111 
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 6
+1 1 1 1 1 1 
+2 2 2 2 2 2 
+3 3 3 3 3 3 
+4 4 4 4 4 4 
+
+bias layer 1 size: 6
+1 1 1 1 1 1 
+
+z input layer 1 size: 6
+11 11 11 11 11 11 
+
+h output layer 1 size: 6
+11 11 11 11 11 11 
+
+dE_dx layer 1 size: 6
+0 0 0 0 0 0 
+
+dE_db layer 1 size: 6
+0 0 0 0 0 0 
+
+dE_dw layer 1 size: 4 x 6
+0 0 0 0 0 0 
+0 0 0 0 0 0 
+0 0 0 0 0 0 
+0 0 0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 6 x 3
+1 1 1 
+2 2 2 
+3 3 3 
+4 4 4 
+5 5 5 
+6 6 6 
+
+bias layer 2 size: 3
+1 1 1 
+
+z input layer 2 size: 3
+232 232 232 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 6 x 3
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3
+232 232 232 
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 5
+1 1 1 1 1 
+2 2 2 2 2 
+3 3 3 3 3 
+4 4 4 4 4 
+
+bias layer 1 size: 5
+1 1 1 1 1 
+
+z input layer 1 size: 5
+11 11 11 11 11 
+
+h output layer 1 size: 5
+11 11 11 11 11 
+
+dE_dx layer 1 size: 5
+0 0 0 0 0 
+
+dE_db layer 1 size: 5
+0 0 0 0 0 
+
+dE_dw layer 1 size: 4 x 5
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 5 x 3
+1 1 1 
+2 2 2 
+3 3 3 
+4 4 4 
+5 5 5 
+
+bias layer 2 size: 3
+1 1 1 
+
+z input layer 2 size: 3
+166 166 166 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 5 x 3
+3 4 4 
+4 5 5 
+5 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3
+166 166 166 
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 5
+1 1 1 1 1 
+2 2 2 2 2 
+3 3 3 3 3 
+4 4 4 4 4 
+
+bias layer 1 size: 5
+1 1 1 1 1 
+
+z input layer 1 size: 5
+11 11 11 11 11 
+
+h output layer 1 size: 5
+11 11 11 11 11 
+
+dE_dx layer 1 size: 5
+0 0 0 0 0 
+
+dE_db layer 1 size: 5
+0 0 0 0 0 
+
+dE_dw layer 1 size: 4 x 5
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 5 x 3
+1 1 1 
+2 2 2 
+3 3 3 
+4 4 4 
+5 5 5 
+
+bias layer 2 size: 3
+1 1 1 
+
+z input layer 2 size: 3
+166 166 166 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 5 x 3
+3 4 4 
+4 5 5 
+5 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3
+166 166 166 
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 5
+1 1 1 1 1 
+1 1 1 1 1 
+1 1 1 1 1 
+1 1 1 1 1 
+
+bias layer 1 size: 5
+1 1 1 1 1 
+
+z input layer 1 size: 5
+5 5 5 5 5 
+
+h output layer 1 size: 5
+5 5 5 5 5 
+
+dE_dx layer 1 size: 5
+0 0 0 0 0 
+
+dE_db layer 1 size: 5
+0 0 0 0 0 
+
+dE_dw layer 1 size: 4 x 5
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 5 x 3
+2 2 2 
+2 2 2 
+2 2 2 
+2 2 2 
+2 2 2 
+
+bias layer 2 size: 3
+2 2 2 
+
+z input layer 2 size: 3
+52 52 52 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 5 x 3
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3
+52 52 52 

@@ -57,5 +57,7 @@ void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<
 template<typename T>
 void shuffleData(std::vector<std::vector<T>>& trainSet, std::vector<std::vector<T>>& trainOut);
 
+template<typename T>
+void mul_funct(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, int m, int n, int nb, int selection);
 
 #endif

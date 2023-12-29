@@ -5,6 +5,167 @@
 #include <algorithm>
 #include <random>
 #include <iomanip>
+#include <fstream>
+#include<chrono>
+
+//**************************************************************************************************************************
+//This function defined in the class Model build all matrix needed for the training and the prediction, starting from defined input, layers and output
+
+template<typename T>
+void Model<T>::buildModel(){
+        std::cout << "Building model..." << std::endl;
+        std::cout << "Model name: " << model_name << std::endl;
+        std::cout << "Number of epochs: " << model_epochs << std::endl;
+        std::cout << "Batch size: " << model_batch_size << std::endl;
+        std::cout << "Learning rate: " << model_learning_rate << std::endl;
+        std::cout << "Loss function: " << model_loss_fun << std::endl;
+        std::cout << "Stop cryteria: " << model_stop_cryteria << std::endl;
+        std::cout << std::endl;
+        std::cout << "Input layer: " << std::endl;
+        std::cout << "Number of input introduced in the network: " << model_input.getShapeInputData() << std::endl;
+        printLayers();
+        std::cout << "Output layer: " << std::endl;
+        std::cout << "Number of output introduced in the network: " << model_output.getShapeOutputData() << " activation function: " << model_output.getAct_Fun() << std::endl;
+        std::cout << std::endl;
+
+        //resizing the vectors
+        weights.resize(layers.size()+1);
+        bias.resize(layers.size()+1);
+        weights_shape.resize(layers.size()+1);
+        z.resize(layers.size()+1);
+        h.resize(layers.size());
+        dAct_z.resize(layers.size()+1);
+        dE_dw.resize(layers.size()+1);
+        dE_dx.resize(layers.size());
+        dE_db.resize(layers.size()+1);
+        y.resize(model_output.getShapeOutputData());
+
+        //create dimensions for the first iteration
+        int fillerdim = model_input.getShapeInputData();
+        int check = 0;
+        for(int block = 0; block < layers.size(); ++block){
+            std::vector<T> filler(fillerdim * layers[block].getNeurons(), default_weight);
+            std::vector<T> fillerBias(layers[block].getNeurons(), default_weight);
+            weights_shape[block].resize(2);
+            //changing the order of the dimensions will change the order of the weights in the matrix in relation
+            //on how the input is passed to the network
+            weights_shape[block][1] = layers[block].getNeurons();
+            weights_shape[block][0] = fillerdim;
+            weights[block].resize(fillerdim * layers[block].getNeurons());
+            weights[block] = filler;
+            bias[block].resize(layers[block].getNeurons());
+            bias[block] = fillerBias;
+            dE_dw[block].resize(fillerdim * layers[block].getNeurons());
+            dAct_z[block].resize(layers[block].getNeurons());
+            z[block].resize(layers[block].getNeurons());
+            h[block].resize(layers[block].getNeurons());
+            dE_dx[block].resize(layers[block].getNeurons());
+            dE_db[block].resize(layers[block].getNeurons());
+            dE_dx[block].resize(layers[block].getNeurons());
+            //update the dimensions for the next iteration
+            fillerdim = layers[block].getNeurons();
+            check += 1;
+        }
+        std::vector<T> filler(layers[check-1].getNeurons() * model_output.getShapeOutputData(), default_weight);
+        std::vector<T> fillerBias(model_output.getShapeOutputData(), default_weight);
+        weights[check].resize(fillerdim * model_output.getShapeOutputData());
+        weights[check] = filler;
+        weights_shape[check].resize(2);
+        weights_shape[check][1] = model_output.getShapeOutputData();
+        weights_shape[check][0] = layers[check-1].getNeurons();
+        bias[check].resize(model_output.getShapeOutputData());
+        bias[check] = fillerBias;
+        dE_dw[check].resize(fillerdim * model_output.getShapeOutputData());
+        dAct_z[check].resize(model_output.getShapeOutputData());
+        dE_db[check].resize(model_output.getShapeOutputData());
+        z[check].resize(model_output.getShapeOutputData());
+        y.resize(model_output.getShapeOutputData());
+        initialiseVector(weights, weights_initialisation);
+        initialiseVector(bias, weights_initialisation);
+
+
+
+        std::cout << "Model built!" << std::endl;
+        std::cout << std::endl;
+    }
+template void Model<float>::buildModel();
+template void Model<double>::buildModel();
+
+//**************************************************************************************************************************
+//function used to print to weights.txt all the matrix of weight at a certain iteration
+
+template<typename T>
+void Model<T>::printAllWeightsToFile(){
+    std::ofstream outputFile("weights.txt", std::ios::app);
+    outputFile << "********************************NEW SET OF WEIGHTS**********************************************" << std::endl;
+    outputFile << std::endl;
+    for(int l=0; l <= layers.size(); l++){
+            outputFile << "************* weights layer " << l+1 << " ****************" << std::endl;
+            outputFile << std::endl;
+            outputFile << "weigthts " << weights_shape[l][0] << " x " << weights_shape[l][1] << std::endl;
+            for(int i = 0; i<weights_shape[l][0]; i++){
+                for(int j =0 ; j<weights_shape[l][1]; j++){
+                    outputFile << weights[l][j+i*weights_shape[l][1]] << " ";
+
+                }
+                outputFile << std::endl;
+            }
+                //add here all needed matrix and bias at the end
+            outputFile << std::endl;
+            outputFile << "bias layer " << l+1 << " size: " << bias[l].size() << std::endl;
+            for(int i = 0; i<bias[l].size(); i++){
+                outputFile << bias[l][i] << " ";
+            }
+            outputFile << std::endl;
+            outputFile << std::endl;
+            outputFile << "z input layer " << l+1 << " size: " << z[l].size() << std::endl;
+                for(int i = 0; i<z[l].size(); i++){
+                    outputFile << z[l][i] << " ";
+                }
+            outputFile << std::endl;
+            outputFile << std::endl;
+            if (l < layers.size()){
+                outputFile << "h output layer " << l+1 << " size: " << h[l].size() << std::endl;
+                for(int i = 0; i<h[l].size(); i++){
+                    outputFile << h[l][i] << " ";
+                }
+                outputFile << std::endl;
+                outputFile << std::endl;
+                outputFile << "dE_dx layer " << l+1 << " size: " << dE_dx[l].size() << std::endl;
+                for(int i = 0; i<dE_dx[l].size(); i++){
+                    outputFile << dE_dx[l][i] << " ";
+                }
+                outputFile << std::endl;
+                outputFile << std::endl;
+            }
+            
+            outputFile << "dE_db layer " << l+1 << " size: " << dE_db[l].size() << std::endl;
+            for(int i = 0; i<dE_db[l].size(); i++){
+                outputFile << dE_db[l][i] << " ";
+            }
+            outputFile << std::endl;
+            outputFile << std::endl;
+            outputFile << "dE_dw layer " << l+1 << " size: " << weights_shape[l][0] << " x " << weights_shape[l][1] << std::endl;
+            for(int i = 0; i<weights_shape[l][0]; i++){
+                for(int j =0 ; j<weights_shape[l][1]; j++){
+                    outputFile << dE_dw[l][j+i*weights_shape[l][1]] << " ";
+
+                }
+                outputFile << std::endl;
+            }
+            outputFile << std::endl;
+    }
+    outputFile << "y output layer " << layers.size()+1 << " size: " << y.size() << std::endl;
+    for(int i = 0; i<y.size(); i++){
+        outputFile << y[i] << " ";
+    }
+    outputFile << std::endl;
+    outputFile.close();
+}
+template void Model<float>::printAllWeightsToFile();
+template void Model<double>::printAllWeightsToFile();
+
+
 
 //***************************************************************************************************************************
 //This finction tacke as input the train and the output data and shuffle them
@@ -130,12 +291,14 @@ void Model<T>::initialiseVector(std::vector<std::vector<T>>& default_weights, co
     }
     else if (weights_model == "debug"){
         for(int i = 0; i < default_weights.size(); i++){
-            for(int j = 0; j < weights_shape[i][0]; j++){
-                for(int k = 0; k < weights_shape[i][1]; k++){
-                    default_weights[i][j*weights_shape[i][1]+k] = j+1;
-                }
+            for(int j = 0; j < default_weights[i].size(); j++){
+                default_weights[i][j] = i+1;
             }
         }
+    }
+    else {
+        std::cout << "Error: weights model not recognized" << std::endl;
+        return;
     }
     /**else if(weights_model == "Glorot"){  //need to be implemented...usefull for layers but not for the last one
         //std::random_device rd;   //seed variabile
@@ -478,43 +641,14 @@ void Model<T>::backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int
     dE_db[0] = mul(dE_dx[0], dAct_z[0]);
     temp = transposeMatrix(input, one, input.size());
     mul_funct(temp, dE_db[0], dE_dw[0], input.size(), one, dE_db[0].size(), matrix_mul_optimisation);
-    /**std::cout << "dE_dw[0]: " << std::endl;
-    for(int s = 0; s < weights_shape[0][0]; s++){
-        for(int t = 0; t < weights_shape[0][1]; t++){
-            std::cout << dE_dw[0][t+s*weights_shape[0][1]] << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-    std::cout << "dE_dw[1]: " << std::endl;
-    for(int s = 0; s < weights_shape[1][0]; s++){
-        for(int t = 0; t < weights_shape[1][1]; t++){
-            std::cout << dE_dw[1][t+s*weights_shape[1][1]] << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-    std::cout << "dE_dw[2]: " << std::endl;
-    for(int s = 0; s < weights_shape[2][0]; s++){
-        for(int t = 0; t < weights_shape[2][1]; t++){
-            std::cout << dE_dw[2][t+s*weights_shape[2][1]] << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-    std::cout << "dE_dw[3]: " << std::endl;
-    for(int s = 0; s < weights_shape[3][0]; s++){
-        for(int t = 0; t < weights_shape[3][1]; t++){
-            std::cout << dE_dw[3][t+s*weights_shape[3][1]] << " ";
-        }
-        std::cout << std::endl;
-    }**/
+    
 }
 template void Model<float>::backPropagation(std::vector<float>& input, std::vector<float>& dE_dy, int& selection);
 template void Model<double>::backPropagation(std::vector<double>& input, std::vector<double>& dE_dy, int& selection);
 
 template<typename T>
 void Model<T>::train(int& selection){
+    int w1 = 10, w2 = 15, w3 = 20;
     std::vector<std::vector<T>> tempWeights = createTempWeightMAtrix(weights);
     std::vector<std::vector<T>> tempBias = createTempBiasMAtrix(bias);
     int batch = model_input.getTrain().size() / model_batch_size;
@@ -530,14 +664,20 @@ void Model<T>::train(int& selection){
     std::cout << "batch: " << batch << std::endl;
     std::cout << "train size: " << model_input.getTrain().size() << std::endl;
     for(int epoch = 0; epoch < model_epochs; epoch++){
-        std::cout << "epoch: " << epoch << "    batch loop: " ;
+        std::cout << "epoch: " << std::setw(4) << epoch << " batch loop: " << batch << "/" << std::flush ;
         operations = 0;
         correct = 0;
+        const auto t0 = std::chrono::high_resolution_clock::now();
         for(int batch_loop = 0; batch_loop < batch+1; batch_loop++){//considera di aggiungere +1 per l'avanzo delle rimaneti singole batch
-            std::cout << " " << batch_loop ;
+            if(batch_loop < batch){
+                std::cout << batch_loop << "\033[27G" << std::flush;
+            }
+            else{
+                std::cout << batch_loop ;;
+            }
             //std::vector<std::vector<T>> tempWeights = createTempWeightMAtrix(weights);
             //std::vector<std::vector<T>> tempBias = createTempBiasMAtrix(bias);
-            count = 0;
+            count = 0;          
             for(int i = 0; i < model_batch_size; i++){
                 if (operations < model_input.getTrain().size()){
                     temp = model_input.getTrain()[batch_loop*model_batch_size+i];
@@ -553,7 +693,7 @@ void Model<T>::train(int& selection){
                     resetVector(dE_dw);
                     resetVector(dE_dx);
                     resetVector(z);
-                    //auto max_element_target = std::max_element(model_output.getOutputTrain()[batch_loop*model_batch_size+i].begin(), model_output.getOutputTrain()[batch_loop*model_batch_size+i].end());
+                    //auto second_max_element_target = std::max_element(model_output.getOutputTrain()[batch_loop*model_batch_size+i].begin(), model_output.getOutputTrain()[batch_loop*model_batch_size+i].end());
                     index_max_element_target = 0;
                     float temp_1 = model_output.getOutputTrain()[batch_loop*model_batch_size+i][0];
                     for(int q =1; q<model_output.getOutputTrain()[batch_loop*model_batch_size+i].size(); q++){
@@ -591,9 +731,10 @@ void Model<T>::train(int& selection){
                 std::cout << y_acc[i] << " ";
             }**/
         }
-
+        const auto t1 = std::chrono::high_resolution_clock::now();
+        int64_t dt_01 = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
         train_accuracy = (float)correct/operations;
-        std::cout << " train Accuracy: " << train_accuracy ;
+        std::cout << " train Accuracy: " << std::setw(9) << train_accuracy ;
         
         //evaluating accuracy on validation set
         std::vector<T> temp_validation;
@@ -604,6 +745,7 @@ void Model<T>::train(int& selection){
             extendMatrix(); //before predict call and for every predict in batch
             predict(temp_validation, selection);
             reduceMatrix(); //after predict call and for every predict in batch
+            resetVector(z);
             index_max_element_target = 0;
             float temp_1 = model_output.getOutputValidation()[i][0];
             for(int q =1; q<model_output.getOutputValidation()[i].size(); q++){
@@ -626,15 +768,17 @@ void Model<T>::train(int& selection){
             operations_validation++;
         }
         validation_accuracy = (float)correct_validation/operations_validation;
-        std::cout << "  validation Accuracy: " << validation_accuracy << std::endl;
+        std::cout << "  validation Accuracy: " << std::setw(9) << validation_accuracy ;
+        std::cout << "  time: " << dt_01 << " ms" << std::endl << std::flush;
         //train_accuracy = (float)correct/operations;
         //std::cout << " train Accuracy: " << train_accuracy << std::endl;
+        //std::cout << std::endl;
     }
     std::cout << std::endl;
     std::cout << "operations: " << operations << std::endl;
 
     //evaluating accuracy on test set
-    /**std::vector<T> temp_test;
+    std::vector<T> temp_test;
     int correct_test = 0;
     int operations_test = 0;
     for(int i = 0; i < model_input.getTest().size(); i++){
@@ -642,6 +786,7 @@ void Model<T>::train(int& selection){
         extendMatrix(); //before predict call and for every predict in batch
         predict(temp_test, selection);
         reduceMatrix(); //after predict call and for every predict in batch
+        resetVector(z);
         index_max_element_target = 0;
         float temp_1 = model_output.getOutputTest()[i][0];
         for(int q =1; q<model_output.getOutputTest()[i].size(); q++){
@@ -665,7 +810,9 @@ void Model<T>::train(int& selection){
     }
     float test_accuracy = (float)correct_test/operations_test;
     std::cout << std::endl;
-    std::cout << "Final Accuracy on the TestSet: " << test_accuracy << std::endl;**/
+    std::cout << "Final Accuracy on the TestSet: " << test_accuracy << std::endl;
+    std::cout << std::endl;
+    
                 
 }
 

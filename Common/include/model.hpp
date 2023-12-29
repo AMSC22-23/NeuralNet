@@ -1,4 +1,5 @@
 #include "network.hpp"
+#include <fstream>
 
 template<typename T>
 class Model{
@@ -25,7 +26,7 @@ class Model{
         std::cout << std::endl;
     }
 
-    void buildModel(){
+    void buildModel();/**{
         std::cout << "Building model..." << std::endl;
         std::cout << "Model name: " << model_name << std::endl;
         std::cout << "Number of epochs: " << model_epochs << std::endl;
@@ -100,7 +101,7 @@ class Model{
 
         std::cout << "Model built!" << std::endl;
         std::cout << std::endl;
-    }
+    }**/
 
     //@note: method should be const
     void printWeigts(){
@@ -127,6 +128,7 @@ class Model{
     void setWeightdInitialization(const std::string weights_model){
         weights_initialisation = weights_model;
     }
+    void printAllWeightsToFile();
     //@note: making a prediction should not change the input
     void predict(std::vector<T>& input, int& selection); //this version need to be called only after the resizing of the weights
     void predict(std::vector<T>& input, int& selection, int flag);
@@ -155,5 +157,6 @@ class Model{
     std::vector<std::vector<T>> weights, bias;
     std::vector<std::vector<int>> weights_shape;
     std::vector<T> input_layer, output_layer;
+    //std::ofstream outputFile("weights.txt");
 };
 
