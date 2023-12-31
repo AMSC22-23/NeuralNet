@@ -45,15 +45,16 @@ int main(){
     //BUILDING THE MODEL
     
     model.addLayer(layer1);
-    model.addLayer(layer2);
-    model.addLayer(layer3);
+    //model.addLayer(layer2);
+    //model.addLayer(layer3);
 
     model.buildModel();
+    
 
 
     //TRAINING THE MODEL
     
-    model.train( a);
+    //model.train( a);
     
     //Debug test
 

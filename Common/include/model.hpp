@@ -29,26 +29,9 @@ class Model{
     void buildModel();
 
     //@note: method should be const
-    void printWeigts(){
-        for(int l=0; l <= layers.size(); l++){
-            std::cout << "weights layer " << l+1 <<std::endl;
-            for(int i = 0; i<weights_shape[l][0]; i++){
-                for(int j =0 ; j<weights_shape[l][1]; j++){
-                    std::cout << weights[l][j+i*weights_shape[l][1]] << " ";
+    void printWeigts() const;
 
-                }
-                std::cout << std::endl;
-            }
-            std::cout << std::endl;
-            std::cout << "bias layer " << l+1 << std::endl;
-            for(int i = 0; i<bias[l].size(); i++){
-                std::cout << bias[l][i] << " ";
-            }
-            std::cout << std::endl;
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-    }
+    void printModel();
 
     void setWeightdInitialization(const std::string weights_model){
         weights_initialisation = weights_model;

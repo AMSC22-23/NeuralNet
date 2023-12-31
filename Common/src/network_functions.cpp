@@ -357,24 +357,43 @@ template double evaluateLossFunction<double>(std::vector<double>& y, std::vector
 */
 
 //**************************************************************************************************************************
-//This function defined in the class Model build all matrix needed for the training and the prediction, starting from defined input, layers and output
+/**
+ * This method print on the standatrd output all weights and bias matrix
+ **/
 
 template<typename T>
-void Model<T>::buildModel(){
-        std::cout << "Building model..." << std::endl;
-        std::cout << "Model name: " << model_name << std::endl;
-        std::cout << "Number of epochs: " << model_epochs << std::endl;
-        std::cout << "Batch size: " << model_batch_size << std::endl;
-        std::cout << "Learning rate: " << model_learning_rate << std::endl;
-        std::cout << "Loss function: " << model_loss_fun << std::endl;
-        std::cout << "Stop cryteria: " << model_stop_cryteria << std::endl;
-        std::cout << std::endl;
-        std::cout << "Input layer: " << std::endl;
-        std::cout << "Number of input introduced in the network: " << model_input.getShapeInputData() << std::endl;
+void Model<T>::printWeigts() const {
+        for(int l=0; l <= layers.size(); l++){
+            std::cout << "weights layer " << l+1 <<std::endl;
+            for(int i = 0; i<weights_shape[l][0]; i++){
+                for(int j =0 ; j<weights_shape[l][1]; j++){
+                    std::cout << weights[l][j+i*weights_shape[l][1]] << " ";
 
+                }
+                std::cout << std::endl;
+            }
+            std::cout << std::endl;
+            std::cout << "bias layer " << l+1 << std::endl;
+            for(int i = 0; i<bias[l].size(); i++){
+                std::cout << bias[l][i] << " ";
+            }
+            std::cout << std::endl;
+            std::cout << std::endl;
+        }
         std::cout << std::endl;
-        std::cout << std::endl;
-        std::cout << "Model name: " << model_name << std::endl;
+    }
+template void Model<float>::printWeigts() const;
+template void Model<double>::printWeigts() const;
+
+//**************************************************************************************************************************
+/**
+ * This Method produce a fancy print of the model in keras style, add information 
+ * on the number of parameters and the activation function of each layer
+*/
+
+template<typename T>
+void Model<T>::printModel() {
+    std::cout << "Model name: " << model_name << std::endl;
         std::cout << "-------------------------------------------------------------" << std::endl;  
         std::cout << "Layers (type)" << std::setw(30) << "Output Shape" << std::setw(17) << "Params #" << std::endl;
         std::cout << "=============================================================" << std::endl;
@@ -404,6 +423,63 @@ void Model<T>::buildModel(){
         //std::cout << std::endl;
         std::cout << "_____________________________________________________________" << std::endl;  
         std::cout << std::endl;
+
+}
+
+template void Model<float>::printModel();
+template void Model<double>::printModel();
+
+
+
+//**************************************************************************************************************************
+//This function defined in the class Model build all matrix needed for the training and the prediction, starting from defined input, layers and output
+
+template<typename T>
+void Model<T>::buildModel(){
+        std::cout << "Building model..." << std::endl;
+        std::cout << "Model name: " << model_name << std::endl;
+        std::cout << "Number of epochs: " << model_epochs << std::endl;
+        std::cout << "Batch size: " << model_batch_size << std::endl;
+        std::cout << "Learning rate: " << model_learning_rate << std::endl;
+        std::cout << "Loss function: " << model_loss_fun << std::endl;
+        std::cout << "Stop cryteria: " << model_stop_cryteria << std::endl;
+        std::cout << std::endl;
+        std::cout << "Input layer: " << std::endl;
+        std::cout << "Number of input introduced in the network: " << model_input.getShapeInputData() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << std::endl;
+        printModel();
+        /**std::cout << "Model name: " << model_name << std::endl;
+        std::cout << "-------------------------------------------------------------" << std::endl;  
+        std::cout << "Layers (type)" << std::setw(30) << "Output Shape" << std::setw(17) << "Params #" << std::endl;
+        std::cout << "=============================================================" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Input (Input Layer)" << "\033[38G" << model_input.getShapeInputData() << "\033[55G" << "0" <<  std::endl;
+        std::cout << std::endl;
+        int inValue = model_input.getShapeInputData();
+        int totalParams = 0;
+        for (int i = 0; i < layers.size(); ++i) {
+            std::cout << layers[i].getName() << " (Dense)" <<  "\033[38G"  << layers[i].getNeurons() << "\033[55G" << layers[i].getNeurons()*(inValue+1) << std::endl;
+            std::cout << std::endl;
+            std::cout << layers[i].getActFun() << " (Hidden Layer)" << "\033[38G" << layers[i].getNeurons() << "\033[55G" << "0" <<  std::endl;
+            std::cout << std::endl;
+            totalParams += layers[i].getNeurons()*(inValue+1);
+            inValue = layers[i].getNeurons();
+        }
+        //printLayers();
+        //std::cout << std::endl;
+        std::cout << "Output (Output layer)" << "\033[38G" << model_output.getShapeOutputData() << "\033[55G" << model_output.getShapeOutputData()*(inValue+1) <<  std::endl;
+        totalParams += model_output.getShapeOutputData()*(inValue+1);
+        std::cout << std::endl;
+        std::cout << model_output.getAct_Fun() << " (Activation Function)" << "\033[38G" << model_output.getShapeOutputData() << "\033[55G" << "0" <<  std::endl;
+        std::cout << std::endl;
+        std::cout << "=============================================================" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Total params: " << totalParams << " (" << totalParams*sizeof(T)/1024 << " KB)" << std::endl;
+        //std::cout << std::endl;
+        std::cout << "_____________________________________________________________" << std::endl;  
+        std::cout << std::endl;**/
         /**std::cout << "Output layer: " << std::endl;
         std::cout << "Number of output introduced in the network: " << model_output.getShapeOutputData() << " activation function: " << model_output.getAct_Fun() << std::endl;
         std::cout << std::endl;**/
