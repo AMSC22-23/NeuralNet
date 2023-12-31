@@ -74,6 +74,8 @@ Utility functions like, readIrisData, and getIrisSets facilitate dataset generat
 It is possible to compile the code with:
 
 ```bash
+#Go first in Common/Neural_Network folder and compile as follow
+
 g++ -O3 -std=c++17  -march=native -ffast-math amsc_nnet.cpp ../src/irisLoader.cpp ../include/network_functions.cpp ../src/ActivationFunctions.cpp  -std=c++20 -o amsc_nnet
 ```
 
@@ -253,7 +255,357 @@ void Model::train(int& selection)
 There are several other methods that are only usefull utilities runned during the training.
 
 #### A real example
-Given the Iris dataset already divided in train, validation and test set using the std::vector<std::vector<T>> structure, following a runnable example of the code
+In order to test the network in `Common/Neural_Network/DataSet`, `Iris.csv` is provided. You can use whatever dataset you want, but you must have to build a customized utility able to provide values to the `Input` and `Output` classes in `std::vector<std::vector<T>>` form. <br>
+In our code, there are already implemented a couple of functions able to retrieve data from the `.csv`: `readIrisData<T>()`, and a function that, given the dimension of the different desired sets as a percentage, divides the output of the previous function into `train`, `validation`, and `test` sets, `getIrisSets<T>()`. As already mentioned, the type `T` is just a template, and you can choose among `float` or `double`.
 
+For this example, we structured the network with three different layers, respectively built with 128, 200, and 300 neurons, using the `ReLu` activation function. When performing classification, the output activation function is set as `sigmoid`.
 
+To improve the performance of the training, we considered a couple of optimizations: first, shuffle the values provided for the train; second, select the `He` model for weight initialization.
 
+You can write the code above in `main()` function
+
+```c++
+//*********************RETRIVE DATA FROM .CSV FILE*************************************************
+    using IrisTuple = std::tuple<float, float, float, float, std::tuple<int, int, int>>;
+
+    std::vector<std::vector<IrisTuple>> iris_se_data, iris_vi_data, iris_ve_data;
+    std::vector<std::vector<float>> trainSet, validationSet, testSet, trainOut, validationOut, testOut; 
+
+    auto result = readIrisData<float>("./DataSet/Iris.csv");
+    auto split_result = getIrisSets<float>(result, 0.6, 0.2, 0.2);
+
+    //organize data in std::vecto<std::vector<T>>
+    trainSet = std::get<0>(split_result);
+    trainOut = std::get<1>(split_result);
+    validationSet = std::get<2>(split_result);
+    validationOut = std::get<3>(split_result);
+    testSet = std::get<4>(split_result);
+    testOut = std::get<5>(split_result);
+
+//********************************NETWORK DEFINITION*************************************************    
+
+    //DEFINING MODEL
+    int a=0;                                       //parameter that define the matrix mul optimization
+    shuffleData(trainSet, trainOut);
+    Input input(trainSet, validationSet, testSet);
+    Output output(trainOut, validationOut, testOut, "sigmoid");
+    Layer layer1("layer1", 128, "ReLu"), layer2("layer2", 200, "ReLu"), layer3("layer3", 300, "ReLu");  
+    Model model("myModel",100, 16, 0.05, "MSE", input, output, "early_stop"); 
+    model.setWeightdInitialization("He");  
+
+    //BUILDING THE MODEL
+    model.addLayer(layer1);
+    model.addLayer(layer2);
+    model.addLayer(layer3);
+
+    model.buildModel();
+    
+    //TRAINING THE MODEL
+    model.train(a);
+
+    return 0;
+```
+
+This is what you are going to find on the standar output:
+
+```c
+ale@BOOK-1B14V8VO0L Neural_Network $ ./amsc_nnet                                                                                                                                  Building model...                                                                                                                                                                 Model name: myModel                                                                                                                                                               Number of epochs: 100                                                                                                                                                             Batch size: 16                                                                                                                                                                    Learning rate: 0.05                                                                                                                                                               Loss function: MSE                                                                                                                                                                Stop cryteria: early_stop                                                                                                                                                                                                                                                                                                                                           Input layer:                                                                                                                                                                      Number of input introduced in the network: 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Model name: myModel                                                                                                                                                               -------------------------------------------------------------                                                                                                                     Layers (type)                  Output Shape         Params #                                                                                                                      =============================================================                                                                                                                                                                                                                                                                                                       Input (Input Layer)                  4                0                                                                                                                                                                                                                                                                                                             layer1 (Dense)                       128              640                                                                                                                                                                                                                                                                                                           ReLu (Hidden Layer)                  128              0                                                                                                                                                                                                                                                                                                             layer2 (Dense)                       200              25800                                                                                                                                                                                                                                                                                                         ReLu (Hidden Layer)                  200              0                                                                                                                                                                                                                                                                                                             layer33 (Dense)                      300              60300                                                                                                                                                                                                                                                                                                         ReLu (Hidden Layer)                  300              0                                                                                                                                                                                                                                                                                                             Output (Output layer)                3                903                                                                                                                                                                                                                                                                                                           sigmoid (Activation Function)        3                0                                                                                                                                                                                                                                                                                                             =============================================================                                                                                                                                                                                                                                                                                                       Total params: 87643 (342 KB)                                                                                                                                                      _____________________________________________________________                                                                                                                                                                                                                                                                                                       Model built!                                                                                                                                                                                                                                                                                                                                                        Train started !  (details and results available in Train_Output.txt file)                                                                                                                                                                                                                                                                                           Progress:  100%                                                                                                                                                                                                                                                                                                                                                     Train and evaluation on Test-Set successfully completed in 23.444 sec !                                                                                                                                         
+```
+
+As printed on the standard output you can inspect `Train_Output.txt` file to go deeper in the details of what happened during the training:
+
+```
+%%Train_Output.txt
+
+batch: 5
+train size: 90
+epoch:    0 batch loop: 5/(012345) train Accuracy:  0.488889  validation Accuracy:  0.666667  time: 231 ms
+epoch:    1 batch loop: 5/(012345) train Accuracy:  0.655556  validation Accuracy:  0.666667  time: 217 ms
+epoch:    2 batch loop: 5/(012345) train Accuracy:  0.666667  validation Accuracy:  0.666667  time: 210 ms
+epoch:    3 batch loop: 5/(012345) train Accuracy:  0.711111  validation Accuracy:  0.666667  time: 213 ms
+epoch:    4 batch loop: 5/(012345) train Accuracy:  0.722222  validation Accuracy:  0.833333  time: 203 ms
+    .
+    .   
+    .
+epoch:   98 batch loop: 5/(012345) train Accuracy:  0.977778  validation Accuracy:       0.9  time: 232 ms
+epoch:   99 batch loop: 5/(012345) train Accuracy:  0.966667  validation Accuracy:  0.866667  time: 233 ms
+
+operations: 90
+
+Final Accuracy on the TestSet: 0.8
+```
+
+The first two rows of the file print the number of batches in which the set is divided and the number of occurrences provided as input. Below, you find the accuracy on the training set measured as the mean value among the results obtained at the end of each loop on a single batch in a single epoch. At the end of each epoch, an evaluation on the validation set is also performed.<br>
+The last line shows the evaluation on the test set, in this case, 80%.
+
+Finally two different `.csv` are provided: `Accuracy.csv` and `Loss.csv`
+
+```csv
+%%Accuracy.csv
+
+epoch, train_accuracy, validation_accuracy;
+0,0.488889,0.666667;
+1,0.655556,0.666667;
+2,0.666667,0.666667;
+3,0.711111,0.666667;
+4,0.722222,0.833333;
+5,0.744444,0.866667;
+    .
+    .
+    .
+97,0.966667,0.833333;
+98,0.977778,0.9;
+99,0.966667,0.866667;
+```
+
+```csv
+%%Loss.csv
+
+epoch, batch, loss
+0,5,0.232133;
+1,5,0.179568;
+2,5,0.160855;
+    .
+    .
+    .
+96,5,0.0328798;
+97,5,0.029592;
+98,5,0.0319308;
+99,5,0.0295758;
+```
+
+These files are produced to simplify the usage of the obtained results in any context.
+
+At he moment the best results in order of accuracy are obtained with this model structure:
+```
+Building model...                                                                                                                                                                 Model name: myModel                                                                                                                                                               Number of epochs: 100                                                                                                                                                             Batch size: 16                                                                                                                                                                    Learning rate: 0.05                                                                                                                                                               Loss function: MSE                                                                                                                                                                Stop cryteria: early_stop                                                                                                                                                                                                                                                                                                                                           Input layer:                                                                                                                                                                      Number of input introduced in the network: 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Model name: myModel                                                                                                                                                               -------------------------------------------------------------                                                                                                                     Layers (type)                  Output Shape         Params #                                                                                                                      =============================================================                                                                                                                                                                                                                                                                                                       Input (Input Layer)                  4                0                                                                                                                                                                                                                                                                                                             layer1 (Dense)                       128              640                                                                                                                                                                                                                                                                                                           ReLu (Hidden Layer)                  128              0                                                                                                                                                                                                                                                                                                             Output (Output layer)                3                387                                                                                                                                                                                                                                                                                                           sigmoid (Activation Function)        3                0                                                                                                                                                                                                                                                                                                             =============================================================                                                                                                                                                                                                                                                                                                       Total params: 1027 (4 KB)                                                                                                                                                         _____________________________________________________________                                                                                                                                                                                                                                                                                                       Model built!                                                                                                                                                                                                                                                                                                                                                        Train started !  (details and results available in Train_Output.txt file)                                                                                                                                                                                                                                                                                           Progress:  100%                                                                                                                                                                                                                                                                                                                                                     Train and evaluation on Test-Set successfully completed in 1.41 sec !
+```
+
+With only one layer built with 128 neurons and without any particoular optimizations on the matrix multiplication algorithm, the model after 100 epoch reach 90% accuracy on the train set, 93.3% on the validation and 100% on the test set.
+
+### Debug Utilities
+To observe how the algorithm behaves during training or if you want to check how the input propagates along the network and back, a couple of useful methods are provided. Let's see how they work:
+
+Choosing `debug` in the `Model::setWeightInitialization()` method, weights and bias are initialized with the same value equal to the index of the layer. The `Model::printAllWeightsToFile()` method allows you to create and update the `weights.txt file` where every single matrix and vector generated by the model at the moment the function is called are printed.
+
+```c
+    .
+    .
+    .
+Layer layer1("layer1", 5, "ReLu");
+Model model("myModel",100, 16, 0.05, "MSE", input, output, "early_stop");l
+model.setWeightdInitialization("debug"); 
+
+model.addLayer(layer1);
+model.buildModel();
+model.printAllWeightsToFile();
+```
+
+```
+%%weights.txt
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 5
+1 1 1 1 1 
+1 1 1 1 1 
+1 1 1 1 1 
+1 1 1 1 1 
+
+bias layer 1 size: 5
+1 1 1 1 1 
+
+z input layer 1 size: 5
+0 0 0 0 0 
+
+h output layer 1 size: 5
+0 0 0 0 0 
+
+dE_dx layer 1 size: 5
+0 0 0 0 0 
+
+dE_db layer 1 size: 5
+0 0 0 0 0 
+
+dE_dw layer 1 size: 4 x 5
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 5 x 3
+2 2 2 
+2 2 2 
+2 2 2 
+2 2 2 
+2 2 2 
+
+bias layer 2 size: 3
+2 2 2 
+
+z input layer 2 size: 3
+0 0 0 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 5 x 3
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3
+0 0 0
+``` 
+
+You can try to change the option provided to `Model::setWeightdInitialization()` and call `Model::printAllWeightsToFile()` to see how the different matrix in each singoul layer are modelled.
+
+You can use this method in a more interesting way after performin manually one step of prediction and one step of backpropagation, and evaluating how the matrix are changed !
+
+```c++
+    .
+    .   
+    .
+Layer layer1("layer1", 5, "ReLu");
+Model model("myModel",100, 16, 0.05, "MSE", input, output, "early_stop"); 
+model.setWeightdInitialization("He");  
+
+model.addLayer(layer1);
+
+model.buildModel();
+model.printAllWeightsToFile();                          //first call after initialization
+    
+model.predict(trainSet[0], a, 1);                       //one step of prediction
+model.backPropagation(trainSet[0], trainOut[0], a);     //one step of backpropagation
+model.printAllWeightsToFile();                          //second call of the method
+```
+
+Below what you cam find in the `weights.txt` file
+
+```c
+%%weights.txt
+
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************
+
+weigthts 4 x 5
+-0.172411 0.855796 0.50487 0.966062 -0.787803 
+-0.348239 -0.975681 -0.674123 -1.02335 0.459974 
+1.13758 -0.671584 -1.13152 -0.473169 0.60252 
+0.0143133 -0.658744 0.474282 0.0805647 0.2821 
+
+bias layer 1 size: 5
+-0.172411 0.855796 0.50487 0.966062 -0.787803 
+
+z input layer 1 size: 5         //after initalization no values available
+0 0 0 0 0 
+
+h output layer 1 size: 5
+0 0 0 0 0 
+
+dE_dx layer 1 size: 5
+0 0 0 0 0 
+
+dE_db layer 1 size: 5
+0 0 0 0 0 
+
+dE_dw layer 1 size: 4 x 5
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+
+************* weights layer 2 ****************
+
+weigthts 5 x 3
+0.889534 -0.129216 0.705581 
+-1.56428 -0.37402 -0.327126 
+-0.0860741 0.381005 0.020714 
+0.655904 -0.232059 0.0740191 
+-0.0845426 -0.937647 0.201616 
+
+bias layer 2 size: 3
+-0.311475 -0.872676 -0.602954 
+
+z input layer 2 size: 3
+0 0 0 
+
+dE_db layer 2 size: 3
+0 0 0 
+
+dE_dw layer 2 size: 5 x 3
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+
+y output layer 2 size: 3            //also no output produced
+0 0 0 
+********************************NEW SET OF WEIGHTS**********************************************
+
+************* weights layer 1 ****************     //from here what is printetd after the second call
+
+weigthts 4 x 5
+-0.172411 0.855796 0.50487 0.966062 -0.787803 
+-0.348239 -0.975681 -0.674123 -1.02335 0.459974 
+1.13758 -0.671584 -1.13152 -0.473169 0.60252 
+0.0143133 -0.658744 0.474282 0.0805647 0.2821 
+
+bias layer 1 size: 5
+-0.172411 0.855796 0.50487 0.966062 -0.787803 
+
+z input layer 1 size: 5
+0.505112 0.623186 -0.0784627 1.17237 -0.817642          //now all updated values available
+
+h output layer 1 size: 5
+0.505112 0.623186 0 1.17237 0 
+
+dE_dx layer 1 size: 5
+0.17069 -0.0791364 0.005011 0.0179063 0.0487738 
+
+dE_db layer 1 size: 5
+0.17069 -0.0791364 0 0.0179063 0 
+
+dE_dw layer 1 size: 4 x 5
+0.166313 -0.0771073 0 0.0174471 0 
+0.059085 -0.0273934 0 0.00619833 0 
+0.14443 -0.0669616 0 0.0151515 0 
+0.0415784 -0.0192768 0 0.00436179 0 
+
+************* weights layer 2 ****************
+
+weigthts 5 x 3
+0.889534 -0.129216 0.705581 
+-1.56428 -0.37402 -0.327126 
+-0.0860741 0.381005 0.020714 
+0.655904 -0.232059 0.0740191 
+-0.0845426 -0.937647 0.201616 
+
+bias layer 2 size: 3
+-0.311475 -0.872676 -0.602954 
+
+z input layer 2 size: 3
+-0.0680381 -1.44309 -0.363639 
+
+dE_db layer 2 size: 3
+0 0 0.241914 
+
+dE_dw layer 2 size: 5 x 3
+0 0 0.122194 
+0 0 0.150758 
+0 0 0 
+0 0 0.283613 
+0 0 0 
+
+y output layer 2 size: 3
+0.482997 0.191068 0.410079                  //output available
+```
+
+To go deeper in the comprehension of the algorithm is possible to call the method also inside the `Model::train()` method and se how the 

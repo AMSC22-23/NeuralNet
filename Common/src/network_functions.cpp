@@ -450,40 +450,7 @@ void Model<T>::buildModel(){
         std::cout << std::endl;
         std::cout << std::endl;
         printModel();
-        /**std::cout << "Model name: " << model_name << std::endl;
-        std::cout << "-------------------------------------------------------------" << std::endl;  
-        std::cout << "Layers (type)" << std::setw(30) << "Output Shape" << std::setw(17) << "Params #" << std::endl;
-        std::cout << "=============================================================" << std::endl;
-        std::cout << std::endl;
-        std::cout << "Input (Input Layer)" << "\033[38G" << model_input.getShapeInputData() << "\033[55G" << "0" <<  std::endl;
-        std::cout << std::endl;
-        int inValue = model_input.getShapeInputData();
-        int totalParams = 0;
-        for (int i = 0; i < layers.size(); ++i) {
-            std::cout << layers[i].getName() << " (Dense)" <<  "\033[38G"  << layers[i].getNeurons() << "\033[55G" << layers[i].getNeurons()*(inValue+1) << std::endl;
-            std::cout << std::endl;
-            std::cout << layers[i].getActFun() << " (Hidden Layer)" << "\033[38G" << layers[i].getNeurons() << "\033[55G" << "0" <<  std::endl;
-            std::cout << std::endl;
-            totalParams += layers[i].getNeurons()*(inValue+1);
-            inValue = layers[i].getNeurons();
-        }
-        //printLayers();
-        //std::cout << std::endl;
-        std::cout << "Output (Output layer)" << "\033[38G" << model_output.getShapeOutputData() << "\033[55G" << model_output.getShapeOutputData()*(inValue+1) <<  std::endl;
-        totalParams += model_output.getShapeOutputData()*(inValue+1);
-        std::cout << std::endl;
-        std::cout << model_output.getAct_Fun() << " (Activation Function)" << "\033[38G" << model_output.getShapeOutputData() << "\033[55G" << "0" <<  std::endl;
-        std::cout << std::endl;
-        std::cout << "=============================================================" << std::endl;
-        std::cout << std::endl;
-        std::cout << "Total params: " << totalParams << " (" << totalParams*sizeof(T)/1024 << " KB)" << std::endl;
-        //std::cout << std::endl;
-        std::cout << "_____________________________________________________________" << std::endl;  
-        std::cout << std::endl;**/
-        /**std::cout << "Output layer: " << std::endl;
-        std::cout << "Number of output introduced in the network: " << model_output.getShapeOutputData() << " activation function: " << model_output.getAct_Fun() << std::endl;
-        std::cout << std::endl;**/
-
+        
         //resizing the vectors
         weights.resize(layers.size()+1);
         bias.resize(layers.size()+1);
