@@ -14,50 +14,6 @@ Our work was divided into three main phases:
 - Profiling the performances of all the different versions.
 - Building the neural network.
 
-### MATRIX MATRIX MULTIPLICATION
-We started working on the project by implementing various versions of matrix-matrix multiplication code individually. This allowed us to profile the performances of different approaches and figure out which approach would be better to use in our neural network. We tried different algorithms and data structures:
-
-- Simple-function-like matrix multiplication.
-
-- Defined and implemented classes that stored the matrices' data using different structures, each structure with its own methods  for accessing the matrix and for matrix-matrix multiplication. We explored the following structures in organizing the data:
-    - single std::vector<> row or column major.
-    - std::vector<std::vector<>>.
-    - std::vector<std::map<>>.
-
-Moreover we tried to implement different classes and methods to understando how different call or data organization can affect the time complexity.
-
-
-
-- Tested different loop structures to figure out which was the best for cache performance:
-    - Naive functions.
-    - Naive functions with accumulations.
-    - Cache-optimized function that reorders the two inner loops.
-    - Transpose a matrix to reach better cache performancies.
-    - Tiling.
-
-- Compiled the code with different optimization flags to compare them and eventually exploit loop unrolling and function inlining.
-- Exploited SIMD instructions using vectorized AVX functions.
-- Exploited CUDA kernels with different optimizations (block dimension, tiling)
-- Utilized OpenBlas library to compare our results with its functions.
-
-**********descrizione degli unit test di filippo e come compilarli
-
-Inside the matrix_mult folder, there are two versions of the same code, ale_test.cpp compiled with:
-
-```bash
-g++ -O3 -std=c++20  -march=native -ffast-math ale_test.cpp ../src/matrixProd_AVX.cpp  -mavx2 -mfma -std=c++20 -o ale_test
-```
-It offers the possibility to evaluate the time complexity of different sequential algorithms. The code accepts an m x n matrix, checks the dimensions, and performs different functions exploiting also vectorized instructions through the AVX library. By modifying these two lines, it is possible to test any dimension as needed.
-
-```c
-77  int mul=1;
-78  int m=1024*mul, n=1024*mul,mb=1024*mul,nb=1024*mul ...
-```
-The second file, ale_test_cuda.cpp, needs to perform several optimizations exploiting the GPU with functions written in CUDA. A Google Colab notebook, "AMSC_cuda_profiler.ipynb," is provided that allows you to load, compile, run code and functions, after copying the folder to a Google Drive folder.
-
-### PROFILING
-To conduct the profiling of our algorithms and examine the impact of various parameters, we developed a compact program designed to automate this process. This program accepts a CSV file (referred to as "profilelist.txt") as input, containing the specified profiling tasks to be executed. Upon execution, the program generates and records the results in distinct CSV files, specifically "filResult.csv" and "profiling_results.csv." Subsequently, when it comes time to analyze the profiling results, we upload the data contained in "profiling_results.csv" to a MongoDB database. Using the Python MongoDB library, we can query and visualize the required data.
-
 ## NEURAL NETWORK
 We implemented a Feed Forward Neural Network, and matrix multiplications are handled by the functions developed in the first part of the project. The weights are updated through a Gradient Descent optimization implemented in a batch-wise solution.
 
@@ -76,8 +32,26 @@ It is possible to compile the code with:
 ```bash
 #Go first in Common/Neural_Network folder and compile as follow
 
-g++ -O3 -std=c++17  -march=native -ffast-math amsc_nnet.cpp ../src/irisLoader.cpp ../include/network_functions.cpp ../src/ActivationFunctions.cpp  -std=c++20 -o amsc_nnet
+g++ -O3 -std=c++17 -I ../include -march=native -ffast-math amsc_nnet.cpp ../src/irisLoader.cpp ../src/network_functions.cpp ../src/ActivationFunctions.cpp  ../src/matrixProd_AVX.cpp -mavx2 -mfma -std=c++20 -o amsc_nnet
 ```
+### STRUCTURE OF THE CODE
+
+The entry point of the code is in `amsc_nnet.cpp` file located in `Common/Neural_Network` folder. This file contains only the `main()` function where is possible to load the dataset, define the model parameters, build and run each method related your costoum model.<br>
+The classes of the network are defined in two header files located in `Common/include` folder:
+- `network.hpp`: contains definition and methods of `Input`, `Output` and `Layer` classes
+- `model.hpp`: contains all the what is related to `Model` class
+
+In the same folder you can find all files where the foot prin of each function and utilitiy runned in the code:
+- `ActivetionFunctions.hpp`
+- `function_utilities.hpp`
+- `irisLoader.hpp`
+
+Each function is defined as `template` function in order to be flexible in accepting as `float` as `double` values, in this folder are located also all the header files that manage the different optimization in matrix multiplication.<br>
+Moving to `Common/src` is possible to manage the different `.cpp` files where the functions are defined:
+- `ActivationFunctions.cpp`: definition of activation and loss function
+- `irisLoader.cpp`: all the stuffs that retrive data from the `Iris.csv` file
+- `network_functions.cpp`: here are developed all the functions and methods runned in the code
+This folder contains also everything related to the matrix multiplication optimization
 
 ### HOW IT WORKS
 
@@ -254,7 +228,7 @@ void Model::train(int& selection)
 
 There are several other methods that are only usefull utilities runned during the training.
 
-#### A real example
+#### RUNNING A WORKING EXAMPLE
 In order to test the network in `Common/Neural_Network/DataSet`, `Iris.csv` is provided. You can use whatever dataset you want, but you must have to build a customized utility able to provide values to the `Input` and `Output` classes in `std::vector<std::vector<T>>` form. <br>
 In our code, there are already implemented a couple of functions able to retrieve data from the `.csv`: `readIrisData<T>()`, and a function that, given the dimension of the different desired sets as a percentage, divides the output of the previous function into `train`, `validation`, and `test` sets, `getIrisSets<T>()`. As already mentioned, the type `T` is just a template, and you can choose among `float` or `double`.
 
@@ -485,7 +459,7 @@ model.backPropagation(trainSet[0], trainOut[0], a);     //one step of backpropag
 model.printAllWeightsToFile();                          //second call of the method
 ```
 
-Below what you cam find in the `weights.txt` file
+Below what you can find in the `weights.txt` file
 
 ```c
 %%weights.txt
@@ -609,3 +583,75 @@ y output layer 2 size: 3
 ```
 
 To go deeper in the comprehension of the algorithm is possible to call the method also inside the `Model::train()` method and se how the parameters evolve during the trining... 
+
+### COMPARISON WITH EXISTING ARCHITECTURES
+
+In order to proove the performance of our code we implemented a coolab noteboock named `Feed_Forward_Comparison.ipynb` located in `Common/Neural_Network/Keras_Network`. To run the comparison a copy of this repo on a personal google drive is needed, than, once opened the notebook in your browser you only need to change the first block of code and access the `Common/Neural_Network` folder on your drive
+
+```bash
+from google.colab import drive
+drive.mount('/gdrive')
+%cd /gdrive/ Path-to-your-own /Common/Neural_Network
+```
+
+Following the blocks on the code you will find already implemented a neural network based on keras tensorflow libraries, is already setted with one layer made by 128 neurons, 100 epochs and the same learning rate.<br>
+Now you can build and run this toy example, print the results, than you can compile and run our code and print the comparison.
+
+Working on a singoul layer with 128 neurons our code results approximately ten time faster, with a better loss and accuracy.
+
+### CUDA IMPLEMENTATION
+Finally we tryed to exploit GPU architecture, and to achive this result we relied again on a coolab notebook. Opening the same `Feed_Forward_Comparison.ipynb` and scrolling down till the last part you can compile and run a different version of the code, you need first to connect to a GPU runtime compile and run the code. Now you can set two different parameters that affect the cuda kernel:
+- Block size
+- Tile size
+
+You can access to the first by calling `Model::setCudaBlockSize()` and passing an `int` parameter that rapresent the choosen block size (default value setted at 32). If you want to chanche the tile size you need to open `Common/src/cudaMMul.cu` file and change the value defined at row 7.
+```c
+%%Common/src/cudaMMul.cu
+
+7  #define tile 32     //set the value you prefere
+```
+
+### MATRIX MATRIX MULTIPLICATION
+We started working on the project by implementing various versions of matrix-matrix multiplication code individually. This allowed us to profile the performances of different approaches and figure out which approach would be better to use in our neural network. We tried different algorithms and data structures:
+
+- Simple-function-like matrix multiplication.
+
+- Defined and implemented classes that stored the matrices' data using different structures, each structure with its own methods  for accessing the matrix and for matrix-matrix multiplication. We explored the following structures in organizing the data:
+    - single std::vector<> row or column major.
+    - std::vector<std::vector<>>.
+    - std::vector<std::map<>>.
+
+Moreover we tried to implement different classes and methods to understando how different call or data organization can affect the time complexity.
+
+
+
+- Tested different loop structures to figure out which was the best for cache performance:
+    - Naive functions.
+    - Naive functions with accumulations.
+    - Cache-optimized function that reorders the two inner loops.
+    - Transpose a matrix to reach better cache performancies.
+    - Tiling.
+
+- Compiled the code with different optimization flags to compare them and eventually exploit loop unrolling and function inlining.
+- Exploited SIMD instructions using vectorized AVX functions.
+- Exploited CUDA kernels with different optimizations (block dimension, tiling)
+- Utilized OpenBlas library to compare our results with its functions.
+
+**********descrizione degli unit test di filippo e come compilarli
+
+Inside the matrix_mult folder, there are two versions of the same code, ale_test.cpp compiled with:
+
+```bash
+g++ -O3 -std=c++20  -march=native -ffast-math ale_test.cpp ../src/matrixProd_AVX.cpp  -mavx2 -mfma -std=c++20 -o ale_test
+```
+It offers the possibility to evaluate the time complexity of different sequential algorithms. The code accepts an m x n matrix, checks the dimensions, and performs different functions exploiting also vectorized instructions through the AVX library. By modifying these two lines, it is possible to test any dimension as needed.
+
+```c
+77  int mul=1;
+78  int m=1024*mul, n=1024*mul,mb=1024*mul,nb=1024*mul ...
+```
+The second file, ale_test_cuda.cpp, needs to perform several optimizations exploiting the GPU with functions written in CUDA. A Google Colab notebook, "AMSC_cuda_profiler.ipynb," is provided that allows you to load, compile, run code and functions, after copying the folder to a Google Drive folder.
+
+### PROFILING
+To conduct the profiling of our algorithms and examine the impact of various parameters, we developed a compact program designed to automate this process. This program accepts a CSV file (referred to as "profilelist.txt") as input, containing the specified profiling tasks to be executed. Upon execution, the program generates and records the results in distinct CSV files, specifically "filResult.csv" and "profiling_results.csv." Subsequently, when it comes time to analyze the profiling results, we upload the data contained in "profiling_results.csv" to a MongoDB database. Using the Python MongoDB library, we can query and visualize the required data.
+

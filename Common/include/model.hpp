@@ -45,6 +45,7 @@ class Model{
     void extendMatrix();
     void reduceMatrix();
     void initialiseVector(std::vector<std::vector<T>>& default_weights, const std::string& weights_model);
+    void setCudaBlockSize(int block_size){cuda_block_size = block_size;}
     
     //@note: method should be const
     Input<T> getInput(){return model_input;}
@@ -58,7 +59,7 @@ class Model{
     std::vector<Layer> layers;
     Input<T> model_input;
     Output<T> model_output;
-    int model_epochs, model_batch_size, matrix_mul_optimisation = 0;
+    int model_epochs, model_batch_size, matrix_mul_optimisation = 0, cuda_block_size = 32;
     float model_learning_rate;
     T default_weight = 0.3;
     std::string model_name, model_loss_fun, model_stop_cryteria, weights_initialisation = "Normal_Distribution";

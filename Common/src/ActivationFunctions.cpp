@@ -1,4 +1,4 @@
-#include "../include/ActivationFunctions.hpp"
+#include "ActivationFunctions.hpp"
 #include <iostream>
 
 template <typename T>

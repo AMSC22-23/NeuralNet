@@ -66,4 +66,9 @@ void shuffleData(std::vector<std::vector<T>>& trainSet, std::vector<std::vector<
 template<typename T>
 void mul_funct(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, int m, int n, int nb, int selection);
 
+template<typename T>
+void mul_funct(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, int m, int n, int nb, int selection, int block_size);
+
+
+
 #endif
