@@ -1,6 +1,8 @@
 //#include "../include/network.hpp"
-#include "../include/irisLoader.hpp"
-#include "../include/model.hpp"
+//#include "../include/irisLoader.hpp"
+//#include "../include/model.hpp"
+#include "irisLoader.hpp"
+#include "model.hpp"
 #include <fstream>
 #include <sstream>
 #include <tuple>
@@ -18,7 +20,7 @@ int main(){
 
     std::vector<std::vector<IrisTuple>> iris_se_data, iris_vi_data, iris_ve_data;
     std::vector<std::vector<float>> trainSet, validationSet, testSet, trainOut, validationOut, testOut;
-    int a=0;
+    int a=2;
 
     auto result = readIrisData<float>("./DataSet/Iris.csv");
     auto split_result = getIrisSets<float>(result, 0.6, 0.2, 0.2);
@@ -45,8 +47,8 @@ int main(){
     //BUILDING THE MODEL
     
     model.addLayer(layer1);
-    model.addLayer(layer2);
-    model.addLayer(layer3);
+    //model.addLayer(layer2);
+    //model.addLayer(layer3);
 
     model.buildModel();
     //model.printAllWeightsToFile();
