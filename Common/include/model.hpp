@@ -56,6 +56,7 @@ class Model{
     std::vector<T> y, dE_dy;
     
     private:
+    //T *ch, *in, *cdE_db, *cw, *cdE_dw,*cz,*cy,cdE_dx, *cw0; //cuda pointers
     std::vector<Layer> layers;
     Input<T> model_input;
     Output<T> model_output;

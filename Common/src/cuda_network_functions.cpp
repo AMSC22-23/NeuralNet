@@ -865,7 +865,7 @@ void Model<T>::train(int& selection){
     outputFile << "train size: " << model_input.getTrain().size() << std::endl;
     std::cout << "Train started !  (details and results available in Train_Output.txt file)" << std::endl;
     std::cout << std::endl;
-    std::cout << "Progress: " ;
+    //std::cout << "Progress: " ;
     const auto t0_0 = std::chrono::high_resolution_clock::now();
     for(int epoch = 0; epoch < model_epochs; epoch++){
         outputFile << "epoch: " << std::setw(4) << epoch << " batch loop: " << batch << "/(";
@@ -918,7 +918,7 @@ void Model<T>::train(int& selection){
             updateWeightsBias(weights, tempWeights, bias, tempBias, count, model_learning_rate);
             resetVector(tempWeights);
             resetVector(tempBias);
-            std::cout << "\033[12G" << percentage << "%" << std::flush;
+            std::cout << "\r" << "progress: " << percentage << "%" << std::flush;
         }
         const auto t1 = std::chrono::high_resolution_clock::now();
         int64_t dt_01 = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();

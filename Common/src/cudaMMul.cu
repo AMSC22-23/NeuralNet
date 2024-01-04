@@ -13,7 +13,7 @@ __global__ void gpu_matrix_multF(float *a,float *b, float *c, int m, int n, int 
     int col = blockIdx.x * blockDim.x + threadIdx.x;
     if( col < nb && row < m)
     {
-        int sum = 0;
+        float sum = 0;
         for(int i = 0; i < n; i++)
         {
             sum += a[row * n + i] * b[i * nb + col];
@@ -28,7 +28,7 @@ __global__ void gpu_matrix_multD(double *a,double *b, double *c, int m, int n, i
     int col = blockIdx.x * blockDim.x + threadIdx.x;
     if( col < nb && row < m)
     {
-        int sum = 0;
+        double sum = 0;
         for(int i = 0; i < n; i++)
         {
             sum += a[row * n + i] * b[i * nb + col];
@@ -48,7 +48,7 @@ __global__ void gpu_matrix_mult_tileF(float *a,float *b, float *c, int m, int n,
 
   int Row = by * blockDim.y + ty;
   int Col = bx * blockDim.x + tx;
-  int Pvalue = 0;
+  float Pvalue = 0;
 
   // Loop over the M and N tiles required to compute the P element
   for (int p = 0; p < (n-1) / tile + 1; ++p) {
@@ -90,7 +90,7 @@ __global__ void gpu_matrix_mult_tileD(double *a,double *b, double *c, int m, int
 
   int Row = by * blockDim.y + ty;
   int Col = bx * blockDim.x + tx;
-  int Pvalue = 0;
+  double Pvalue = 0;
 
   // Loop over the M and N tiles required to compute the P element
   for (int p = 0; p < (n-1) / tile + 1; ++p) {
@@ -148,9 +148,9 @@ void cudaFunctionF(float *a, float *b, float *c, int m, int n, int nb, int block
 
     cudaMemcpy(c, cc, sizeof(float) * m*nb, cudaMemcpyDeviceToHost);
 
-    cudaFree(a);
-    cudaFree(b);
-    cudaFree(c);
+    cudaFree(ac);
+    cudaFree(bc);
+    cudaFree(cc);
 
 }
 
@@ -178,6 +178,12 @@ void cudaFunctionD(double *a, double *b, double *c, int m, int n, int nb, int bl
     gpu_matrix_multD<<<dimGrid, dimBlock>>>(ac, bc, cc, m, n, nb);
     cudaThreadSynchronize();
 
+    cudaMemcpy(c, cc, sizeof(float) * m*nb, cudaMemcpyDeviceToHost);
+
+    cudaFree(ac);
+    cudaFree(bc);
+    cudaFree(cc);
+
 }
 
 
@@ -204,9 +210,9 @@ void cudaTileFunctionF(float *a, float *b, float *c, int m, int n, int nb, int b
         
     cudaMemcpy(c, cc, sizeof(float) * m*nb, cudaMemcpyDeviceToHost);
 
-    cudaFree(a);
-    cudaFree(b);
-    cudaFree(c);
+    cudaFree(ac);
+    cudaFree(bc);
+    cudaFree(cc);
 
 }
 
@@ -232,8 +238,8 @@ void cudaTileFunctionD(double *a, double *b, double *c, int m, int n, int nb, in
     gpu_matrix_mult_tileD<<<dimGrid, dimBlock>>>(ac, bc, cc, m, n, nb);
     cudaMemcpy(c, cc, sizeof(double) * m*nb, cudaMemcpyDeviceToHost);
 
-    cudaFree(a);
-    cudaFree(b);
-    cudaFree(c);
+    cudaFree(ac);
+    cudaFree(bc);
+    cudaFree(cc);
 
 }

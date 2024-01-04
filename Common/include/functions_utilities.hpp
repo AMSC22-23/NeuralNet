@@ -48,6 +48,9 @@ void updateDE_Dw_Db(std::vector<std::vector<T>>& old_weights, std::vector<std::v
 template<typename T>
 void updateWeightsBias(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_bias, int numOccurence, float learning_rate);
 
+//template<typename T>
+//void updateWeightsBias(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& new_weights, T *old_bias, T *new_bias, int numOccurence, float learning_rate);
+
 template<typename T>
 void evaluateAccuracy(std::vector<T>& y, std::vector<T>& target, int& numCorrect, int& numTotal);
 
@@ -68,6 +71,9 @@ void mul_funct(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, int m, i
 
 template<typename T>
 void mul_funct(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, int m, int n, int nb, int selection, int block_size);
+
+//template<typename T>
+//void mul_funct(T *a, T *b, T *c, int m, int n, int nb, int selection, int block_size);
 
 
 
