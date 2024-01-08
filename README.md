@@ -621,7 +621,7 @@ We started working on the project by implementing various versions of matrix-mat
     - std::vector<std::vector<>>.
     - std::vector<std::map<>>.
 
-Moreover we tried to implement different classes and methods to understando how different call or data organization can affect the time complexity.
+Moreover we tried to implement different classes and methods to understand how different call or data organization can affect the time complexity.
 
 
 
@@ -629,7 +629,7 @@ Moreover we tried to implement different classes and methods to understando how 
     - Naive functions.
     - Naive functions with accumulations.
     - Cache-optimized function that reorders the two inner loops.
-    - Transpose a matrix to reach better cache performancies.
+    - Transpose a matrix to reach better cache performances.
     - Tiling.
 
 - Compiled the code with different optimization flags to compare them and eventually exploit loop unrolling and function inlining.
@@ -637,7 +637,46 @@ Moreover we tried to implement different classes and methods to understando how 
 - Exploited CUDA kernels with different optimizations (block dimension, tiling)
 - Utilized OpenBlas library to compare our results with its functions.
 
-**********descrizione degli unit test di filippo e come compilarli
+### Unit tests 
+Before integrating the algorithms into the neural network, we tested them: 
+for each mm algorithm we built a unit test, located in Common/test/unit_test, that checks if 
+the result produced by our algorithm is the same produced by openblas libray. Each unit test also performs
+a first comparison between the two algorithms in terms of time complexity. 
+The developed unit tests are:
+- UnitTest_MatrixFlat.cpp that tests the class MatrixFlat.
+- UnitTest_mmm_loopI.cpp that test the Cache-optimized function that reorders the two inner loops
+- UnitTest_mmm_multiT.cpp that test the function that uses openMP to further improve performances  
+- UnitTest_mmm_naive.cpp that test the naive (cache-unaware) matrix multiplication algorithm
+- UnitTest_mmm_naive_RegisterAcc.cpp that test the naive function with register accumulation
+- UnitTest_mmm_tiling.cpp that test the tiling mmm algorithm
+
+To compile the unit tests is possible to relay on make directives. The command:
+
+```bash
+make UnitTest_<ALGORITHM_NAME> \
+&& ./UnitTest_<ALGORITHM_NAME> PROGRAM_ARGUMENTS
+
+```
+will compile the unit test called UnitTest_<ALGORITHM_NAME> and run it 
+with the arguments PROGRAM_ARGUMENTS. 
+
+The following table shows the arguments needed for each test.
+
+| Algorithm\Arguments   | MatrixDim | NumberThreads |
+|-----------------------|-----------|---------------|
+| MatrixFlat.cpp        | &#10007;  | &#10007;      |
+| mmm_naive             | &#10003;  | &#10007;      |
+| mmm_naive_RegisterAcc | &#10003;  | &#10007;      |
+| mmm_loopI             | &#10003;  | &#10007;      |
+| mmm_multiT.cpp        | &#10003;  | &#10003;      |
+
+where both MatrixDIm and NumberThreads must be a single value 
+that can be converted to an integer. 
+
+
+
+
+
 
 Inside the matrix_mult folder, there are two versions of the same code, ale_test.cpp compiled with:
 
