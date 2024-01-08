@@ -6,8 +6,6 @@ void cudaFunctionF(float *a, float *b, float *c, int m, int n, int nb, int block
 void cudaFunctionD(double *a, double *b, double *c, int m, int n, int nb, int block_size);
 void cudaTileFunctionF(float *a, float *b, float *c, int m, int n, int nb, int block_size);
 void cudaTileFunctionD(double *a, double *b, double *c, int m, int n, int nb, int block_size);
-void cudaFunctionFOptimized(float *a, float *b, float *c, int m, int n, int nb, int block_size);
-void cudaFunctionDOptimized(double *a, double *b, double *c, int m, int n, int nb, int block_size);
 
 /**void cudaFunction(float *a, float *b, float *c, int m, int n, int nb, int block_size){
     cudaFunctionF(a, b, c, m, n, nb, block_size);

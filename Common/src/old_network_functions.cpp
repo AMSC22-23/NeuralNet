@@ -793,22 +793,11 @@ template void Model<double>::reduceMatrix();
 template<typename T> //thi version need to be called only after the resizing of the weights
 void Model<T>::predict(std::vector<T>& input, int& selection){
     input.push_back(1);
-    //mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation);   //weights[0], input, z, weights_shape[0][0], weights_shape[0][1], 1, matrix_mul_optimisation);
-    const auto t0_0 = std::chrono::high_resolution_clock::now();
     mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation);   //weights[0], input, z, weights_shape[0][0], weights_shape[0][1], 1, matrix_mul_optimisation);
-    const auto t0_1 = std::chrono::high_resolution_clock::now();
-    int64_t dt_01 = std::chrono::duration_cast<std::chrono::microseconds>(t0_1 - t0_0).count();
-    times[0] += dt_01;
     activationFun(z[0], h[0], layers[0].getActFun());
     
     for(int loop = 0; loop < layers.size(); loop++){
-        //mul_funct(h[loop], weights[loop+1], z[loop+1], 1, weights_shape[loop+1][0]+1, weights_shape[loop+1][1], matrix_mul_optimisation);
-        const auto t1_0 = std::chrono::high_resolution_clock::now();
-         mul_funct(h[loop], weights[loop+1], z[loop+1], 1, weights_shape[loop+1][0]+1, weights_shape[loop+1][1], matrix_mul_optimisation);
-        //mul_funct(h[loop], weights[loop+1], z[loop+1], 1, weights_shape[loop+1][0]+1, weights_shape[loop+1][1], matrix_mul_optimisation, cuda_block_size);
-        const auto t1_1 = std::chrono::high_resolution_clock::now();
-        int64_t dt_02 = std::chrono::duration_cast<std::chrono::microseconds>(t1_1 - t1_0).count();
-        times[1+loop] += dt_02;
+        mul_funct(h[loop], weights[loop+1], z[loop+1], 1, weights_shape[loop+1][0]+1, weights_shape[loop+1][1], matrix_mul_optimisation);
         if(loop < layers.size()-1){
             activationFun(z[loop+1], h[loop+1], layers[loop+1].getActFun());
         }
@@ -857,49 +846,21 @@ void Model<T>::backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int
     activationFunDerivative(z[layers.size()], dAct_z[layers.size()], model_output.getOutputAct_fun());
     dE_db[layers.size()] = mul(dE_dy, dAct_z[layers.size()]);
     temp = transposeMatrix(h[layers.size()-1], one, h[layers.size()-1].size());
-    //mul_funct(temp , dE_db[layers.size()],dE_dw[layers.size()], h[layers.size()-1].size(), one, dE_db[layers.size()].size(), matrix_mul_optimisation);
-    const auto t0_0 = std::chrono::high_resolution_clock::now();
     mul_funct(temp , dE_db[layers.size()],dE_dw[layers.size()], h[layers.size()-1].size(), one, dE_db[layers.size()].size(), matrix_mul_optimisation);
-    //cudaFunctionFOptimized(input, &cw[0], &cz[0], 1, weights_shape[0][0], weights_shape[0][1], cuda_block_size);
-    const auto t0_1 = std::chrono::high_resolution_clock::now();
-    int64_t dt_01 = std::chrono::duration_cast<std::chrono::microseconds>(t0_1 - t0_0).count();
-    //std::cout << "time1: " << dt_01 <<  std::endl;
-    times[1+layers.size()] += dt_01;
     transposeMatrix2(weights[layers.size()], temp, weights_shape[layers.size()][0], weights_shape[layers.size()][1]);
-    //mul_funct(dE_db[layers.size()], temp, dE_dx[layers.size()-1], one,  dE_db[layers.size()].size(), weights_shape[layers.size()][0], matrix_mul_optimisation);
-    const auto t1_0 = std::chrono::high_resolution_clock::now();
     mul_funct(dE_db[layers.size()], temp, dE_dx[layers.size()-1], one,  dE_db[layers.size()].size(), weights_shape[layers.size()][0], matrix_mul_optimisation);
-    //cudaFunctionFOptimized(&ch[add_ch[loop]], &cw[add_cw[loop+1]], &cz[add_cz[loop+1]], 1, weights_shape[loop+1][0], weights_shape[loop+1][1], cuda_block_size);
-    const auto t1_1 = std::chrono::high_resolution_clock::now();
-    int64_t dt_02 = std::chrono::duration_cast<std::chrono::microseconds>(t1_1 - t1_0).count();    
-    times[1+layers.size()+1] += dt_02;
     for (int i=layers.size()-1; i > 0; i--){
         activationFunDerivative(z[i], dAct_z[i], layers[i].getActFun());
         dE_db[i] = mul(dE_dx[i], dAct_z[i]);
         temp = transposeMatrix(h[i-1], one, h[i-1].size());
-        //mul_funct(temp, dE_db[i], dE_dw[i], h[i-1].size(), one, dE_db[i].size(), matrix_mul_optimisation);
-        const auto t2_0 = std::chrono::high_resolution_clock::now();
         mul_funct(temp, dE_db[i], dE_dw[i], h[i-1].size(), one, dE_db[i].size(), matrix_mul_optimisation);
-        const auto t2_1 = std::chrono::high_resolution_clock::now();
-        int64_t dt_03 = std::chrono::duration_cast<std::chrono::microseconds>(t2_1 - t2_0).count();
-        times[1+layers.size()+1+1+i] += dt_03;
         transposeMatrix2(weights[i], temp, weights_shape[i][0], weights_shape[i][1]);
-        const auto t3_0 = std::chrono::high_resolution_clock::now();
         mul_funct(dE_db[i], temp, dE_dx[i-1], one,  dE_db[i].size(), weights_shape[i][0], matrix_mul_optimisation);
-        const auto t3_1 = std::chrono::high_resolution_clock::now();
-        int64_t dt_04 = std::chrono::duration_cast<std::chrono::microseconds>(t3_1 - t3_0).count();
-        times[1+layers.size()+1+1+i+layers.size()-1] += dt_04;
-        //mul_funct(dE_db[i], temp, dE_dx[i-1], one,  dE_db[i].size(), weights_shape[i][0], matrix_mul_optimisation);
     }
     activationFunDerivative(z[0], dAct_z[0], layers[0].getActFun());
     dE_db[0] = mul(dE_dx[0], dAct_z[0]);
     temp = transposeMatrix(input, one, input.size());
-    const auto t4_0 = std::chrono::high_resolution_clock::now();
     mul_funct(temp, dE_db[0], dE_dw[0], input.size(), one, dE_db[0].size(), matrix_mul_optimisation);
-    const auto t4_1 = std::chrono::high_resolution_clock::now();
-    int64_t dt_05 = std::chrono::duration_cast<std::chrono::microseconds>(t4_1 - t4_0).count();
-    times[4 + 1*layers.size() + 2*(layers.size()-1)-1] += dt_05;
-    //mul_funct(temp, dE_db[0], dE_dw[0], input.size(), one, dE_db[0].size(), matrix_mul_optimisation);
     
 }
 template void Model<float>::backPropagation(std::vector<float>& input, std::vector<float>& dE_dy, int& selection);
@@ -914,17 +875,6 @@ template void Model<double>::backPropagation(std::vector<double>& input, std::ve
 
 template<typename T>
 void Model<T>::train(int& selection){
-    int time_seize = 4 + 1*layers.size() + 2*(layers.size()-1);
-    times.resize(time_seize);
-    for(int i = 0; i < time_seize; i++){
-        times[i] = 0;
-    }
-    std::vector<int64_t> times2;
-    times2.resize(4);
-    for(int i = 0; i < 4; i++){
-        times2[i] = 0;
-    }
-    std::ofstream profileFile("Time_profile_fake.csv", std::ios::app);
     std::ofstream outputFile("Train_Output.txt");
     std::ofstream accuracyCSV("Accuracy.csv");
     std::ofstream lossCSV("Loss.csv");
@@ -948,7 +898,6 @@ void Model<T>::train(int& selection){
     std::cout << std::endl;
     //std::cout << "Progress: " ;
     const auto t0_0 = std::chrono::high_resolution_clock::now();
-    int total_opp = 0;
     for(int epoch = 0; epoch < model_epochs; epoch++){
         outputFile << "epoch: " << std::setw(4) << epoch << " batch loop: " << batch << "/(";
         operations = 0;
@@ -963,18 +912,12 @@ void Model<T>::train(int& selection){
             //loss = 0;      \\uncomment if you need to evaluate the loss inside each batch, remember to uncomment also loss = loss/count at the end of the loop    
             for(int i = 0; i < model_batch_size; i++){
                 if (operations < model_input.getTrain().size()){
-                    const auto tt0 = std::chrono::high_resolution_clock::now();
-                    total_opp++;
                     temp = model_input.getTrain()[batch_loop*model_batch_size+i];
                     extendMatrix();         //before predict call and for every predict in batch
-                    const auto tt1 = std::chrono::high_resolution_clock::now();
                     predict(temp, selection);
-                    const auto tt2 = std::chrono::high_resolution_clock::now();
                     reduceMatrix();          //after predict call and for every predict in batch
                     applyLossFunction(y, model_output.getOutputTrain()[batch_loop*model_batch_size+i], dE_dy, model_loss_fun);
-                    const auto tt3 = std::chrono::high_resolution_clock::now();
                     backPropagation(temp, dE_dy, selection);
-                    const auto tt4 = std::chrono::high_resolution_clock::now();
                     incrementweightsBias(dE_dw, dE_db, tempWeights, tempBias);
                     loss += evaluateLossFunction(y, model_output.getOutputTrain()[batch_loop*model_batch_size+i], model_loss_fun);
                     resetVector(dE_dw);
@@ -1001,20 +944,12 @@ void Model<T>::train(int& selection){
                     }
                     operations++;
                     count++;
-                    const auto tt5 = std::chrono::high_resolution_clock::now();
-                    int64_t tt_00 = std::chrono::duration_cast<std::chrono::microseconds>(tt5 - tt0).count();
-                    int64_t tt_01 = std::chrono::duration_cast<std::chrono::microseconds>(tt2 - tt1).count();
-                    int64_t tt_02 = std::chrono::duration_cast<std::chrono::microseconds>(tt4 - tt3).count();
-                    int64_t tt_03 = std::chrono::duration_cast<std::chrono::microseconds>(tt5 - tt4).count();
-                    times2[0] += tt_00;
-                    times2[1] += tt_01;
-                    times2[2] += tt_02;
-                    times2[3] += tt_03;
                 }
             }
             updateWeightsBias(weights, tempWeights, bias, tempBias, count, model_learning_rate);
             resetVector(tempWeights);
             resetVector(tempBias);
+            //std::cout << "\033[12G" << percentage << "%" << std::flush;
             std::cout << "\r" << "progress: " << percentage << "%" << std::flush;
         }
         const auto t1 = std::chrono::high_resolution_clock::now();
@@ -1061,21 +996,8 @@ void Model<T>::train(int& selection){
         outputFile << "  time: " << dt_01 << " ms" << std::endl << std::flush;
         accuracyCSV << epoch << "," << train_accuracy << "," << validation_accuracy << std::endl;
     }
-    //outputFile << std::endl;
+    outputFile << std::endl;
     outputFile << "operations: " << operations << std::endl;
-    //profileFile << layers[0].getNeurons() << "," << layers[1].getNeurons()<< "," << layers[2].getNeurons() << "," << "0" << ",";
-    std::cout << std::endl;
-    for(int i = 0; i < times.size(); i++){
-       // std::cout << "time mul " << i << ": " << (float)times[i]/total_opp << " mics, total: " <<times[i]<< std::endl;
-       // profileFile << (float)times[i]/total_opp << ",";
-    }
-    std::cout << std::endl;
-    for(int i = 0; i < times2.size(); i++){
-        //std::cout << "time2 " << i << ": " << (float)times2[i]/total_opp << " mics, total: " << times2[i] << std::endl;
-       // profileFile << (float)times2[i]/total_opp << ",";
-    }
-    profileFile << "0" << std::endl;
-    std::cout << "Total mul: " << total_opp << std::endl;
 
     //evaluating accuracy on test set
     std::vector<T> temp_test;
@@ -1122,8 +1044,7 @@ void Model<T>::train(int& selection){
     std::cout << std::endl;
     outputFile.close(); 
     accuracyCSV.close();
-    lossCSV.close();
-    profileFile.close();             
+    lossCSV.close();             
 }
 
 template void Model<float>::train(int& selection);

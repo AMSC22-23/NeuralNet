@@ -47,19 +47,16 @@ class Model{
     void initialiseVector(std::vector<std::vector<T>>& default_weights, const std::string& weights_model);
     void setCudaBlockSize(int block_size){cuda_block_size = block_size;}
     
-    
     //@note: method should be const
     Input<T> getInput(){return model_input;}
     Output<T> getOutput(){return model_output;}
 
     protected:
     std::vector<std::vector<T>> dE_dw, z, h, dAct_z, dE_dx, dE_db;
-    //std::vector<std::vector<T>> cu_dE_dw, cu_z, cu_h, cu_dE_dx, cu_dE_db, cu_weights, cu_bias, cu_y; // cuda vectors
     std::vector<T> y, dE_dy;
     
     private:
-    std::vector<int64_t> times;
-    //T *ch, *cdE_db, *cw, *cdE_dw,*cz,*cy,cdE_dx; //cuda pointers
+    //T *ch, *in, *cdE_db, *cw, *cdE_dw,*cz,*cy,cdE_dx, *cw0; //cuda pointers
     std::vector<Layer> layers;
     Input<T> model_input;
     Output<T> model_output;
