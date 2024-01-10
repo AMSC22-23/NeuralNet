@@ -11,6 +11,11 @@
 #include<chrono>
 
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+
 /*
  * ***********************************************************************************************************************
  * *******************************    UTILITIES **************************************************************************
@@ -176,6 +181,7 @@ std::vector<T> sum(std::vector<T>& a, std::vector<T>& b){
 }
 template std::vector<float> sum<float>(std::vector<float>& a, std::vector<float>& b);
 template std::vector<double> sum<double>(std::vector<double>& a, std::vector<double>& b);
+
 
 
 
@@ -347,7 +353,7 @@ template void applyLossFunction<double>(std::vector<double>& y, std::vector<doub
 //This function defined in functions_utilities.hpp compute the mean square error (MSE)
 
 template<typename T>
-T mse(std::vector<T>& y, std::vector<T>& target){
+T mse(const std::vector<T>& y, const std::vector<T>& target){
     T result = 0;
     for(int i = 0; i < y.size(); i++){
         result += pow(y[i] - target[i], 2);
@@ -355,8 +361,8 @@ T mse(std::vector<T>& y, std::vector<T>& target){
     result = result / y.size();
     return result;
 }
-template float mse<float>(std::vector<float>& y, std::vector<float>& target);
-template double mse<double>(std::vector<double>& y, std::vector<double>& target);
+template float mse<float>(const std::vector<float>& y,const std::vector<float>& target);
+template double mse<double>(const std::vector<double>& y,const std::vector<double>& target);
 
 
 //****************************************************************************************************************************************************

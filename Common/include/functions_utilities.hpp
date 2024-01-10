@@ -3,7 +3,7 @@
 
 //DEFINED IN functions_utilities.cpp in this folder
 
-
+#include <string>
 #include <vector>
 
 //@note: it is completely fine to have functions like this one but consider
@@ -14,6 +14,9 @@
 // these two problems are not limited to here
 template<typename T>
 std::vector<T> sum(std::vector<T>& a, std::vector<T>& b);
+
+template<typename T>
+std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b);
 
 template<typename T>
 std::vector<T> transposeMatrix(const std::vector<T>& matrix, const int m, const int n);
@@ -31,7 +34,7 @@ template<typename T>
 T evaluateLossFunction(std::vector<T>& y, std::vector<T>& target, std::string& lossFunction);
 
 template<typename T>
-T mse(std::vector<T>& y, std::vector<T>& target);
+T mse(const std::vector<T>& y, const std::vector<T>& target);
 
 //template<typename T>
 //void mseDerivative(std::vector<T>& y,  std::vector<T>& target, std::vector<T>& dE_dy);
