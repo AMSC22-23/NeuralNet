@@ -6,7 +6,11 @@
 #include <cuda_runtime_api.h>
 #include <cuda_runtime.h>
 #define tile 32
+ //***********************************************************************************
 
+ //here all the functions for lunching the kernels and the optimized kernels
+
+ //***********************************************************************************
 
 __global__ void gpu_matrix_multF(float *a,float *b, float *c, int m, int n, int nb)
 {
@@ -51,9 +55,8 @@ __global__ void gpu_matrix_mult_tileF(float *a,float *b, float *c, int m, int n,
   int Col = bx * blockDim.x + tx;
   float Pvalue = 0;
 
-  // Loop over the M and N tiles required to compute the P element
+  
   for (int p = 0; p < (n-1) / tile + 1; ++p) {
-    // Collaborative loading of M and N tiles into shared memory
     if(Row < m && p * tile+tx < n) {
         ds_M[ty][tx] = a[Row*n + p*tile+tx];
     }
@@ -95,7 +98,7 @@ __global__ void gpu_matrix_mult_tileD(double *a,double *b, double *c, int m, int
 
   // Loop over the M and N tiles required to compute the P element
   for (int p = 0; p < (n-1) / tile + 1; ++p) {
-    // Collaborative loading of M and N tiles into shared memory
+    
     if(Row < m && p * tile+tx < n) {
         ds_M[ty][tx] = a[Row*n + p*tile+tx];
     }
@@ -135,7 +138,6 @@ void cudaFunctionF(float *a, float *b, float *c, int m, int n, int nb, int block
 
     cudaMemcpy(ac, a, sizeof(float) * m *n, cudaMemcpyHostToDevice);
     cudaMemcpy(bc, b, sizeof(float) * n *nb, cudaMemcpyHostToDevice);
-    //cudaMemcpy(cc, c, sizeof(float) * m *nb, cudaMemcpyHostToDevice);
 
     int MATRIX_SIZE_X = m;
     int MATRIX_SIZE_Y = nb;
@@ -145,7 +147,6 @@ void cudaFunctionF(float *a, float *b, float *c, int m, int n, int nb, int block
     dim3 dimBlock(block_size, block_size);
 
     gpu_matrix_multF<<<dimGrid, dimBlock>>>(ac, bc, cc, m, n, nb);
-    //cudaThreadSynchronize();
     cudaDeviceSynchronize();
 
     cudaMemcpy(c, cc, sizeof(float) * m*nb, cudaMemcpyDeviceToHost);
@@ -167,7 +168,6 @@ void cudaFunctionD(double *a, double *b, double *c, int m, int n, int nb, int bl
 
     cudaMemcpy(ac, a, sizeof(double) * m *n, cudaMemcpyHostToDevice);
     cudaMemcpy(bc, b, sizeof(double) * n *nb, cudaMemcpyHostToDevice);
-    //cudaMemcpy(cc, c, sizeof(float) * m *nb, cudaMemcpyHostToDevice);
 
     int MATRIX_SIZE_X = m;
     int MATRIX_SIZE_Y = nb;
@@ -178,7 +178,6 @@ void cudaFunctionD(double *a, double *b, double *c, int m, int n, int nb, int bl
     dim3 dimBlock(block_size, block_size);
 
     gpu_matrix_multD<<<dimGrid, dimBlock>>>(ac, bc, cc, m, n, nb);
-    //cudaThreadSynchronize();
     cudaDeviceSynchronize();
 
 }
@@ -223,7 +222,6 @@ void cudaTileFunctionD(double *a, double *b, double *c, int m, int n, int nb, in
 
     cudaMemcpy(ac, a, sizeof(double) * m *n, cudaMemcpyHostToDevice);
     cudaMemcpy(bc, b, sizeof(double) * n *nb, cudaMemcpyHostToDevice);
-    //cudaMemcpy(cc, c, sizeof(float) * m *nb, cudaMemcpyHostToDevice);
 
     int MATRIX_SIZE_X = m;
     int MATRIX_SIZE_Y = nb;
@@ -256,7 +254,6 @@ void cudaFunctionDOptimized(double *a, double *b, double *c, int m, int n, int n
 
     gpu_matrix_mult_tileD<<<dimGrid, dimBlock>>>(a, b, c, m, n, nb);
     cudaDeviceSynchronize();
-    //cudaMemcpy(c, cc, sizeof(double) * m*nb, cudaMemcpyDeviceToHost);
 }
 
 void cudaFunctionFOptimized(float *a, float *b, float *c, int m, int n, int nb, int block_size){
@@ -271,5 +268,4 @@ void cudaFunctionFOptimized(float *a, float *b, float *c, int m, int n, int nb, 
     
         gpu_matrix_mult_tileF<<<dimGrid, dimBlock>>>(a, b, c, m, n, nb);
         cudaDeviceSynchronize();
-        //cudaMemcpy(c, cc, sizeof(float) * m*nb, cudaMemcpyDeviceToHost);
     }

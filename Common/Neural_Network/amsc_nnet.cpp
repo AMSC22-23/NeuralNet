@@ -38,7 +38,7 @@ int main(){
     //CREATING MODEL
     shuffleData(trainSet, trainOut);
     Input input(trainSet, validationSet, testSet);
-    Output output(trainOut, validationOut, testOut, "sigmoid");
+    Output output(trainOut, validationOut, testOut, "SoftMax");
     Layer layer1("layer1", 128, "ReLu"), layer2("layer2", 3000, "ReLu"), layer3("layer33", 3000, "ReLu");  //128 neurons and one layer best in train set at the moment
     Model model("myModel",100, 16, 0.05, "MSE", input, output, "early_stop"); //batch around 8-16 learning rate 0.05 works well
     model.setWeightdInitialization("He");  //He best in train set at the moment, Xavier works well too, Normal is fine, Uniform do not work

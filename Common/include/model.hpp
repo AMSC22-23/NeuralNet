@@ -1,10 +1,16 @@
 #include "network.hpp"
 #include <fstream>
 
+//*********************************************************************************************************************
+
+//Here the definition of the methods of the class Model, the body is defined in /src/model.cpp
+
+//*********************************************************************************************************************
+
 template<typename T>
 class Model{
     public:
-    Model(std::string name, int epochs, int batch_size, float learning_rate, std::string loss_fun, Input<T> input, Output<T> output, std::string stop_cryteria):
+    Model(const std::string name, const int epochs, const int batch_size, const float learning_rate, const std::string loss_fun, Input<T> input, Output<T> output, const std::string stop_cryteria):
         model_name(name), model_epochs(epochs), model_batch_size(batch_size), model_learning_rate(learning_rate), model_loss_fun(loss_fun), model_stop_cryteria(stop_cryteria), model_input(input), model_output(output)
         
     {};
@@ -28,38 +34,34 @@ class Model{
 
     void buildModel();
 
-    //@note: method should be const
+    
     void printWeigts() const;
 
-    void printModel();
+    void printModel() const ;
 
     void setWeightdInitialization(const std::string weights_model){
         weights_initialisation = weights_model;
     }
-    void printAllWeightsToFile();
-    //@note: making a prediction should not change the input
-    void predict(std::vector<T>& input, int& selection); //this version need to be called only after the resizing of the weights
-    void predict(std::vector<T>& input, int& selection, int flag);
-    void backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int& selection);
+    void printAllWeightsToFile() const ;
+    //@note: making a prediction should not change the input***********
+        //re-@note: in the way we build the function the input is resized to add the bias constant, so is not possible to declare it const
+    void predict(std::vector<T>& input, const int& selection); //this version need to be called only after the resizing of the weights
+    void predict(std::vector<T>& input, const int& selection, const int flag);
+    void backPropagation(const std::vector<T>& input, std::vector<T>& dE_dy, const int& selection);
     void train(int& selection);
     void extendMatrix();
     void reduceMatrix();
     void initialiseVector(std::vector<std::vector<T>>& default_weights, const std::string& weights_model);
-    void setCudaBlockSize(int block_size){cuda_block_size = block_size;}
     
-    
-    //@note: method should be const
-    Input<T> getInput(){return model_input;}
-    Output<T> getOutput(){return model_output;}
+    Input<T> getInput() const {return model_input;}
+    Output<T> getOutput() const {return model_output;}
 
     protected:
     std::vector<std::vector<T>> dE_dw, z, h, dAct_z, dE_dx, dE_db;
-    //std::vector<std::vector<T>> cu_dE_dw, cu_z, cu_h, cu_dE_dx, cu_dE_db, cu_weights, cu_bias, cu_y; // cuda vectors
     std::vector<T> y, dE_dy;
     
     private:
     std::vector<int64_t> times;
-    //T *ch, *cdE_db, *cw, *cdE_dw,*cz,*cy,cdE_dx; //cuda pointers
     std::vector<Layer> layers;
     Input<T> model_input;
     Output<T> model_output;
@@ -70,6 +72,5 @@ class Model{
     std::vector<std::vector<T>> weights, bias;
     std::vector<std::vector<int>> weights_shape;
     std::vector<T> input_layer, output_layer;
-    //std::ofstream outputFile("weights.txt");
 };
 

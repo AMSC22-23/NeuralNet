@@ -58,7 +58,7 @@ template void shuffleData<double>(std::vector<std::vector<double>>& firstSet, st
 
 
 template<typename T>
-void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias){
+void incrementweightsBias(const std::vector<std::vector<T>>& old_weights, const std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias){
     for(int i=0; i<old_weights.size(); i++){
         for(int j=0; j<old_weights[i].size(); j++){
             new_weights[i][j] = old_weights[i][j] + new_weights[i][j];
@@ -68,8 +68,8 @@ void incrementweightsBias(std::vector<std::vector<T>>& old_weights, std::vector<
         }
     }
 }
-template void incrementweightsBias<float>(std::vector<std::vector<float>>& old_weights, std::vector<std::vector<float>>& old_bias, std::vector<std::vector<float>>& new_weights, std::vector<std::vector<float>>& new_bias);
-template void incrementweightsBias<double>(std::vector<std::vector<double>>& old_weights, std::vector<std::vector<double>>& old_bias, std::vector<std::vector<double>>& new_weights, std::vector<std::vector<double>>& new_bias);
+template void incrementweightsBias<float>(const std::vector<std::vector<float>>& old_weights, const std::vector<std::vector<float>>& old_bias, std::vector<std::vector<float>>& new_weights, std::vector<std::vector<float>>& new_bias);
+template void incrementweightsBias<double>(const std::vector<std::vector<double>>& old_weights, const std::vector<std::vector<double>>& old_bias, std::vector<std::vector<double>>& new_weights, std::vector<std::vector<double>>& new_bias);
 
 
 
@@ -87,15 +87,15 @@ template void resetVector<double>(std::vector<std::vector<double>>& vector);
 
 //****************************************************************************************************************************************************
 //DEPRECATED
-template<typename T>
-void evaluateAccuracy(std::vector<T>& y, std::vector<T>& target, int& numCorrect, int& numTotal){
-    for(int i = 0; i < y.size(); i++){
-        if(y[i] == target[i]){
-            numCorrect++;
-        }
-        numTotal++;
-    }
-}
+// template<typename T>
+// void evaluateAccuracy(std::vector<T>& y, std::vector<T>& target, int& numCorrect, int& numTotal){
+//     for(int i = 0; i < y.size(); i++){
+//         if(y[i] == target[i]){
+//             numCorrect++;
+//         }
+//         numTotal++;
+//     }
+// }
 
 //****************************************************************************************************************************************************
 //These functions are used to update the temporary Matrix used to store the derivatives of the loss function with respect to the weights and the bias
@@ -116,21 +116,21 @@ template void updateWeightsBias<double>(std::vector<std::vector<double>>& old_we
 
 
 template<typename T>
-void updateDE_Dw_Db(std::vector<std::vector<T>>& old_weights, std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias){
+void updateDE_Dw_Db(const std::vector<std::vector<T>>& old_weights, const std::vector<std::vector<T>>& old_bias, std::vector<std::vector<T>>& new_weights, std::vector<std::vector<T>>& new_bias){
     for(int i=0; i<old_weights.size(); i++){
         new_weights[i] = sum(old_weights[i], new_weights[i]);
         new_bias[i] = sum(old_bias[i], new_bias[i]);
     }
 }
-template void updateDE_Dw_Db<float>(std::vector<std::vector<float>>& old_weights, std::vector<std::vector<float>>& old_bias, std::vector<std::vector<float>>& new_weights, std::vector<std::vector<float>>& new_bias);
-template void updateDE_Dw_Db<double>(std::vector<std::vector<double>>& old_weights, std::vector<std::vector<double>>& old_bias, std::vector<std::vector<double>>& new_weights, std::vector<std::vector<double>>& new_bias);
+template void updateDE_Dw_Db<float>(const std::vector<std::vector<float>>& old_weights, const std::vector<std::vector<float>>& old_bias, std::vector<std::vector<float>>& new_weights, std::vector<std::vector<float>>& new_bias);
+template void updateDE_Dw_Db<double>(const std::vector<std::vector<double>>& old_weights, const std::vector<std::vector<double>>& old_bias, std::vector<std::vector<double>>& new_weights, std::vector<std::vector<double>>& new_bias);
 
 //****************************************************************************************************************************************************
 //Used to initialize to 0 objects with the same dimensions of vector of weights and bias, used to create temporary matrix for the training
 
 
 template<typename T>
-std::vector<std::vector<T>> createTempBiasMAtrix(std::vector<std::vector<T>>& old_bias){
+std::vector<std::vector<T>> createTempBiasMAtrix(const std::vector<std::vector<T>>& old_bias){
     std::vector<std::vector<T>> temp;
     temp.resize(old_bias.size());
     for(int i = 0; i < old_bias.size(); i++){
@@ -142,11 +142,11 @@ std::vector<std::vector<T>> createTempBiasMAtrix(std::vector<std::vector<T>>& ol
     }
     return temp;
 }
-template std::vector<std::vector<float>> createTempBiasMAtrix(std::vector<std::vector<float>>& old_bias);
-template std::vector<std::vector<double>> createTempBiasMAtrix(std::vector<std::vector<double>>& old_bias);
+template std::vector<std::vector<float>> createTempBiasMAtrix(const std::vector<std::vector<float>>& old_bias);
+template std::vector<std::vector<double>> createTempBiasMAtrix(const std::vector<std::vector<double>>& old_bias);
 
 template<typename T>  //da ottimizzare
-std::vector<std::vector<T>> createTempWeightMAtrix(std::vector<std::vector<T>>& old_weights){
+std::vector<std::vector<T>> createTempWeightMAtrix(const std::vector<std::vector<T>>& old_weights){
     std::vector<std::vector<T>> temp;
     temp.resize(old_weights.size());
     for(int i = 0; i < old_weights.size(); i++){
@@ -158,15 +158,15 @@ std::vector<std::vector<T>> createTempWeightMAtrix(std::vector<std::vector<T>>& 
     }
     return temp;
 }
-template std::vector<std::vector<float>> createTempWeightMAtrix(std::vector<std::vector<float>>& old_weights);
-template std::vector<std::vector<double>> createTempWeightMAtrix(std::vector<std::vector<double>>& old_weights);
+template std::vector<std::vector<float>> createTempWeightMAtrix(const std::vector<std::vector<float>>& old_weights);
+template std::vector<std::vector<double>> createTempWeightMAtrix(const std::vector<std::vector<double>>& old_weights);
 
 //****************************************************************************************************************************************************
 //Perform the sum (first) and multiplication (second) of members with the same index of two different matrix stored in two different row-major vectors
 
 
 template<typename T>
-std::vector<T> sum(std::vector<T>& a, std::vector<T>& b){
+std::vector<T> sum(const std::vector<T>& a, const std::vector<T>& b){
     std::vector<T> c;
     c.resize(a.size());
     for(int i = 0; i < a.size(); i++){
@@ -174,8 +174,8 @@ std::vector<T> sum(std::vector<T>& a, std::vector<T>& b){
     }
     return c;
 }
-template std::vector<float> sum<float>(std::vector<float>& a, std::vector<float>& b);
-template std::vector<double> sum<double>(std::vector<double>& a, std::vector<double>& b);
+template std::vector<float> sum<float>(const std::vector<float>& a, const std::vector<float>& b);
+template std::vector<double> sum<double>(const std::vector<double>& a, const std::vector<double>& b);
 
 
 
@@ -347,13 +347,13 @@ template void transposeMatrix2<double>(const std::vector<double>& matrix, std::v
 //This function defined in activation_functions.hpp compute the derivative of the mean square error (MSE)
 
 template<typename T>
-void mseDerivative( std::vector<T>& y, std::vector<T>& target, std::vector<T>& dE_dy){
+void mseDerivative(const  std::vector<T>& y, const std::vector<T>& target, std::vector<T>& dE_dy){
     for(int i = 0; i < y.size(); i++){
         dE_dy[i] = y[i] - target[i];
     }
 }
-template void mseDerivative<float>(std::vector<float>& y, std::vector<float>& target, std::vector<float>& dE_dy);
-template void mseDerivative<double>(std::vector<double>& y, std::vector<double>& target, std::vector<double>& dE_dy);
+template void mseDerivative<float>(const std::vector<float>& y, const std::vector<float>& target, std::vector<float>& dE_dy);
+template void mseDerivative<double>(const std::vector<double>& y, const std::vector<double>& target, std::vector<double>& dE_dy);
 
 //****************************************************************************************************************************************************
 /**
@@ -362,7 +362,7 @@ template void mseDerivative<double>(std::vector<double>& y, std::vector<double>&
  **/
 
 template<typename T>
-void applyLossFunction(std::vector<T>& y,std::vector<T>& target, std::vector<T>& dE_dy, std::string& lossFunction){
+void applyLossFunction(const std::vector<T>& y,const std::vector<T>& target, std::vector<T>& dE_dy,const std::string& lossFunction){
     if(lossFunction == "MSE"){
         mseDerivative(y, target, dE_dy);
     }
@@ -370,15 +370,15 @@ void applyLossFunction(std::vector<T>& y,std::vector<T>& target, std::vector<T>&
         std::cout << "Error: loss function not recognized" << std::endl;
     }
 }
-template void applyLossFunction<float>(std::vector<float>& y, std::vector<float>& target, std::vector<float>& dE_dy, std::string& lossFunction);
-template void applyLossFunction<double>(std::vector<double>& y, std::vector<double>& target, std::vector<double>& dE_dy, std::string& lossFunction);
+template void applyLossFunction<float>(const std::vector<float>& y, const std::vector<float>& target, std::vector<float>& dE_dy,const std::string& lossFunction);
+template void applyLossFunction<double>(const std::vector<double>& y, const std::vector<double>& target, std::vector<double>& dE_dy,const std::string& lossFunction);
 
 
 //****************************************************************************************************************************************************
 //This function defined in functions_utilities.hpp compute the mean square error (MSE)
 
 template<typename T>
-T mse(std::vector<T>& y, std::vector<T>& target){
+T mse(const std::vector<T>& y, const std::vector<T>& target){
     T result = 0;
     for(int i = 0; i < y.size(); i++){
         result += pow(y[i] - target[i], 2);
@@ -386,8 +386,8 @@ T mse(std::vector<T>& y, std::vector<T>& target){
     result = result / y.size();
     return result;
 }
-template float mse<float>(std::vector<float>& y, std::vector<float>& target);
-template double mse<double>(std::vector<double>& y, std::vector<double>& target);
+template float mse<float>(const std::vector<float>& y, const std::vector<float>& target);
+template double mse<double>(const std::vector<double>& y, const std::vector<double>& target);
 
 
 //****************************************************************************************************************************************************
@@ -397,7 +397,7 @@ template double mse<double>(std::vector<double>& y, std::vector<double>& target)
  **/
 
 template<typename T>
-T evaluateLossFunction(std::vector<T>& y, std::vector<T>& target, std::string& lossFunction){
+T evaluateLossFunction(const std::vector<T>& y, const std::vector<T>& target, const std::string& lossFunction){
     T result;
     if(lossFunction == "MSE"){
         result = mse(y, target);
@@ -408,8 +408,8 @@ T evaluateLossFunction(std::vector<T>& y, std::vector<T>& target, std::string& l
         return result;
     }
 }
-template float evaluateLossFunction<float>(std::vector<float>& y, std::vector<float>& target, std::string& lossFunction);
-template double evaluateLossFunction<double>(std::vector<double>& y, std::vector<double>& target, std::string& lossFunction);
+template float evaluateLossFunction<float>(const std::vector<float>& y, const std::vector<float>& target, const std::string& lossFunction);
+template double evaluateLossFunction<double>(const std::vector<double>& y, const std::vector<double>& target, const std::string& lossFunction);
 
 
 /*
@@ -454,7 +454,7 @@ template void Model<double>::printWeigts() const;
 */
 
 template<typename T>
-void Model<T>::printModel() {
+void Model<T>::printModel() const  {
     std::cout << "Model name: " << model_name << std::endl;
         std::cout << "-------------------------------------------------------------" << std::endl;  
         std::cout << "Layers (type)" << std::setw(30) << "Output Shape" << std::setw(17) << "Params #" << std::endl;
@@ -488,8 +488,8 @@ void Model<T>::printModel() {
 
 }
 
-template void Model<float>::printModel();
-template void Model<double>::printModel();
+template void Model<float>::printModel() const ;
+template void Model<double>::printModel() const ;
 
 
 
@@ -580,7 +580,7 @@ template void Model<double>::buildModel();
 //function used to print to weights.txt all the matrix of weight at a certain iteration
 
 template<typename T>
-void Model<T>::printAllWeightsToFile(){
+void Model<T>::printAllWeightsToFile() const {
     std::ofstream outputFile("weights.txt", std::ios::app);
     outputFile << "********************************NEW SET OF WEIGHTS**********************************************" << std::endl;
     outputFile << std::endl;
@@ -647,8 +647,8 @@ void Model<T>::printAllWeightsToFile(){
     outputFile << std::endl;
     outputFile.close();
 }
-template void Model<float>::printAllWeightsToFile();
-template void Model<double>::printAllWeightsToFile();
+template void Model<float>::printAllWeightsToFile() const ;
+template void Model<double>::printAllWeightsToFile() const ;
 
 
 //******************************************************************************************************************************************
@@ -791,7 +791,7 @@ template void Model<double>::reduceMatrix();
 */
 
 template<typename T> //thi version need to be called only after the resizing of the weights
-void Model<T>::predict(std::vector<T>& input, int& selection){
+void Model<T>::predict(std::vector<T>& input, const int& selection){
     input.push_back(1);
     //mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation);   //weights[0], input, z, weights_shape[0][0], weights_shape[0][1], 1, matrix_mul_optimisation);
     const auto t0_0 = std::chrono::high_resolution_clock::now();
@@ -817,11 +817,11 @@ void Model<T>::predict(std::vector<T>& input, int& selection){
     input.pop_back();
 }
 
-template void Model<float>::predict(std::vector<float>& input, int& selection);
-template void Model<double>::predict(std::vector<double>& input, int& selection);
+template void Model<float>::predict(std::vector<float>& input, const int& selection);
+template void Model<double>::predict(std::vector<double>& input, const int& selection);
 
 template<typename T> //this version contains the extension and reduction of the matrix
-void Model<T>::predict(std::vector<T>& input, int& selection, int flag){
+void Model<T>::predict(std::vector<T>& input, const int& selection, const int flag){
     extendMatrix();
     input.push_back(1);
     mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation);   //weights[0], input, z, weights_shape[0][0], weights_shape[0][1], 1, matrix_mul_optimisation);
@@ -843,15 +843,15 @@ void Model<T>::predict(std::vector<T>& input, int& selection, int flag){
     reduceMatrix();
 }
 
-template void Model<float>::predict(std::vector<float>& input, int& selection, int flag);
-template void Model<double>::predict(std::vector<double>& input, int& selection, int flag);
+template void Model<float>::predict(std::vector<float>& input, const int& selection, const int flag);
+template void Model<double>::predict(std::vector<double>& input, const int& selection, const int flag);
 
 
 //****************************************************************************************************************************************************
 //This function defined in Model.hpp compute the backpropagation of the model using the chain rule and Gradient Descent
 
 template<typename T>
-void Model<T>::backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int& selection){
+void Model<T>::backPropagation(const std::vector<T>& input, std::vector<T>& dE_dy, const int& selection){
     int one=1;
     std::vector<T> temp;
     activationFunDerivative(z[layers.size()], dAct_z[layers.size()], model_output.getOutputAct_fun());
@@ -902,8 +902,8 @@ void Model<T>::backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int
     //mul_funct(temp, dE_db[0], dE_dw[0], input.size(), one, dE_db[0].size(), matrix_mul_optimisation);
     
 }
-template void Model<float>::backPropagation(std::vector<float>& input, std::vector<float>& dE_dy, int& selection);
-template void Model<double>::backPropagation(std::vector<double>& input, std::vector<double>& dE_dy, int& selection);
+template void Model<float>::backPropagation(const std::vector<float>& input, std::vector<float>& dE_dy, const int& selection);
+template void Model<double>::backPropagation(const std::vector<double>& input, std::vector<double>& dE_dy, const int& selection);
 
 
 //****************************************************************************************************************************************************

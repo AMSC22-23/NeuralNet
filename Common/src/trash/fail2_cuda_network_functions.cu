@@ -1,14 +1,16 @@
-#include "model.hpp"
-#include "matrixProd_VM_VV.hpp"
-#include "ActivationFunctions.hpp"
-#include "functions_utilities.hpp"
-#include "matrixProd_AVX.hpp"
-//#include "../include/cudaMatrixMul.h"
+#include "../include/model.hpp"
+#include "../include/matrixProd_VM_VV.hpp"
+#include "../include/ActivationFunctions.hpp"
+#include "../include/functions_utilities.hpp"
+#include "../include/matrixProd_AVX.hpp"
+#include "../include/cudaMatrixMul.h"
 #include <algorithm>
 #include <random>
 #include <iomanip>
 #include <fstream>
 #include<chrono>
+#include <cuda.h>
+#include <cuda_runtime_api.h>
 
 
 /*
@@ -166,7 +168,7 @@ template std::vector<std::vector<double>> createTempWeightMAtrix(std::vector<std
 
 
 template<typename T>
-std::vector<T> sum(std::vector<T>& a, std::vector<T>& b){
+std::vector<T> sum(const std::vector<T>& a, const std::vector<T>& b){
     std::vector<T> c;
     c.resize(a.size());
     for(int i = 0; i < a.size(); i++){
@@ -174,8 +176,8 @@ std::vector<T> sum(std::vector<T>& a, std::vector<T>& b){
     }
     return c;
 }
-template std::vector<float> sum<float>(std::vector<float>& a, std::vector<float>& b);
-template std::vector<double> sum<double>(std::vector<double>& a, std::vector<double>& b);
+template std::vector<float> sum<float>(const std::vector<float>& a, const std::vector<float>& b);
+template std::vector<double> sum<double>(const std::vector<double>& a, const std::vector<double>& b);
 
 
 
@@ -197,9 +199,8 @@ template std::vector<double> mul<double>(std::vector<double>& a, std::vector<dou
 /**
  * This function take two vector as input and store the result of the MAtrix multiplication in a third vector, several optimization are available
  * modify the variable matrix_mul_optimisation to select the optimization:
- *      0) Cache Optimised  (default) use an optimization on the register to reduce the number of access to the cache
- *      1) A non optimized version of matrix mul, just for comparison
- *      2) Exploiting explicit Vectorize instructions throug AVX library
+ *      0) GPU with block size optimization (default)
+ *      
  * 
  * the other parameters are:
  *     a: first matrix
@@ -210,76 +211,59 @@ template std::vector<double> mul<double>(std::vector<double>& a, std::vector<dou
  *     nb: number of columns of the second matrix
 */
 
-template<typename T>
-void mul_funct(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, int m, int n, int nb, int selection){
-    int64_t t;
-    int i=0,d=0,ib=0,db=0;
+template<>
+void mul_funct<float>(std::vector<float>& a, std::vector<float>& b, std::vector<float>& c, int m, int n, int nb, int selection, int block_size){
+    float *ac,*bc,*cc;
+    ac = a.data();
+    bc = b.data();
+    cc = c.data();
+    //int cuda_block_size = 32;
     switch(selection){
         case 0:
-            MatrixCaheOptimised<T>(a, b, c, m, n, nb, t);
+            cudaFunctionF(ac, bc, cc, m, n, nb, block_size);
             break;
+
         case 1:
-            MatrixNaive<T>(a, b, c, m, n, nb, t);
+            cudaTileFunctionF(ac, bc, cc, m, n, nb, block_size);
             break;
-        case 2:
-            std::vector<T> mat1AVX, mat1BAVX, res;
-            //resize the index to fit in vector reg.
-                while((m+i) % 8 != 0){
-                    i++;
-                }
-                while((n+d) % 8 != 0){
-                    d++;
-                }
-                while((nb+db) % 8 != 0){
-                    db++;
-                }
-                mat1AVX.resize((m+i)*(n+d));
-                mat1BAVX.resize((n+d)*(nb+db));
-                res.resize((m+i)*(nb+db));
-            //add zeros to fit the vector reg.
-            for(int y =0 ; y<m+i; y++){
-                for(int u =0; u<n+d; u++){
-                    if(u<n && y<m){
-                        mat1AVX[y*(n+d)+u] = a[y*n+u];
-                    }else{
-                        mat1AVX[y*(n+d)+u] = 0;
-                    }
-
-                }
-            }
-            for(int y =0 ; y<n+d; y++){
-                for(int u =0; u<nb+db; u++){
-                    if(u<nb && y<n){
-                        mat1BAVX[y*(nb+db)+u] = b[y*nb+u];
-
-                    }else{
-                        mat1BAVX[y*(nb+db)+u] = 0;
-                    }
-
-                }
-            }
-            matrixMult_Avx<T>(mat1AVX, mat1BAVX, res, m+i, n+d, nb+db, t); //matrix multiplication
-            //remove zeros
-            for(int y =0 ; y<m; y++){
-                for(int u =0; u<nb; u++){  
-                    c[y*(nb)+u] = res[y*(nb+db)+u];
-                }
-            }
-
-            break;
-        /**case 3:
-            T *ac,*bc,*cc;
-            ac = a.data();
-            bc = b.data();
-            cc = c.data();
-            cudaFunction(ac, bc, cc, m, n, nb, cuda_block_size);
-            break;**/
-
     }    
 }
 
-template void mul_funct<float>(std::vector<float>& a, std::vector<float>& b, std::vector<float>& c, int m, int n, int nb, int selection);
-template void mul_funct<double>(std::vector<double>& a, std::vector<double>& b, std::vector<double>& c, int m, int n, int nb, int selection);
+template<>
+void mul_funct<double>(std::vector<double>& a, std::vector<double>& b, std::vector<double>& c, int m, int n, int nb, int selection, int block_size){
+    double *ac,*bc,*cc;
+    ac = a.data();
+    bc = b.data();
+    cc = c.data();
+    //int cuda_block_size = 32;
+    switch(selection){
+        case 0:
+            cudaFunctionD(ac, bc, cc, m, n, nb, block_size);
+            break;
+
+        case 1:
+            cudaTileFunctionD(ac, bc, cc, m, n, nb, block_size);
+            break;
+
+    }
+}
+
+template<>
+void mul_funct<float>(float *a, float *b, float *c, int m, int n, int nb, int selection, int block_size){
+    switch(selection){
+        case 0:
+            cudaFunctionF(a, b, c, m, n, nb, block_size);
+            break;
+
+        case 1:
+            cudaTileFunctionF(a, b, c, m, n, nb, block_size);
+            break;
+    }    
+}
+
+
+//template void mul_funct<float>(std::vector<float>& a, std::vector<float>& b, std::vector<float>& c, int m, int n, int nb, int selection);
+//template void mul_funct<double>(std::vector<double>& a, std::vector<double>& b, std::vector<double>& c, int m, int n, int nb, int selection);
 
 
 //****************************************************************************************************************************************************
@@ -362,7 +346,7 @@ template void mseDerivative<double>(std::vector<double>& y, std::vector<double>&
  **/
 
 template<typename T>
-void applyLossFunction(std::vector<T>& y,std::vector<T>& target, std::vector<T>& dE_dy, std::string& lossFunction){
+void applyLossFunction(std::vector<T>& y,std::vector<T>& target, std::vector<T>& dE_dy, const std::string& lossFunction){
     if(lossFunction == "MSE"){
         mseDerivative(y, target, dE_dy);
     }
@@ -370,8 +354,8 @@ void applyLossFunction(std::vector<T>& y,std::vector<T>& target, std::vector<T>&
         std::cout << "Error: loss function not recognized" << std::endl;
     }
 }
-template void applyLossFunction<float>(std::vector<float>& y, std::vector<float>& target, std::vector<float>& dE_dy, std::string& lossFunction);
-template void applyLossFunction<double>(std::vector<double>& y, std::vector<double>& target, std::vector<double>& dE_dy, std::string& lossFunction);
+template void applyLossFunction<float>(std::vector<float>& y, std::vector<float>& target, std::vector<float>& dE_dy,const std::string& lossFunction);
+template void applyLossFunction<double>(std::vector<double>& y, std::vector<double>& target, std::vector<double>& dE_dy,const std::string& lossFunction);
 
 
 //****************************************************************************************************************************************************
@@ -793,16 +777,25 @@ template void Model<double>::reduceMatrix();
 template<typename T> //thi version need to be called only after the resizing of the weights
 void Model<T>::predict(std::vector<T>& input, int& selection){
     input.push_back(1);
-    mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation);   //weights[0], input, z, weights_shape[0][0], weights_shape[0][1], 1, matrix_mul_optimisation);
+    cudaMemcpy(in, input.data(), input.size()*sizeof(T), cudaMemcpyHostToDevice);
+    //mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation, cuda_block_size);   //weights[0], input, z, weights_shape[0][0], weights_shape[0][1], 1, matrix_mul_optimisation);
+    mul_funct(in, cw, cz, 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation, cuda_block_size);
+    cudaMemcpy(z.data(), cz, z[0].size()*sizeof(T), cudaMemcpyDeviceToHost);
     activationFun(z[0], h[0], layers[0].getActFun());
+    cudaMemcpy(ch, h[0].data(), h[0].size()*sizeof(T), cudaMemcpyHostToDevice);
+    
     
     for(int loop = 0; loop < layers.size(); loop++){
-        mul_funct(h[loop], weights[loop+1], z[loop+1], 1, weights_shape[loop+1][0]+1, weights_shape[loop+1][1], matrix_mul_optimisation);
+        //mul_funct(h[loop], weights[loop+1], z[loop+1], 1, weights_shape[loop+1][0]+1, weights_shape[loop+1][1], matrix_mul_optimisation, cuda_block_size);
+        mul_funct(ch[loop].data(), cw[loop+1], cz[loop+1], 1, weights_shape[loop+1][0]+1, weights_shape[loop+1][1], matrix_mul_optimisation, cuda_block_size);
         if(loop < layers.size()-1){
             activationFun(z[loop+1], h[loop+1], layers[loop+1].getActFun());
+            cudaMemcpy(ch[loop+1], h[loop+1].data(), h[loop+1].size()*sizeof(T), cudaMemcpyHostToDevice);
         }
     }
     activationFun(z[layers.size()], y, model_output.getOutputAct_fun());
+    //cudaMemcpy(cy, y.data(), y.size()*sizeof(T), cudaMemcpyHostToDevice);
+
     input.pop_back();
 }
 
@@ -813,11 +806,11 @@ template<typename T> //this version contains the extension and reduction of the 
 void Model<T>::predict(std::vector<T>& input, int& selection, int flag){
     extendMatrix();
     input.push_back(1);
-    mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation);   //weights[0], input, z, weights_shape[0][0], weights_shape[0][1], 1, matrix_mul_optimisation);
+    mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation, cuda_block_size);   //weights[0], input, z, weights_shape[0][0], weights_shape[0][1], 1, matrix_mul_optimisation);
     activationFun(z[0], h[0], layers[0].getActFun());
     
     for(int loop = 0; loop < layers.size(); loop++){
-        mul_funct(h[loop], weights[loop+1], z[loop+1], 1, weights_shape[loop+1][0]+1, weights_shape[loop+1][1], matrix_mul_optimisation);
+        mul_funct(h[loop], weights[loop+1], z[loop+1], 1, weights_shape[loop+1][0]+1, weights_shape[loop+1][1], matrix_mul_optimisation, cuda_block_size);
         if(loop < layers.size()-1){
             activationFun(z[loop+1], h[loop+1], layers[loop+1].getActFun());
         }
@@ -845,22 +838,37 @@ void Model<T>::backPropagation(std::vector<T>& input, std::vector<T>& dE_dy, int
     std::vector<T> temp;
     activationFunDerivative(z[layers.size()], dAct_z[layers.size()], model_output.getOutputAct_fun());
     dE_db[layers.size()] = mul(dE_dy, dAct_z[layers.size()]);
-    temp = transposeMatrix(h[layers.size()-1], one, h[layers.size()-1].size());
-    mul_funct(temp , dE_db[layers.size()],dE_dw[layers.size()], h[layers.size()-1].size(), one, dE_db[layers.size()].size(), matrix_mul_optimisation);
+    cudaMemcpy(cdE_db[layers.size()], dE_db[layers.size()].data(), dE_db[layers.size()].size()*sizeof(T), cudaMemcpyHostToDevice);
+    //temp = transposeMatrix(h[layers.size()-1], one, h[layers.size()-1].size());
+    //mul_funct(temp , dE_db[layers.size()],dE_dw[layers.size()], h[layers.size()-1].size(), one, dE_db[layers.size()].size(), matrix_mul_optimisation, cuda_block_size);
+    mul_funct(ch[layers.size()-1], cdE_db[layers.size()], cdE_dw[layers.size()], h[layers.size()-1].size(), one, dE_db[layers.size()].size(), matrix_mul_optimisation, cuda_block_size);
+    cudaMemcpy(dE_dw[layers.size()].data(), cdE_dw[layers.size()], dE_dw[layers.size()].size()*sizeof(T), cudaMemcpyDeviceToHost);
     transposeMatrix2(weights[layers.size()], temp, weights_shape[layers.size()][0], weights_shape[layers.size()][1]);
-    mul_funct(dE_db[layers.size()], temp, dE_dx[layers.size()-1], one,  dE_db[layers.size()].size(), weights_shape[layers.size()][0], matrix_mul_optimisation);
+    cudaMemcpy(cw0[layers.size()], temp.data(), temp.size()*sizeof(T), cudaMemcpyHostToDevice);
+    //mul_funct(dE_db[layers.size()], temp, dE_dx[layers.size()-1], one,  dE_db[layers.size()].size(), weights_shape[layers.size()][0], matrix_mul_optimisation, cuda_block_size);
+    mul_funct(cdE_db[layers.size()], cw0[layers.size()], cdE_dx[layers.size()-1], one,  dE_db[layers.size()].size(), weights_shape[layers.size()][0], matrix_mul_optimisation, cuda_block_size);
+    cudaMemcpy(dE_dx[layers.size()-1].data(), cdE_dx[layers.size()-1], dE_dx[layers.size()-1].size()*sizeof(T), cudaMemcpyDeviceToHost);
     for (int i=layers.size()-1; i > 0; i--){
         activationFunDerivative(z[i], dAct_z[i], layers[i].getActFun());
         dE_db[i] = mul(dE_dx[i], dAct_z[i]);
-        temp = transposeMatrix(h[i-1], one, h[i-1].size());
-        mul_funct(temp, dE_db[i], dE_dw[i], h[i-1].size(), one, dE_db[i].size(), matrix_mul_optimisation);
+        cudaMemcpy(cdE_db[i], dE_db[i].data(), dE_db[i].size()*sizeof(T), cudaMemcpyHostToDevice);
+        //temp = transposeMatrix(h[i-1], one, h[i-1].size());
+        //mul_funct(temp, dE_db[i], dE_dw[i], h[i-1].size(), one, dE_db[i].size(), matrix_mul_optimisation, cuda_block_size);
+        mul_funct(ch[i-1], cdE_db[i], cdE_dw[i], h[i-1].size(), one, dE_db[i].size(), matrix_mul_optimisation, cuda_block_size);
+        cudaMemcpy(dE_dw[i].data(), cdE_dw[i], dE_dw[i].size()*sizeof(T), cudaMemcpyDeviceToHost);
         transposeMatrix2(weights[i], temp, weights_shape[i][0], weights_shape[i][1]);
-        mul_funct(dE_db[i], temp, dE_dx[i-1], one,  dE_db[i].size(), weights_shape[i][0], matrix_mul_optimisation);
+        cudaMemcpy(cw0[i], temp.data(), temp.size()*sizeof(T), cudaMemcpyHostToDevice);
+        //mul_funct(dE_db[i], temp, dE_dx[i-1], one,  dE_db[i].size(), weights_shape[i][0], matrix_mul_optimisation, cuda_block_size);
+        mul_funct(cdE_db[i], cw0[i], cdE_dx[i-1], one,  dE_db[i].size(), weights_shape[i][0], matrix_mul_optimisation, cuda_block_size);
+        cudaMemcpy(dE_dx[i-1].data(), cdE_dx[i-1], dE_dx[i-1].size()*sizeof(T), cudaMemcpyDeviceToHost);
     }
     activationFunDerivative(z[0], dAct_z[0], layers[0].getActFun());
     dE_db[0] = mul(dE_dx[0], dAct_z[0]);
-    temp = transposeMatrix(input, one, input.size());
-    mul_funct(temp, dE_db[0], dE_dw[0], input.size(), one, dE_db[0].size(), matrix_mul_optimisation);
+    cudaMemcpy(cdE_db[0], dE_db[0].data(), dE_db[0].size()*sizeof(T), cudaMemcpyHostToDevice);
+    //temp = transposeMatrix(input, one, input.size());
+    //mul_funct(temp, dE_db[0], dE_dw[0], input.size(), one, dE_db[0].size(), matrix_mul_optimisation, cuda_block_size);
+    mul_funct(in, cdE_db[0], cdE_dw[0], input.size(), one, dE_db[0].size(), matrix_mul_optimisation, cuda_block_size);
+    cudaMemcpy(dE_dw[0].data(), cdE_dw[0], dE_dw[0].size()*sizeof(T), cudaMemcpyDeviceToHost);
     
 }
 template void Model<float>::backPropagation(std::vector<float>& input, std::vector<float>& dE_dy, int& selection);
@@ -878,6 +886,63 @@ void Model<T>::train(int& selection){
     std::ofstream outputFile("Train_Output.txt");
     std::ofstream accuracyCSV("Accuracy.csv");
     std::ofstream lossCSV("Loss.csv");
+
+    /********CUDA*********/
+    int h_size;
+    for (int i=0; i<h.size(); i++){
+        h_size += h[i].size()+1;
+    }
+    int h_size0;
+    for (int i=0; i<h.size(); i++){
+        h_size += h[i].size();
+    }
+    int input_size = model_input.getTrain()[i].size()+1;
+    
+    int dE_db_size;
+    for (int i=0; i<dE_db.size(); i++){
+        dE_db_size += dE_db[i].size();
+    }
+    int weights_size;
+    for (int i=0; i<weights.size(); i++){
+        weights_size += weights[i].size()+bias[i].size();
+    }
+    int weights_size0;
+    for (int i=0; i<weights.size(); i++){
+        weights_size += weights[i].size();
+    }
+    int dE_dw_size;
+    for (int i=0; i<dE_dw.size(); i++){
+        dE_dw_size += dE_dw[i].size();
+    }
+    int z_size;
+    for (int i=0; i<z.size(); i++){
+        z_size += z[i].size();
+    }
+    int dE_dx_size;
+    for (int i=0; i<dE_dx.size(); i++){
+        dE_dx_size += dE_dx[i].size();
+    }
+    cudaMallocManaged((void **) &cdE_dx, sizeof(T)*dE_dx_size);
+    cudaMallocManaged((void **) &cy, sizeof(T)*y.size());
+    cudaMallocManaged((void **) &cz, sizeof(T)*z_size);
+    cudaMallocManaged((void **) &ch, sizeof(T)*h_size);
+    cudaMallocManaged((void **) &in, sizeof(float)*input_size);
+    cudaMallocManaged((void **) &cdE_db, sizeof(float)*dE_db_size);
+    cudaMallocManaged((void **) &cw, sizeof(float)*weights_size);
+    cudaMallocManaged((void **) &cw0, sizeof(float)*weights_size0);
+    cudaMallocManaged((void **) &cdE_dw, sizeof(float)*dE_dw_size);
+
+    
+
+    /**cudaMemcpy(in, input, sizeof(float) * input_size0, cudaMemcpyHostToDevice);
+    cudaMemcpy(cw, weights, sizeof(float) * weights_size0, cudaMemcpyHostToDevice);
+    cudaMemcpy(cdE_dw, dE_dw, sizeof(float) * dE_dw_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(cdE_db, dE_db, sizeof(float) * dE_db_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(ch, h, sizeof(float) * h_size0, cudaMemcpyHostToDevice);**/
+
+    /********CUDA*********/
+
+    
     accuracyCSV << "epoch, train_accuracy, validation_accuracy" << std::endl;
     lossCSV << "epoch, batch, loss" << std::endl;
     std::vector<std::vector<T>> tempWeights = createTempWeightMAtrix(weights);
@@ -896,7 +961,7 @@ void Model<T>::train(int& selection){
     outputFile << "train size: " << model_input.getTrain().size() << std::endl;
     std::cout << "Train started !  (details and results available in Train_Output.txt file)" << std::endl;
     std::cout << std::endl;
-    //std::cout << "Progress: " ;
+    std::cout << "Progress: " ;
     const auto t0_0 = std::chrono::high_resolution_clock::now();
     for(int epoch = 0; epoch < model_epochs; epoch++){
         outputFile << "epoch: " << std::setw(4) << epoch << " batch loop: " << batch << "/(";
@@ -905,6 +970,10 @@ void Model<T>::train(int& selection){
         const auto t0 = std::chrono::high_resolution_clock::now();
         T loss = 0;
         for(int batch_loop = 0; batch_loop < batch+1; batch_loop++){//considera di aggiungere +1 per l'avanzo delle rimaneti singole batch
+            cudaMemcpy(cw0, weights, sizeof(float) * weights_size0, cudaMemcpyHostToDevice);
+            extendMatrix();
+            cudaMemcpy(cw, weights.data(), sizeof(float) * weights_size, cudaMemcpyHostToDevice);
+            reduceMatrix();
             outputFile << batch_loop;
             int percentage;
             percentage = ((epoch*batch)+batch_loop)*100/(model_epochs*batch);
@@ -949,8 +1018,7 @@ void Model<T>::train(int& selection){
             updateWeightsBias(weights, tempWeights, bias, tempBias, count, model_learning_rate);
             resetVector(tempWeights);
             resetVector(tempBias);
-            //std::cout << "\033[12G" << percentage << "%" << std::flush;
-            std::cout << "\r" << "progress: " << percentage << "%" << std::flush;
+            std::cout << "\033[12G" << percentage << "%" << std::flush;
         }
         const auto t1 = std::chrono::high_resolution_clock::now();
         int64_t dt_01 = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
@@ -1036,6 +1104,7 @@ void Model<T>::train(int& selection){
     outputFile << std::endl;
     std::cout << std::endl;
     std::cout << "Final Accuracy on the TestSet: " << test_accuracy << std::endl;
+    outputFile << std::endl;
     const auto t1_0 = std::chrono::high_resolution_clock::now();
     int64_t dt_00 = std::chrono::duration_cast<std::chrono::milliseconds>(t1_0 - t0_0).count();
     std::cout << std::endl;
@@ -1049,6 +1118,3 @@ void Model<T>::train(int& selection){
 
 template void Model<float>::train(int& selection);
 template void Model<double>::train(int& selection);
-
-
-

@@ -16,6 +16,7 @@ T sigmoidActivation(const T &input) {
     return 1 / (1 + std::exp(-input));
 }
 
+
 template <typename T>
 T sigmoidActivationDerivative(const T &input) {
     T sigmoid = sigmoidActivation(input);
@@ -43,12 +44,26 @@ T ReLuActivationDerivative(const T &input) {
     return (input > 0) ? 1 : 0;
 }
 
+template <typename T>
+T softmaxActivation(const T &input) {
+    return std::exp(input) / (1 + std::exp(input));
+}
+
+template <typename T>
+T softmaxActivationDerivative(const T &input) {
+    T s = softmaxActivation(input);
+    return s * (1 - s);
+}
+
 //@note: instead of this list of `if` you could either
 //       - use polymorphism and have a base class "ActivationFunction" that must 
 //         implement a "eval" and "eval_der" methods
 //       - this can be done also with static polymorphism if you template upon the
 //         activation function type
 //       - have a struct "ActivationFunction" that has two attibutes that are std::functions
+
+//      re-@note: due to design choices we do not want do instanciate new classes in main and we want to
+//      address the activation function with a string, we didn't find other suitable solutions
 template <typename T>
 T applyActivationFunction(const T &input, const std::string &activationFunction) {
     if (activationFunction == "linear") {
@@ -59,7 +74,9 @@ T applyActivationFunction(const T &input, const std::string &activationFunction)
         return tanhActivation(input);
     } else if (activationFunction == "ReLu") {
         return ReLuActivation(input);
-    } else {
+    } else if (activationFunction == "SoftMax") {
+        return softmaxActivation(input);
+    }else {
         std::cout << "Activation function not implemented" << std::endl;
     }
     return 0;
@@ -78,6 +95,8 @@ T applyActivationFunctionDerivative(const T &input, const std::string &activatio
         return tanhActivationDerivative(input);
     } else if (activationFunction == "ReLu") {
         return ReLuActivationDerivative(input);
+    } else if (activationFunction == "SoftMax") {
+        return softmaxActivationDerivative(input);
     } else {
         std::cout << "Activation function not implemented" << std::endl;
     }

@@ -1,32 +1,41 @@
+#ifndef ACTIVATION_NETWORK_HPP
+#define ACTIVATION_NETWORK_HPP
+
 #include<iostream>
 #include<vector>
 #include<string>
+
+//**********************************************************************************************************************
+
+//Here you can find the definition of the classes "Input", "Output" and "Layer" that are used to build the model.
+
+//**********************************************************************************************************************
 
 
 template<typename T>
 class Input{
     public:
     
-    void setInputSet(std::vector<std::vector<T>> train, std::vector<std::vector<T>> validation, std::vector<std::vector<T>> test,
+    void setInputSet(const std::vector<std::vector<T>> train, const std::vector<std::vector<T>> validation, const std::vector<std::vector<T>> test,
             std::vector<std::vector<T>>& train_input, std::vector<std::vector<T>>& validation_input,
-             std::vector<std::vector<T>>& test_input) {   //sono di tentativo:vanno implementate !
+             std::vector<std::vector<T>>& test_input) {   
         
         train_input = train;
         test_input = test;
         validation_input = validation;
     }
 
-    std::vector<std::vector<T>> getTrain(){return train_input;}
-    std::vector<std::vector<T>> getTest(){return test_input;}
-    std::vector<std::vector<T>> getValidation(){return validation_input;}
+    std::vector<std::vector<T>> getTrain() const {return train_input;}
+    std::vector<std::vector<T>> getTest() const {return test_input;}
+    std::vector<std::vector<T>> getValidation() const {return validation_input;}
 
 
-    void setShape(std::vector<std::vector<T>> input, std::vector<int>& output) {
+    void setShape(const std::vector<std::vector<T>> input, std::vector<int>& output) {
         output[0] = input.size();
         output[1] = input[0].size();
     }
 
-    Input(std::vector<std::vector<T>> train, std::vector<std::vector<T>> validation, std::vector<std::vector<T>> test) 
+    Input(const std::vector<std::vector<T>> train, const std::vector<std::vector<T>> validation, const std::vector<std::vector<T>> test) 
             {setInputSet(train, validation, test, train_input, validation_input, test_input),
             setShape(train, train_shape),
             setShape(validation, validation_shape),
@@ -54,11 +63,6 @@ class Input{
 
     int getShapeInputData() const {return train_shape[1];}
 
-    /**std::vector<std::vector<T>> getTrain() const {return train_input;}
-    std::vector<std::vector<T>> getTest() const {return test_input;}
-    std::vector<std::vector<T>> getValidation() const {return validation_input;}**/
-
-
     private:
     std::vector<std::vector<T>> train_input, validation_input, test_input;
     std::vector<int> train_shape{0,0}, validation_shape{0,0}, test_shape{0,0};
@@ -67,8 +71,8 @@ class Input{
 template<typename T>
 class Output{
     public:
-    Output(std::vector<std::vector<T>> train_target, std::vector<std::vector<T>> validadion_target,
-         std::vector<std::vector<T>> test_target, std::string sel_actFun)
+    Output(const std::vector<std::vector<T>> train_target, const std::vector<std::vector<T>> validadion_target,
+         const std::vector<std::vector<T>> test_target, std::string sel_actFun)
      {setTarget(train_target,output_target_train);
     setTarget(validadion_target,output_target_validation);
     setTarget(test_target,output_target_test);
@@ -93,11 +97,11 @@ class Output{
     
 
 
-    void setTarget(std::vector<std::vector<T>> target, std::vector<std::vector<T>>& output_target) {
+    void setTarget(const std::vector<std::vector<T>> target, std::vector<std::vector<T>>& output_target) {
         output_target = target;
     }
 
-    void setShape(std::vector<std::vector<T>> input, std::vector<int>& output) {
+    void setShape(const std::vector<std::vector<T>> input, std::vector<int>& output) {
         output[0] = input.size();
         output[1] = input[0].size();
     }
@@ -108,11 +112,11 @@ class Output{
     std::string getOutputAct_fun() const {return act_funct;}
    
 
-    void setResult(std::vector<T> new_result, std::vector<T>& output_result) {
+    void setResult(const std::vector<T> new_result, std::vector<T>& output_result) {
         output_result.push_back(new_result);
     }
 
-    void set_Act_Fun(std::string selection, std::string& variable){
+    void set_Act_Fun(const std::string selection, std::string& variable){
         variable = selection;
     }
 
@@ -139,18 +143,17 @@ class Output{
 //template<typename T>
 class Layer{
     public:
-    Layer(std::string layer_name, int num_of_neurons, std::string layer_act_funct):
+    Layer(const std::string layer_name, const int num_of_neurons, const std::string layer_act_funct):
         name(layer_name), neurons(num_of_neurons), act_funct(layer_act_funct) {};
 
     void printLayer() const {
         std::cout << "Layer: " << name << " ,number of neurons: " << neurons << " ,activation function: " << act_funct << std::endl;
-        //std::cout << name << " (Dense)" << "\033[35G" << neurons << "\033[60G" << "0" <<  std::endl;
     }
 
-    //@note: method should be const
-    int getNeurons() {return neurons;}
-    std::string getActFun() {return act_funct;};
-    std::string getName() {return name;};
+    
+    int getNeurons() const {return neurons;}
+    std::string getActFun() const {return act_funct;};
+    std::string getName() const {return name;};
     private:
     std::string act_funct, name;
     bool dense = true;
@@ -158,4 +161,4 @@ class Layer{
 
 };
 
-
+#endif

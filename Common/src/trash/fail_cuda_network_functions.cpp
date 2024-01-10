@@ -9,8 +9,6 @@
 #include <iomanip>
 #include <fstream>
 #include<chrono>
-#include <cuda.h>
-#include <cuda_runtime_api.h>
 
 
 /*
@@ -168,7 +166,7 @@ template std::vector<std::vector<double>> createTempWeightMAtrix(std::vector<std
 
 
 template<typename T>
-std::vector<T> sum(std::vector<T>& a, std::vector<T>& b){
+std::vector<T> sum(const std::vector<T>& a,const  std::vector<T>& b){
     std::vector<T> c;
     c.resize(a.size());
     for(int i = 0; i < a.size(); i++){
@@ -176,8 +174,8 @@ std::vector<T> sum(std::vector<T>& a, std::vector<T>& b){
     }
     return c;
 }
-template std::vector<float> sum<float>(std::vector<float>& a, std::vector<float>& b);
-template std::vector<double> sum<double>(std::vector<double>& a, std::vector<double>& b);
+template std::vector<float> sum<float>(const std::vector<float>& a,const  std::vector<float>& b);
+template std::vector<double> sum<double>(const std::vector<double>& a,const  std::vector<double>& b);
 
 
 
@@ -346,7 +344,7 @@ template void mseDerivative<double>(std::vector<double>& y, std::vector<double>&
  **/
 
 template<typename T>
-void applyLossFunction(std::vector<T>& y,std::vector<T>& target, std::vector<T>& dE_dy, std::string& lossFunction){
+void applyLossFunction(std::vector<T>& y,std::vector<T>& target, std::vector<T>& dE_dy, const std::string& lossFunction){
     if(lossFunction == "MSE"){
         mseDerivative(y, target, dE_dy);
     }
@@ -354,8 +352,8 @@ void applyLossFunction(std::vector<T>& y,std::vector<T>& target, std::vector<T>&
         std::cout << "Error: loss function not recognized" << std::endl;
     }
 }
-template void applyLossFunction<float>(std::vector<float>& y, std::vector<float>& target, std::vector<float>& dE_dy, std::string& lossFunction);
-template void applyLossFunction<double>(std::vector<double>& y, std::vector<double>& target, std::vector<double>& dE_dy, std::string& lossFunction);
+template void applyLossFunction<float>(std::vector<float>& y, std::vector<float>& target, std::vector<float>& dE_dy,const std::string& lossFunction);
+template void applyLossFunction<double>(std::vector<double>& y, std::vector<double>& target, std::vector<double>& dE_dy,const std::string& lossFunction);
 
 
 //****************************************************************************************************************************************************
