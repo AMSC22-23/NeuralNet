@@ -192,6 +192,29 @@ template std::vector<float> mul<float>(std::vector<float>& a, std::vector<float>
 template std::vector<double> mul<double>(std::vector<double>& a, std::vector<double>& b);
 
 
+//operator version of the functions above:
+
+template<typename T>
+std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b) {
+    std::vector<T> result;
+    result.resize(a.size());
+    for (int i = 0; i < a.size(); i++) {
+        result[i] = a[i] + b[i];
+    }
+    return result;
+}
+
+template<typename T>
+std::vector<T> operator*(const std::vector<T>& a, const std::vector<T>& b) {
+    std::vector<T> result;
+    result.resize(a.size());
+    for (int i = 0; i < a.size(); i++) {
+        result[i] = a[i] * b[i];
+    }
+    return result;
+}
+
+
 
 //****************************************************************************************************************************************************
 /**
