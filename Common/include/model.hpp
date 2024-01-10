@@ -1,3 +1,6 @@
+#ifndef ACTIVATION_MODEL_HPP
+#define ACTIVATION_MODEL_HPP
+
 #include "network.hpp"
 #include <fstream>
 
@@ -74,3 +77,5 @@ class Model{
     std::vector<T> input_layer, output_layer;
 };
 
+
+#endif

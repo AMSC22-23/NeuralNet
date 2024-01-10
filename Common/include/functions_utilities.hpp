@@ -8,10 +8,14 @@
 
 //**********************************************************************************************************************
 
+#include <string>
 #include <vector>
 
 template<typename T>
 std::vector<T> sum(const std::vector<T>& a,const std::vector<T>& b);
+
+template<typename T>
+std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b);
 
 template<typename T>
 std::vector<T> transposeMatrix(const std::vector<T>& matrix, const int m, const int n);
@@ -29,7 +33,10 @@ template<typename T>
 T evaluateLossFunction(const std::vector<T>& y, const std::vector<T>& target, const std::string& lossFunction);
 
 template<typename T>
-T mse(const std::vector<T>& y, const std::vector<T>& target);
+T mse(const const std::vector<T>& y, const const std::vector<T>& target);
+
+template<typename T>
+T mse(const std::vector<T>& y, const std::vector<T>& target, int num_threads);
 
 template<typename T>
 void mseDerivative(const std::vector<T>& y,  const std::vector<T>& target, std::vector<T>& dE_dy);
