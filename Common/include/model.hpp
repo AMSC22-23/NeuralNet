@@ -48,9 +48,9 @@ class Model{
     void setCudaBlockSize(int block_size){cuda_block_size = block_size;}
     
     
-    //@note: method should be const
-    Input<T> getInput(){return model_input;}
-    Output<T> getOutput(){return model_output;}
+
+    Input<T> getInput() const {return model_input;}
+    Output<T> getOutput() const {return model_output;}
 
     protected:
     std::vector<std::vector<T>> dE_dw, z, h, dAct_z, dE_dx, dE_db;
