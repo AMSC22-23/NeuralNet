@@ -43,6 +43,7 @@ T ReLuActivationDerivative(const T &input) {
     return (input > 0) ? 1 : 0;
 }
 
+
 //@note: instead of this list of `if` you could either
 //       - use polymorphism and have a base class "ActivationFunction" that must 
 //         implement a "eval" and "eval_der" methods
@@ -86,3 +87,82 @@ T applyActivationFunctionDerivative(const T &input, const std::string &activatio
 
 template float applyActivationFunctionDerivative<float>(const float &input, const std::string &activationFunction);
 template double applyActivationFunctionDerivative<double>(const double &input, const std::string &activationFunction);
+
+
+
+//created struct
+template <typename T>
+struct ActivationFunction {
+    std::function<T(T)> activate;
+    std::function<T(T)> derivative;
+};
+
+
+
+//first version using struct:
+template <typename T>
+T applyActivationFunction(const T &input, const ActivationFunction<T> &activationFunction) {
+    return activationFunction.activate(input);
+}
+
+template <typename T>
+T applyActivationFunctionDerivative(const T &input, const ActivationFunction<T> &activationFunction) {
+    return activationFunction.derivative(input);
+}
+
+
+        // //example of main()
+        //     int main() {
+        //     ActivationFunction<float> linear = {linearActivation<float>, linearActivationDerivative<float>};
+        //     ActivationFunction<float> sigmoid = {sigmoidActivation<float>, sigmoidActivationDerivative<float>};
+        //     ActivationFunction<float> tanh = {tanhActivation<float>, tanhActivationDerivative<float>};
+        //     ActivationFunction<float> relu = {ReLuActivation<float>, ReLuActivationDerivative<float>};
+
+        //     float input = 2.0;
+
+        //     auto applyActivation = [](const ActivationFunction<float> &activation, float input) {
+        //         return activation.activate(input);
+        //     };
+
+        //     auto applyActivationDerivative = [](const ActivationFunction<float> &activation, float input) {
+        //         return activation.derivative(input);
+        //     };
+
+        //     std::cout << "Linear Activation: " << applyActivation(linear, input) << std::endl;
+        //     std::cout << "Sigmoid Activation: " << applyActivation(sigmoid, input) << std::endl;
+        //     std::cout << "Tanh Activation: " << applyActivation(tanh, input) << std::endl;
+        //     std::cout << "ReLu Activation: " << applyActivation(relu, input) << std::endl;
+
+        //     return 0;
+        // }
+
+
+//second verison using struct:
+template <typename T>
+T applyActivation(const ActivationFunction<T> &activation, const T &input, bool useDerivative = false) {
+    return useDerivative ? activation.derivative(input) : activation.activate(input);
+}
+
+        // example 
+        //     int main() {
+        //     ActivationFunction<float> linear = {linearActivation<float>, linearActivationDerivative<float>};
+        //     ActivationFunction<float> sigmoid = {sigmoidActivation<float>, sigmoidActivationDerivative<float>};
+        //     ActivationFunction<float> tanh = {tanhActivation<float>, tanhActivationDerivative<float>};
+        //     ActivationFunction<float> relu = {ReLuActivation<float>, ReLuActivationDerivative<float>};
+
+        //     float input = 2.0;
+
+        //     std::cout << "Linear Activation: " << applyActivation(linear, input) << std::endl;
+        //     std::cout << "Linear Activation Derivative: " << applyActivation(linear, input, true) << std::endl;
+
+        //     std::cout << "Sigmoid Activation: " << applyActivation(sigmoid, input) << std::endl;
+        //     std::cout << "Sigmoid Activation Derivative: " << applyActivation(sigmoid, input, true) << std::endl;
+
+        //     std::cout << "Tanh Activation: " << applyActivation(tanh, input) << std::endl;
+        //     std::cout << "Tanh Activation Derivative: " << applyActivation(tanh, input, true) << std::endl;
+
+        //     std::cout << "ReLu Activation: " << applyActivation(relu, input) << std::endl;
+        //     std::cout << "ReLu Activation Derivative: " << applyActivation(relu, input, true) << std::endl;
+
+        //     return 0;
+        // }
