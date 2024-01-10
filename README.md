@@ -34,6 +34,11 @@ It is possible to compile the code with:
 
 g++ -O3 -std=c++17 -I ../include -march=native -ffast-math amsc_nnet.cpp ../src/irisLoader.cpp ../src/network_functions.cpp ../src/ActivationFunctions.cpp  ../src/matrixProd_AVX.cpp -mavx2 -mfma -std=c++20 -o amsc_nnet
 ```
+
+otherwise: 
+```bash
+make NeuralNet
+```
 ### STRUCTURE OF THE CODE
 
 The entry point of the code is in `amsc_nnet.cpp` file located in `Common/Neural_Network` folder. This file contains only the `main()` function where is possible to load the dataset, define the model parameters, build and run each method related your costoum model.<br>
