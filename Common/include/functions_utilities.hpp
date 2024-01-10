@@ -36,6 +36,9 @@ T evaluateLossFunction(std::vector<T>& y, std::vector<T>& target, std::string& l
 template<typename T>
 T mse(const std::vector<T>& y, const std::vector<T>& target);
 
+template<typename T>
+T mse(const std::vector<T>& y, const std::vector<T>& target, int num_threads);
+
 //template<typename T>
 //void mseDerivative(std::vector<T>& y,  std::vector<T>& target, std::vector<T>& dE_dy);
 
