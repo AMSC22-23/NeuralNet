@@ -696,7 +696,7 @@ It offers the possibility to evaluate the time complexity of different sequentia
 ```
 The second file, ale_test_cuda.cpp, needs to perform several optimizations exploiting the GPU with functions written in CUDA. A Google Colab notebook, "AMSC_cuda_profiler.ipynb," is provided that allows you to load, compile, run code and functions, after copying the folder to a Google Drive folder.
 
-### PROFILING
+### Profiling
 To conduct the profiling of our algorithms and examine the impact of various parameters, 
 we developed a compact program designed to automate this process. This program accepts
 a CSV file (referred to as "profilelist.txt") as input, 
@@ -726,7 +726,7 @@ The file associated to this program are:
 - profiler.hpp header file where it is defined the class that implements the features of the program. It is located in Common/include
 - profiler.cpp source file associated to profile.hpp, located in Common/src.
 - test_profiler.cpp the main that, when compiled, gives the program we have used in the profiling phase. 
-- All file associated to the algorithms, making them "profilables". Located in Common/profiling which are: 
+- All file associated to the algorithms, making them "profilables". Located in Common/test/profiling which are: 
     * naive.cpp 
     * loopI.cpp
     * tiling.cpp
@@ -737,7 +737,10 @@ The file associated to this program are:
   
 - A compiled executable of the program, located in Common/profiling. This file is 
 called "autoprofile". 
-
+-profilinglist.txt a csv file with header that contains the profiling tasks to be executed.
+- filResult.csv and profiling_result csv files that contain the results of the profiling tasks.
+  It was necessary to write result in two different files because one of the two files is trunked 
+  each time new data is uploaded to the database. In this way we make sure that in the db there are no duplicates (and we also keep an offline backup of the data)
 
 
 After specifying all desired profiling in profilelist.txt, execute the following command 
@@ -746,3 +749,11 @@ for launching the profiling:
 ```bash
 ./autoprofile
 ```
+
+
+In the folder Common/test/profiling/python_scripts there are all python scripts needed to query the database and plot the data
+
+#### A note on profiling algorithms based on Cuda
+For algorithms based on Cuda we just kept track of the time complexity.
+The profiling has been conducted manually in this case. The result of this process can be found in 
+Common/test/profiling/cuda/cudaprof.csv
