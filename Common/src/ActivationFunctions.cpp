@@ -1,5 +1,6 @@
 #include "ActivationFunctions.hpp"
 #include <iostream>
+#include <functional>
 
 template <typename T>
 T linearActivation(const T &input) {
@@ -64,6 +65,9 @@ T softmaxActivationDerivative(const T &input) {
 
 //      re-@note: due to design choices we do not want do instanciate new classes in main and we want to
 //      address the activation function with a string, we didn't find other suitable solutions
+//      but we provided a couple of solutions of the function that uses a struct to address the problem and 
+//      and apossible main() example
+
 template <typename T>
 T applyActivationFunction(const T &input, const std::string &activationFunction) {
     if (activationFunction == "linear") {

@@ -33,7 +33,7 @@ template<typename T>
 T evaluateLossFunction(const std::vector<T>& y, const std::vector<T>& target, const std::string& lossFunction);
 
 template<typename T>
-T mse(const const std::vector<T>& y, const const std::vector<T>& target);
+T mse(const std::vector<T>& y, const std::vector<T>& target);
 
 template<typename T>
 T mse(const std::vector<T>& y, const std::vector<T>& target, int num_threads);

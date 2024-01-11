@@ -1,6 +1,4 @@
-//#include "../include/network.hpp"
-//#include "../include/irisLoader.hpp"
-//#include "../include/model.hpp"
+
 #include "irisLoader.hpp"
 #include "model.hpp"
 #include <fstream>

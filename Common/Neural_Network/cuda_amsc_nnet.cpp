@@ -57,15 +57,12 @@ int main(){
     
     //TRAINING THE MODEL
    
+    // #first cuda model
     model.train(a);
-
     model.buildModel();
-    
-    model.setCudaPointers();
-    model.train(a,1);
-    
 
-     
+    // #second cuda model
+    model.train(a,1);
     
     //Debug test
     
