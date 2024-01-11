@@ -735,12 +735,12 @@ The file associated to this program are:
     * avx.cpp
     * avxT.cpp
   
-- A compiled executable of the program, located in Common/profiling. This file is 
+- A compiled executable of the program, located in Common/test/profiling. This file is 
 called "autoprofile". 
--profilinglist.txt a csv file with header that contains the profiling tasks to be executed.
-- filResult.csv and profiling_result csv files that contain the results of the profiling tasks.
+- profilinglist.txt located in Common/test/profiling. It is a csv file with header that contains the profiling tasks to be executed.
+- filResult.csv and profiling_result csv files. Located in Common/test/profiling. They contain the results of the profiling tasks.
   It was necessary to write result in two different files because one of the two files is trunked 
-  each time new data is uploaded to the database. In this way we make sure that in the db there are no duplicates (and we also keep an offline backup of the data)
+  each time new data is uploaded to the database. In this way we make sure that in the db there are no duplicates (and we also keep an offline backup of the data wiht the other file)
 
 
 After specifying all desired profiling in profilelist.txt, execute the following command 
