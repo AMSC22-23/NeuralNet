@@ -1,13 +1,10 @@
-//#include "../include/network.hpp"
-//#include "../include/irisLoader.hpp"
-//#include "../include/model.hpp"
 #include "irisLoader.hpp"
 #include "test_model.hpp"
 #include <fstream>
 #include <sstream>
 #include <tuple>
 
-#include "../include/functions_utilities.hpp"
+#include "functions_utilities.hpp"
 #include <algorithm>
 #include <random>
 #include <chrono>

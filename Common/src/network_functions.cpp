@@ -791,11 +791,12 @@ template void Model<double>::reduceMatrix();
  * when this function is called remember to reset to 0 the z vector, otherwise it will be summed to the following iterations !!!!!!!!!!!
 */
 
-template<typename T> //thi version need to be called only after the resizing of the weights
+//this version need to be called only after the resizing of the weights
+template<typename T> 
 void Model<T>::predict(std::vector<T>& input, const int& selection){
     input.push_back(1);
     const auto t0_0 = std::chrono::high_resolution_clock::now();
-    mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation);   //weights[0], input, z, weights_shape[0][0], weights_shape[0][1], 1, matrix_mul_optimisation);
+    mul_funct(input, weights[0], z[0], 1, weights_shape[0][0]+1, weights_shape[0][1], matrix_mul_optimisation);  
     const auto t0_1 = std::chrono::high_resolution_clock::now();
     int64_t dt_01 = std::chrono::duration_cast<std::chrono::microseconds>(t0_1 - t0_0).count();
     times[0] += dt_01;
@@ -1119,6 +1120,8 @@ void Model<T>::train(int& selection){
 
 template void Model<float>::train(int& selection);
 template void Model<double>::train(int& selection);
+
+
 
 
 

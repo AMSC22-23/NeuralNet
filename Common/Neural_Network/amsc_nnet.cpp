@@ -5,7 +5,7 @@
 #include <sstream>
 #include <tuple>
 
-#include "../include/functions_utilities.hpp"
+#include "functions_utilities.hpp"
 #include <algorithm>
 #include <random>
 #include <chrono>

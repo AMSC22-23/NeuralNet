@@ -599,10 +599,16 @@ drive.mount('/gdrive')
 %cd /gdrive/ Path-to-your-own /Common/Neural_Network
 ```
 
+![Coolab](images/Coolab_Notebook.png)
+
 Following the blocks on the code you will find already implemented a neural network based on keras tensorflow libraries, is already setted with one layer made by 128 neurons, 100 epochs and the same learning rate.<br>
 Now you can build and run this toy example, print the results, than you can compile and run our code and print the comparison.
 
 Working on a singoul layer with 128 neurons our code results approximately ten time faster, with a better loss and accuracy.
+
+![Accuracy](images/Accuracy.png)
+
+![Loss](images/Loss.png)
 
 ### CUDA IMPLEMENTATION
 Finally we tryed to exploit GPU architecture, and to achive this result we relied again on a coolab notebook. Opening the same `Feed_Forward_Comparison.ipynb` and scrolling down till the last part you can compile and run a different version of the code, you need first to connect to a GPU runtime compile and run the code. Now you can set two different parameters that affect the cuda kernel:
@@ -616,7 +622,14 @@ You can access to the first by calling `Model::setCudaBlockSize()` and passing a
 7  #define tile 32     //set the value you prefere
 ```
 
-### MATRIX MATRIX MULTIPLICATION
+In order to deeply understand how cuda code and cuda kernel work we provided two different implementations that exploit different memory acess and organization, you can run both the codes in the `coolab notebook`.
+
+
+![Cuda](images/Coolab2.png)
+
+
+
+## MATRIX MATRIX MULTIPLICATION
 We started working on the project by implementing various versions of matrix-matrix multiplication code individually. This allowed us to profile the performances of different approaches and figure out which approach would be better to use in our neural network. We tried different algorithms and data structures:
 
 - Simple-function-like matrix multiplication.
