@@ -1,3 +1,11 @@
-algorithm, program arguments, compiler optimization, profile misses?
-gmultiT, 1000 1 128 1 20, -fopenmp,0
-gmultiT, 1000 1 128 1 30, -fopenmp,1
+algorithm_name, program arguments, compiler optimization, profile misses?
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0

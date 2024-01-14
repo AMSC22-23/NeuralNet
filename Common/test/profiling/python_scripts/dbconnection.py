@@ -12,7 +12,7 @@ def upload_new_data():
     collection = db['filresult']
 
     # reading the file containing the profiling results, located in a folder above
-    csv_file_path = 'profiling_results.csv'
+    csv_file_path = '../profiling_results.csv'
 
     #csv_file_path = '../profiling_results.csv'
     data = pd.read_csv(csv_file_path, names=['author', 'id', 'matrix_dimension', 'datatype',
@@ -51,3 +51,5 @@ def upload_new_data():
     # deleting the content of the csv file
     f = open(csv_file_path, "w+")
     f.close()
+
+    return collection

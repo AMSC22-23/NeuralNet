@@ -14,7 +14,7 @@ from dbconnection import upload_new_data
 
 
 # we first upload the new data from the csv file
-upload_new_data()
+# upload_new_data()
 
 
 # we now connect to the database
@@ -477,5 +477,5 @@ def plot_time_tiling_multiT(data_type):
     plt.savefig('plot/time_complexity_tiling_multiT_' + data_type + '.png')
     plt.close()
 
-plot_time_tiling_multiT('float')
-plot_time_tiling_multiT('double')
+#    plot_time_tiling_multiT('float')
+#    plot_time_tiling_multiT('double')

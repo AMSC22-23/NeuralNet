@@ -42,7 +42,7 @@ def CUDAmisses_plot(collection):
     plt.ylabel('time [ms]')
     plt.grid()
     plt.title('Execution time vs matrix dimension')
-    plt.savefig('plot/CUDAmisses_plot')
+    plt.savefig('../plot/CUDAmisses_plot')
 
 client = MongoClient('mongodb://localhost:27017/')
 db = client['AMSC_PROJECT']  # Cambia con il nome del tuo database
