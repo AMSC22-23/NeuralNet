@@ -10,6 +10,9 @@ df["custom_x"] = df["n_layer1"]
 # Filtra i dati in base alle condizioni richieste
 
 df_model_0 = df[df['model'] == 0]
+
+df_model_3 = df[df['model'] == 3]
+
 df_model_1_blk_size_4 = df[(df['model'] == 1) & (df['blk_size'] == 4)]
 df_model_2_blk_size_4 = df[(df['model'] == 2) & (df['blk_size'] == 4)]
 
@@ -23,6 +26,9 @@ df_model_1_blk_size_32 = df[(df['model'] == 1) & (df['blk_size'] == 32)]
 df_model_2_blk_size_32 = df[(df['model'] == 2) & (df['blk_size'] == 32)]
 
 df_mode0_sorted = df_model_0.sort_values(by="n_layer1")
+
+df_mode3_sorted = df_model_3.sort_values(by="n_layer1")
+
 df_model_1_blk_size_4_sorted = df_model_1_blk_size_4.sort_values(by="n_layer1")
 df_model_2_blk_size_4_sorted = df_model_2_blk_size_4.sort_values(by="n_layer1")
 
@@ -45,6 +51,8 @@ for value in string:
 
   # Plot per model=0
   plt.plot(df_mode0_sorted['custom_x'], df_mode0_sorted[time]/1000, label='Sequential', marker='o')
+  
+  plt.plot(df_mode3_sorted['custom_x'], df_mode3_sorted[time]/1000, label='Optimized', marker='o')
 
   # Plot per model=1, blk_size=4
   plt.plot(df_model_1_blk_size_4_sorted['custom_x'], df_model_1_blk_size_4_sorted[time]/1000, label='CUDA 1, blk_size=4', marker='o')

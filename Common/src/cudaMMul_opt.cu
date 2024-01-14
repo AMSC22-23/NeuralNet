@@ -1,0 +1,312 @@
+#include "../include/cudaMatrixMul.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <cuda.h>
+#include <cuda_runtime_api.h>
+#include <cuda_runtime.h>
+#define tile 32
+ //***********************************************************************************
+
+ //here all the functions for lunching the kernels and the optimized kernels
+
+ //***********************************************************************************
+
+__global__ void vectorVectorProduct2(float *vectorA, float *vectorB, float *result, int M, int N) {
+    __shared__ float sharedVectorA[256];
+
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (threadIdx.x < M) {
+        sharedVectorA[threadIdx.x] = vectorA[threadIdx.x];
+    }
+
+    __syncthreads();  
+
+    if (row < N) {
+        result[row] = sharedVectorA[0] * vectorB[row];
+    }
+}
+
+
+
+
+__global__ void vectorMatrixProduct1(float *vector, float *matrix, float *result, int M, int N) {
+    __shared__ float sharedVector[256];
+
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+
+    
+    if (threadIdx.x < M) {
+        sharedVector[threadIdx.x] = vector[threadIdx.x];
+    }
+
+    __syncthreads();  
+
+    if (col < N) {
+        float sum = 0.0f;
+        for (int i = 0; i < M; ++i) {
+            sum += sharedVector[i] * matrix[i * N + col];
+        }
+        result[col] = sum;
+    }
+}
+
+
+
+__global__ void gpu_matrix_multF(float *a,float *b, float *c, int m, int n, int nb)
+{
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    if( col < nb && row < m)
+    {
+       float sum = 0;
+        for(int i = 0; i < n; i++)
+        {
+            sum += a[row * n + i] * b[i * nb + col];
+        }
+        c[row * nb + col] = sum;
+    }
+}
+
+__global__ void gpu_matrix_multD(double *a,double *b, double *c, int m, int n, int nb)
+{
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    if( col < nb && row < m)
+    {
+        double sum = 0;
+        for(int i = 0; i < n; i++)
+        {
+            sum += a[row * n + i] * b[i * nb + col];
+        }
+        c[row * nb + col] = sum;
+    }
+}
+
+__global__ void gpu_matrix_mult_tileF(float *a,float *b, float *c, int m, int n, int nb)
+{
+    __shared__ int ds_M[tile][tile];
+    __shared__ int ds_N[tile][tile];
+
+
+  int bx = blockIdx.x;  int by = blockIdx.y;
+  int tx = threadIdx.x; int ty = threadIdx.y;
+
+  int Row = by * blockDim.y + ty;
+  int Col = bx * blockDim.x + tx;
+  float Pvalue = 0;
+
+  
+  for (int p = 0; p < (n-1) / tile + 1; ++p) {
+    if(Row < m && p * tile+tx < n) {
+        ds_M[ty][tx] = a[Row*n + p*tile+tx];
+    }
+    else
+    {
+        ds_M[ty][tx] = 0.0;
+    }
+    if (p*tile+ty < n && Col < nb) {
+        ds_N[ty][tx] = b[(p*tile+ty)*nb + Col];
+    }
+    else
+    {
+        ds_N[ty][tx] = 0.0;
+    }
+    __syncthreads();
+
+    if(Row < m && Col < nb) {
+        for (int i = 0; i < tile; ++i)
+           Pvalue += ds_M[ty][i] * ds_N[i][tx];
+    }
+    __syncthreads();
+  }
+  if (Row < m && Col < nb)
+    c[Row*nb+Col] = Pvalue;
+}
+
+__global__ void gpu_matrix_mult_tileD(double *a,double *b, double *c, int m, int n, int nb)
+{
+    __shared__ int ds_M[tile][tile];
+    __shared__ int ds_N[tile][tile];
+
+
+  int bx = blockIdx.x;  int by = blockIdx.y;
+  int tx = threadIdx.x; int ty = threadIdx.y;
+
+  int Row = by * blockDim.y + ty;
+  int Col = bx * blockDim.x + tx;
+  double Pvalue = 0;
+
+  // Loop over the M and N tiles required to compute the P element
+  for (int p = 0; p < (n-1) / tile + 1; ++p) {
+    
+    if(Row < m && p * tile+tx < n) {
+        ds_M[ty][tx] = a[Row*n + p*tile+tx];
+    }
+    else
+    {
+        ds_M[ty][tx] = 0.0;
+    }
+    if (p*tile+ty < n && Col < nb) {
+        ds_N[ty][tx] = b[(p*tile+ty)*nb + Col];
+    }
+    else
+    {
+        ds_N[ty][tx] = 0.0;
+    }
+    __syncthreads();
+
+    if(Row < m && Col < nb) {
+        for (int i = 0; i < tile; ++i)
+           Pvalue += ds_M[ty][i] * ds_N[i][tx];
+    }
+    __syncthreads();
+  }
+  if (Row < m && Col < nb)
+    c[Row*nb+Col] = Pvalue;
+}
+
+
+
+
+
+void cudaFunctionF(float *a, float *b, float *c, int m, int n, int nb, int block_size){
+    float *ac,*bc,*cc;
+
+    cudaMallocManaged((void **) &ac, sizeof(float)*m*n);
+    cudaMallocManaged((void **) &bc, sizeof(float)*n*nb);
+    cudaMallocManaged((void **) &cc, sizeof(float)*m*nb);
+
+    cudaMemcpy(ac, a, sizeof(float) * m *n, cudaMemcpyHostToDevice);
+    cudaMemcpy(bc, b, sizeof(float) * n *nb, cudaMemcpyHostToDevice);
+
+    int MATRIX_SIZE_X = m;
+    int MATRIX_SIZE_Y = nb;
+    unsigned int grid_rows = (MATRIX_SIZE_X + block_size - 1) / block_size;
+    unsigned int grid_cols = (MATRIX_SIZE_Y + block_size - 1) / block_size;
+    dim3 dimGrid(grid_cols, grid_rows);
+    dim3 dimBlock(block_size, block_size);
+
+    gpu_matrix_multF<<<dimGrid, dimBlock>>>(ac, bc, cc, m, n, nb);
+    cudaDeviceSynchronize();
+
+    cudaMemcpy(c, cc, sizeof(float) * m*nb, cudaMemcpyDeviceToHost);
+
+    cudaFree(ac);
+    cudaFree(bc);
+    cudaFree(cc);
+
+}
+
+
+void cudaFunctionD(double *a, double *b, double *c, int m, int n, int nb, int block_size){
+
+    double *ac,*bc,*cc;
+
+    cudaMallocManaged((void **) &ac, sizeof(double)*m*n);
+    cudaMallocManaged((void **) &bc, sizeof(double)*n*nb);
+    cudaMallocManaged((void **) &cc, sizeof(double)*m*nb);
+
+    cudaMemcpy(ac, a, sizeof(double) * m *n, cudaMemcpyHostToDevice);
+    cudaMemcpy(bc, b, sizeof(double) * n *nb, cudaMemcpyHostToDevice);
+
+    int MATRIX_SIZE_X = m;
+    int MATRIX_SIZE_Y = nb;
+
+    unsigned int grid_rows = (MATRIX_SIZE_X + block_size - 1) / block_size;
+    unsigned int grid_cols = (MATRIX_SIZE_Y + block_size - 1) / block_size;
+    dim3 dimGrid(grid_cols, grid_rows);
+    dim3 dimBlock(block_size, block_size);
+
+    gpu_matrix_multD<<<dimGrid, dimBlock>>>(ac, bc, cc, m, n, nb);
+    cudaDeviceSynchronize();
+
+}
+
+
+void cudaTileFunctionF(float *a, float *b, float *c, int m, int n, int nb, int block_size){
+    
+    float *ac,*bc,*cc;
+
+    cudaMallocManaged((void **) &ac, sizeof(float)*m*n);
+    cudaMallocManaged((void **) &bc, sizeof(float)*n*nb);
+    cudaMallocManaged((void **) &cc, sizeof(float)*m*nb);
+
+    cudaMemcpy(ac, a, sizeof(float) * m *n, cudaMemcpyHostToDevice);
+    cudaMemcpy(bc, b, sizeof(float) * n *nb, cudaMemcpyHostToDevice);
+
+    int MATRIX_SIZE_X = m;
+    int MATRIX_SIZE_Y = nb;
+
+    unsigned int grid_rows = (MATRIX_SIZE_X + block_size - 1) / block_size;
+    unsigned int grid_cols = (MATRIX_SIZE_Y + block_size - 1) / block_size;
+    dim3 dimGrid(grid_cols, grid_rows);
+    dim3 dimBlock(block_size, block_size);
+
+    gpu_matrix_mult_tileF<<<dimGrid, dimBlock>>>(ac, bc, cc, m, n, nb);
+    cudaDeviceSynchronize();
+        
+    cudaMemcpy(c, cc, sizeof(float) * m*nb, cudaMemcpyDeviceToHost);
+
+    cudaFree(a);
+    cudaFree(b);
+    cudaFree(c);
+
+}
+
+void cudaTileFunctionD(double *a, double *b, double *c, int m, int n, int nb, int block_size){
+    double *ac,*bc,*cc;
+
+    cudaMallocManaged((void **) &ac, sizeof(double)*m*n);
+    cudaMallocManaged((void **) &bc, sizeof(double)*n*nb);
+    cudaMallocManaged((void **) &cc, sizeof(double)*m*nb);
+
+    cudaMemcpy(ac, a, sizeof(double) * m *n, cudaMemcpyHostToDevice);
+    cudaMemcpy(bc, b, sizeof(double) * n *nb, cudaMemcpyHostToDevice);
+
+    int MATRIX_SIZE_X = m;
+    int MATRIX_SIZE_Y = nb;
+
+    unsigned int grid_rows = (MATRIX_SIZE_X + block_size - 1) / block_size;
+    unsigned int grid_cols = (MATRIX_SIZE_Y + block_size - 1) / block_size;
+    dim3 dimGrid(grid_cols, grid_rows);
+    dim3 dimBlock(block_size, block_size);
+
+    gpu_matrix_mult_tileD<<<dimGrid, dimBlock>>>(ac, bc, cc, m, n, nb);
+    cudaDeviceSynchronize();
+    cudaMemcpy(c, cc, sizeof(double) * m*nb, cudaMemcpyDeviceToHost);
+
+    cudaFree(a);
+    cudaFree(b);
+    cudaFree(c);
+
+}
+
+void cudaFunctionDOptimized(double *a, double *b, double *c, int m, int n, int nb, int block_size){
+
+
+    int MATRIX_SIZE_X = m;
+    int MATRIX_SIZE_Y = nb;
+
+    unsigned int grid_rows = (MATRIX_SIZE_X + block_size - 1) / block_size;
+    unsigned int grid_cols = (MATRIX_SIZE_Y + block_size - 1) / block_size;
+    dim3 dimGrid(grid_cols, grid_rows);
+    dim3 dimBlock(block_size, block_size);
+
+    gpu_matrix_mult_tileD<<<dimGrid, dimBlock>>>(a, b, c, m, n, nb);
+    cudaDeviceSynchronize();
+}
+
+void cudaFunctionFOptimized(float *a, float *b, float *c, int m, int n, int nb, int block_size){
+        block_size = 256;
+        int MATRIX_SIZE_Y = nb;
+        
+        int numBlocks = (MATRIX_SIZE_Y + block_size - 1) / block_size;
+        if(m == 1){
+          vectorMatrixProduct1<<<numBlocks, block_size>>>(a, b, c, n, nb);
+        }else{
+          vectorVectorProduct2<<<numBlocks, block_size>>>(a, b, c, m, nb);
+        }
+        cudaDeviceSynchronize();
+    }
