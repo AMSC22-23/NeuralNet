@@ -76,7 +76,8 @@ def plot_time_complexity(datatype: str):
        plt.plot(data['matrix_dimension'], data['time [ms]'], label=id_to_name([id]))
 
 
-
+   plt.xlabel('Matrix dimension')
+   plt.ylabel('Time [ms]')
    plt.yscale('log')
    plt.legend()
    plt.grid()
