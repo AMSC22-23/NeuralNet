@@ -1,11 +1,13 @@
 algorithm_name, program arguments, compiler optimization, profile misses?
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
-o_blas, 512 0 125 , -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+gmultiT, 3000 0 108 4 10, -O3 -march=native -ffast-math,0
+gmultiT, 3000 0 118 4 10,  -O3 -march=native -ffast-math -funroll-loops,0
+gmultiT, 3000 0 128 4 10,  -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+gmultiT, 3000 0 108 4 10, -O3 -march=native -ffast-math,0
+gmultiT, 3000 0 118 4 10,  -O3 -march=native -ffast-math -funroll-loops,0
+gmultiT, 3000 0 128 4 10,  -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+gmultiT, 3000 0 108 4 10, -O3 -march=native -ffast-math,0
+gmultiT, 3000 0 118 4 10,  -O3 -march=native -ffast-math -funroll-loops,0
+gmultiT, 3000 0 128 4 10,  -O3 -march=native -ffast-math -funroll-loops -ftracer,0
+gmultiT, 3000 0 108 4 10, -O3 -march=native -ffast-math,0
+gmultiT, 3000 0 118 4 10,  -O3 -march=native -ffast-math -funroll-loops,0
+gmultiT, 3000 0 128 4 10,  -O3 -march=native -ffast-math -funroll-loops -ftracer,0

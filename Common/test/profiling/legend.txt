@@ -1,3 +1,4 @@
+ID: COMPILER OPTIONS
 10X:  -O3 -march=native -ffast-math
 11X:  -O3 -march=native -ffast-math -funroll-loops
 11AX: -O3 -march=native -ffast-math -funroll-all-loops
