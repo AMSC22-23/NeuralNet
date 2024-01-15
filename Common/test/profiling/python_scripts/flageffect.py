@@ -44,7 +44,7 @@ def ploteffect():
     plt.ylabel("Time [ms]")
 
     plt.title("Effect of different compiler flags on gmultiT on 3000X3000 matrix")
-    plt.savefig('flagEffect')
+    plt.savefig('../plot/flagEffect')
 
 
 
